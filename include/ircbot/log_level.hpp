@@ -9,4 +9,6 @@ enum class LogLevel : uint8_t {
   CRITICAL,
 };
 
+#define LogLevelDesc(x) #x
+
 #endif

@@ -3,7 +3,6 @@
 
 #include <ostream>
 #include <string>
-#include <mutex>
 
 #include "log_level.hpp"
 
@@ -19,7 +18,6 @@ class LogOutput {
  private:
   std::ostream& m_output;
   LogLevel m_level;
-  std::mutex m_mtx;
 };
 
 #endif

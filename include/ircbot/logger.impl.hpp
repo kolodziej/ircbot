@@ -1,20 +1,27 @@
-template <typename First, typename... Rest>
-void Logger::operator()(std::stringstream& stream, First f, Rest... r) {
+#include <iomanip>
+
+template <typename... Args>
+void Logger::operator()(LogLevel level, Args... args) {
   std::lock_guard<std::mutex> lock(m_mtx);
-  std::stringstream stream;
-  log(stream, f, r);
+  m_stream = std::stringstream();
 
-  auto log_msg = stream.str();
+  // time
+  auto now = std::chrono::system_clock::now();
+  auto time = std::chrono::system_clock::to_time_t(now);
+
+  m_stream << std::put_time(std::localtime(&time), "%Y-%m-%d %X") << " ";
+
+  m_stream << LogLevelDesc(level) << ": ";
+
+  log(args...);
+
+  auto log_msg = m_stream.str();
   for (auto& log : m_outputs)
-    log.log(log_msg);
+    log.log(level, log_msg);
 }
 
 template <typename First, typename... Rest>
-void Logger::log(std::stringstream& stream, First f, Rest... r) {
-  stream << f;
-  log(stream, r...);
-}
-
-void Logger::log(std::stringstream& stream) {
-  stream << std::endl;
+void Logger::log(First f, Rest... r) {
+  m_stream << f;
+  log(r...);
 }

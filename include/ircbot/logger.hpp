@@ -5,6 +5,7 @@
 #include <sstream>
 #include <mutex>
 
+#include "log_level.hpp"
 #include "log_output.hpp"
 
 class Logger {
@@ -12,17 +13,21 @@ class Logger {
   void addOutput(const LogOutput& output);
 
   template <typename... Args>
-  void operator()(Args... args);
+  void operator()(LogLevel level, Args... args);
 
  private:
   template <typename First, typename... Rest>
-  void log(std::stringstream& stream, First f, Rest... r);
+  void log(First f, Rest... r);
 
-  void log(std::stringstream& stream);
+  void log();
 
  private:
   std::vector<LogOutput> m_outputs;
   std::mutex m_mtx;
+
+  std::stringstream m_stream;
 };
+
+#include "ircbot/logger.impl.hpp"
 
 #endif
