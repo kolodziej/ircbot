@@ -1,0 +1,11 @@
+# CMake
+Makefile
+CMakeFiles
+CMakeCache.txt
+cmake_install.cmake
+
+# output
+*.o
+*.a
+*.so
+ircbot

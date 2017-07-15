@@ -1,0 +1,17 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+
+INCLUDE_DIRECTORIES(
+    "${CMAKE_SOURCE_DIR}/include"
+)
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+
+SET(SOURCES
+    source/main.cpp
+)
+
+SET(HEADERS
+    # list of headers
+)
+
+ADD_EXECUTABLE("ircbot" ${SOURCES})
