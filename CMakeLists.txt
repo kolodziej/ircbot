@@ -1,5 +1,6 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
 
+FIND_PACKAGE(Threads)
 FIND_PACKAGE(Boost 1.62 COMPONENTS system program_options REQUIRED)
 
 INCLUDE_DIRECTORIES(
@@ -13,6 +14,7 @@ SET(SOURCES
     source/log_output.cpp
     source/log_level.cpp
     source/logger.cpp
+    source/session.cpp
     source/main.cpp
 )
 
@@ -22,7 +24,8 @@ SET(HEADERS
     include/ircbot/log_output.hpp
     include/ircbot/logger.impl.hpp
     include/ircbot/logger.hpp
+    include/ircbot/session.hpp
 )
 
 ADD_EXECUTABLE("ircbot" ${SOURCES})
-TARGET_LINK_LIBRARIES("ircbot" "${Boost_LIBRARIES}")
+TARGET_LINK_LIBRARIES("ircbot" "${Boost_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")

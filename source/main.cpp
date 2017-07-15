@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <thread>
+#include <stdexcept>
 
 #include "ircbot/bot_config.hpp"
+#include "ircbot/session.hpp"
 
 #include <boost/program_options.hpp>
 
@@ -49,15 +52,29 @@ int main(int argc, char** argv) {
 
   if (vm.count("help")) {
     std::cout << opts << "\n";
-    return 2;
+    return 1;
   }
 
   try {
     opt::notify(vm);
   } catch (opt::error& exc) {
     std::cerr << "Error: " << exc.what() << "\n";
-    return 1;
+    return 2;
   }
+
+  boost::asio::io_service io_service;
+  Session sess{io_service, cfg.irc_server, cfg.irc_port};
+
+  std::thread io_thread{[&io_service]() { io_service.run(); }};
+
+  try {
+    sess.connect();
+  } catch (std::logic_error& exc) {
+    std::cerr << "Connection error: " << exc.what() << "\n";
+    return 3;
+  }
+
+  io_thread.join();
 
   return 0;
 }
