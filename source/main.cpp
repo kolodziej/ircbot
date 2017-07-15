@@ -2,19 +2,29 @@
 #include <fstream>
 #include <string>
 #include <thread>
+#include <fstream>
 #include <stdexcept>
 
 #include "ircbot/bot_config.hpp"
 #include "ircbot/session.hpp"
+#include "ircbot/logger.hpp"
 
 #include <boost/program_options.hpp>
 
 namespace opt = boost::program_options;
 
-#include "ircbot/logger.hpp"
-
 int main(int argc, char** argv) {
   BotConfig cfg;
+  Logger log;
+
+  std::fstream error_log{"/var/log/ircbot/error.log",
+    std::ios::out | std::ios::app};
+  std::fstream debug_log{"/var/log/ircbot/debug.log",
+    std::ios::out | std::ios::app};
+
+  log.addOutput(LogOutput{std::clog, LogLevel::INFO});
+  log.addOutput(LogOutput{error_log, LogLevel::ERROR});
+  log.addOutput(LogOutput{debug_log, LogLevel::DEBUG});
 
   opt::options_description opts("Options");
   opts.add_options()
@@ -58,7 +68,7 @@ int main(int argc, char** argv) {
   try {
     opt::notify(vm);
   } catch (opt::error& exc) {
-    std::cerr << "Error: " << exc.what() << "\n";
+    log(LogLevel::ERROR, "Startup error: ", exc.what());
     return 2;
   }
 
@@ -68,9 +78,11 @@ int main(int argc, char** argv) {
   std::thread io_thread{[&io_service]() { io_service.run(); }};
 
   try {
+    log(LogLevel::INFO, "Connecting to ", cfg.irc_server, ":", cfg.irc_port);
     sess.connect();
+    log(LogLevel::INFO, "Connected to ", cfg.irc_server, ":", cfg.irc_port);
   } catch (std::logic_error& exc) {
-    std::cerr << "Connection error: " << exc.what() << "\n";
+    log(LogLevel::ERROR, "Connection error: ", exc.what());
     io_thread.join();
     return 3;
   }
