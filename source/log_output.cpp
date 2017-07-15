@@ -4,5 +4,5 @@
 
 void LogOutput::log(LogLevel level, std::string message) {
   if (level >= m_level)
-    m_stream << message << std::flush;
+    m_output << message << std::flush;
 }

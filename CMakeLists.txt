@@ -7,11 +7,17 @@ INCLUDE_DIRECTORIES(
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 SET(SOURCES
+    source/log_output.cpp
+    source/log_level.cpp
+    source/logger.cpp
     source/main.cpp
 )
 
 SET(HEADERS
-    # list of headers
+    include/ircbot/log_level.hpp
+    include/ircbot/log_output.hpp
+    include/ircbot/logger.impl.hpp
+    include/ircbot/logger.hpp
 )
 
 ADD_EXECUTABLE("ircbot" ${SOURCES})

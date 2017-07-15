@@ -1,9 +1,10 @@
 #include <iomanip>
+#include <string>
 
 template <typename... Args>
 void Logger::operator()(LogLevel level, Args... args) {
   std::lock_guard<std::mutex> lock(m_mtx);
-  m_stream = std::stringstream();
+  m_stream.str(std::string());
 
   // time
   auto now = std::chrono::system_clock::now();
@@ -13,11 +14,11 @@ void Logger::operator()(LogLevel level, Args... args) {
   std::strftime(t, 64, "%Y-%m-%d %X", std::localtime(&time));
   m_stream << t;
 
-  m_stream << LogLevelDesc(level) << ": ";
+  m_stream << " " << LogLevelDesc(level) << ": ";
 
   log(args...);
 
-  auto log_msg = m_stream.str();
+  std::string log_msg = m_stream.str();
   for (auto& log : m_outputs)
     log.log(level, log_msg);
 }
