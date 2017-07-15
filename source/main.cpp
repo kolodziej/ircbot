@@ -8,6 +8,8 @@
 
 namespace opt = boost::program_options;
 
+#include "ircbot/logger.hpp"
+
 int main(int argc, char** argv) {
   BotConfig cfg;
 
