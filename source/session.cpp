@@ -26,3 +26,33 @@ void Session::connect() {
     throw std::logic_error{"could not connect to endpoint!"};
   }
 }
+
+std::string Session::receive() {
+  static const size_t buffer_size = 1024;
+  static char buf[buffer_size];
+
+  boost::system::error_code ec;
+  auto buffer = boost::asio::buffer(buf, buffer_size);
+  size_t read_size = boost::asio::read(m_socket, buffer, ec);
+
+  logger(LogLevel::INFO, "Receive error code: ", ec);
+  if (ec != 0)
+    return std::string();
+
+  if (ec != 0) { // change to boost ok code
+    throw std::logic_error{"an error occurred during reading from socket!"};
+  }
+
+  std::string message(buf, read_size);
+  return message;
+}
+
+void Session::send(const std::string& message) {
+  boost::system::error_code ec;
+  auto buffer = boost::asio::buffer(message.data(), message.size());
+  boost::asio::write(m_socket, buffer, ec);
+
+  if (ec != 0) { // change to boost ok code
+    throw std::logic_error{"an error occurred during writing to socket!"};
+  }
+}

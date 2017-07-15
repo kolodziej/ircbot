@@ -11,6 +11,9 @@ class Session {
 
   void connect();
 
+  std::string receive();
+  void send(const std::string&);
+
  private:
   boost::asio::io_service& m_io;
   std::string m_address;
