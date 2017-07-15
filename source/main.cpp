@@ -13,18 +13,19 @@
 
 namespace opt = boost::program_options;
 
+Logger logger;
+
 int main(int argc, char** argv) {
   BotConfig cfg;
-  Logger log;
 
   std::fstream error_log{"/var/log/ircbot/error.log",
     std::ios::out | std::ios::app};
   std::fstream debug_log{"/var/log/ircbot/debug.log",
     std::ios::out | std::ios::app};
 
-  log.addOutput(LogOutput{std::clog, LogLevel::INFO});
-  log.addOutput(LogOutput{error_log, LogLevel::ERROR});
-  log.addOutput(LogOutput{debug_log, LogLevel::DEBUG});
+  logger.addOutput(LogOutput{std::clog, LogLevel::INFO});
+  logger.addOutput(LogOutput{error_log, LogLevel::ERROR});
+  logger.addOutput(LogOutput{debug_log, LogLevel::DEBUG});
 
   opt::options_description opts("Options");
   opts.add_options()
@@ -68,7 +69,7 @@ int main(int argc, char** argv) {
   try {
     opt::notify(vm);
   } catch (opt::error& exc) {
-    log(LogLevel::ERROR, "Startup error: ", exc.what());
+    logger(LogLevel::ERROR, "Startup error: ", exc.what());
     return 2;
   }
 
@@ -77,16 +78,27 @@ int main(int argc, char** argv) {
 
   std::thread io_thread{[&io_service]() { io_service.run(); }};
 
+  auto network_loop = [&io_service, &sess]() {
+    int i = 0;
+    while (i++ < 10) {
+      auto data = sess.receive();
+      sess.send(data);
+    }
+  };
+
+  std::thread network_thread{network_loop};
+
   try {
-    log(LogLevel::INFO, "Connecting to ", cfg.irc_server, ":", cfg.irc_port);
+    logger(LogLevel::INFO, "Connecting to ", cfg.irc_server, ":", cfg.irc_port);
     sess.connect();
-    log(LogLevel::INFO, "Connected to ", cfg.irc_server, ":", cfg.irc_port);
+    logger(LogLevel::INFO, "Connected to ", cfg.irc_server, ":", cfg.irc_port);
   } catch (std::logic_error& exc) {
-    log(LogLevel::ERROR, "Connection error: ", exc.what());
+    logger(LogLevel::ERROR, "Connection error: ", exc.what());
     io_thread.join();
     return 3;
   }
 
+  network_thread.join();
   io_thread.join();
 
   return 0;

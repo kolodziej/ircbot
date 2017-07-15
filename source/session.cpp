@@ -2,6 +2,10 @@
 
 #include <stdexcept>
 
+#include "ircbot/logger.hpp"
+
+extern Logger logger;
+
 Session::Session(boost::asio::io_service& io, std::string address, uint16_t port) :
   m_io{io},
   m_address{address},
