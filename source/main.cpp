@@ -71,6 +71,7 @@ int main(int argc, char** argv) {
     sess.connect();
   } catch (std::logic_error& exc) {
     std::cerr << "Connection error: " << exc.what() << "\n";
+    io_thread.join();
     return 3;
   }
 
