@@ -9,7 +9,9 @@ void Logger::operator()(LogLevel level, Args... args) {
   auto now = std::chrono::system_clock::now();
   auto time = std::chrono::system_clock::to_time_t(now);
 
-  m_stream << std::put_time(std::localtime(&time), "%Y-%m-%d %X") << " ";
+  char t[64];
+  std::strftime(t, 64, "%Y-%m-%d %X", std::localtime(&time));
+  m_stream << t;
 
   m_stream << LogLevelDesc(level) << ": ";
 
