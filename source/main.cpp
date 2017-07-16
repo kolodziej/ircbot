@@ -13,10 +13,9 @@
 
 namespace opt = boost::program_options;
 
-Logger logger;
-
 int main(int argc, char** argv) {
   BotConfig cfg;
+  Logger& logger = Logger::getInstance();
 
   std::fstream error_log{"/var/log/ircbot/error.log",
     std::ios::out | std::ios::app};

@@ -4,8 +4,6 @@
 
 #include "ircbot/logger.hpp"
 
-extern Logger logger;
-
 Session::Session(boost::asio::io_service& io, std::string address, uint16_t port) :
   m_io{io},
   m_address{address},
@@ -34,6 +32,8 @@ void Session::connect() {
 std::string Session::receive() {
   static const size_t buffer_size = 1024;
   static char buf[buffer_size];
+
+  static Logger& logger = Logger::getInstance();
 
   boost::system::error_code ec;
   auto buffer = boost::asio::buffer(buf, buffer_size);
