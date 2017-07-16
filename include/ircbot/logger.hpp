@@ -15,7 +15,11 @@ class Logger {
   template <typename... Args>
   void operator()(LogLevel level, Args... args);
 
+  static Logger& getInstance();
+
  private:
+  Logger() = default;
+
   template <typename First, typename... Rest>
   void log(First f, Rest... r);
 
@@ -26,6 +30,9 @@ class Logger {
   std::mutex m_mtx;
 
   std::stringstream m_stream;
+
+ private:
+  static Logger m_logger_instance;
 };
 
 #include "ircbot/logger.impl.hpp"
