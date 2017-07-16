@@ -33,7 +33,7 @@ std::string Session::receive() {
   if (not m_socket.is_open())
     throw std::logic_error{"socket is not connected!"};
 
-  static const size_t buffer_size = 16;
+  static const size_t buffer_size = 1024;
   static char buf[buffer_size];
 
   static Logger& logger = Logger::getInstance();
