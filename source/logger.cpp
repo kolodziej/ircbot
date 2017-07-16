@@ -11,5 +11,18 @@ void Logger::addOutput(const LogOutput& output) {
 void Logger::log() {
   m_stream << "\n";
 }
+
+std::string Logger::filterString(std::string s) {
+  for (char& c : s) {
+    switch (c) {
+      case '\n':
+      case '\r':
+        c = '\\';
+        break;
+    }
+  }
+
+  return s;
+}
   
 Logger Logger::m_logger_instance;

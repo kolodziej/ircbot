@@ -23,7 +23,12 @@ class Logger {
   template <typename First, typename... Rest>
   void log(First f, Rest... r);
 
+  template <typename... Rest>
+  void log(std::string s, Rest... r);
+
   void log();
+
+  std::string filterString(std::string);
 
  private:
   std::vector<LogOutput> m_outputs;

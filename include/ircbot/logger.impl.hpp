@@ -28,3 +28,9 @@ void Logger::log(First f, Rest... r) {
   m_stream << f;
   log(r...);
 }
+
+template <typename... Rest>
+void Logger::log(std::string s, Rest... r) {
+  m_stream << filterString(s);
+  log(r...);
+}
