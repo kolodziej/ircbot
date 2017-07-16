@@ -16,6 +16,7 @@ SET(SOURCES
     source/logger.cpp
     source/session.cpp
     source/bot.cpp
+    source/interpreter.cpp
     source/main.cpp
 )
 
@@ -27,6 +28,8 @@ SET(HEADERS
     include/ircbot/session.hpp
     include/ircbot/bot_config.hpp
     include/ircbot/bot.hpp
+    include/ircbot/interpreter.hpp
+    include/ircbot/interpreter_result.hpp
 )
 
 ADD_EXECUTABLE("ircbot" ${SOURCES})

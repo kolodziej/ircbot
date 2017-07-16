@@ -1,6 +1,7 @@
 #include "ircbot/bot.hpp"
 
 #include "ircbot/session.hpp"
+#include "ircbot/interpreter.hpp"
 #include "ircbot/logger.hpp"
 
 Bot::Bot(Session& session) :
@@ -54,6 +55,10 @@ void Bot::run_interpreter() {
     m_received_cv.notify_all();
 
     logger(LogLevel::DEBUG, "Interpreting: ", message);
+    Interpreter intp; // @TODO: supporting messages divided into parts
+    auto x = intp.run(message);
+
+    // @TODO: do sth with interpreted message
 
     m_outgoing_mtx.lock();
     m_outgoing.push_back(message);
