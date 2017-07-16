@@ -30,18 +30,17 @@ void Session::connect() {
 }
 
 std::string Session::receive() {
-  static const size_t buffer_size = 1024;
+  if (not m_socket.is_open())
+    throw std::logic_error{"socket is not connected!"};
+
+  static const size_t buffer_size = 16;
   static char buf[buffer_size];
 
   static Logger& logger = Logger::getInstance();
 
   boost::system::error_code ec;
   auto buffer = boost::asio::buffer(buf, buffer_size);
-  size_t read_size = boost::asio::read(m_socket, buffer, ec);
-
-  logger(LogLevel::INFO, "Receive error code: ", ec);
-  if (ec != 0)
-    return std::string();
+  size_t read_size = m_socket.read_some(buffer, ec);
 
   if (ec != 0) { // change to boost ok code
     throw std::logic_error{"an error occurred during reading from socket!"};
@@ -52,6 +51,9 @@ std::string Session::receive() {
 }
 
 void Session::send(const std::string& message) {
+  if (not m_socket.is_open())
+    throw std::logic_error{"socket is not connected!"};
+
   boost::system::error_code ec;
   auto buffer = boost::asio::buffer(message.data(), message.size());
   boost::asio::write(m_socket, buffer, ec);
