@@ -2,11 +2,13 @@
 #include <fstream>
 #include <string>
 #include <thread>
+#include <chrono>
 #include <fstream>
 #include <stdexcept>
 
 #include "ircbot/bot_config.hpp"
 #include "ircbot/session.hpp"
+#include "ircbot/bot.hpp"
 #include "ircbot/logger.hpp"
 
 #include <boost/program_options.hpp>
@@ -73,19 +75,10 @@ int main(int argc, char** argv) {
   }
 
   boost::asio::io_service io_service;
-  Session sess{io_service, cfg.irc_server, cfg.irc_port};
-
   std::thread io_thread{[&io_service]() { io_service.run(); }};
 
-  auto network_loop = [&io_service, &sess]() {
-    int i = 0;
-    while (i++ < 10) {
-      auto data = sess.receive();
-      sess.send(data);
-    }
-  };
-
-  std::thread network_thread{network_loop};
+  Session sess{io_service, cfg.irc_server, cfg.irc_port};
+  Bot bot{sess};
 
   try {
     logger(LogLevel::INFO, "Connecting to ", cfg.irc_server, ":", cfg.irc_port);
@@ -97,7 +90,13 @@ int main(int argc, char** argv) {
     return 3;
   }
 
-  network_thread.join();
+  std::thread recv_thread(&Bot::run_receiver, &bot);
+  std::thread interpreter_thread(&Bot::run_interpreter, &bot);
+  std::thread send_thread(&Bot::run_sender, &bot);
+
+  recv_thread.join();
+  interpreter_thread.join();
+  send_thread.join();
   io_thread.join();
 
   return 0;

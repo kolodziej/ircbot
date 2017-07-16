@@ -15,16 +15,18 @@ SET(SOURCES
     source/log_level.cpp
     source/logger.cpp
     source/session.cpp
+    source/bot.cpp
     source/main.cpp
 )
 
 SET(HEADERS
-    include/ircbot/bot_config.hpp
     include/ircbot/log_level.hpp
     include/ircbot/log_output.hpp
     include/ircbot/logger.impl.hpp
     include/ircbot/logger.hpp
     include/ircbot/session.hpp
+    include/ircbot/bot_config.hpp
+    include/ircbot/bot.hpp
 )
 
 ADD_EXECUTABLE("ircbot" ${SOURCES})
