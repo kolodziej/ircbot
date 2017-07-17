@@ -1,7 +1,7 @@
 #include "ircbot/bot.hpp"
 
 #include "ircbot/session.hpp"
-#include "ircbot/interpreter.hpp"
+#include "ircbot/irc_interpreter.hpp"
 #include "ircbot/logger.hpp"
 
 Bot::Bot(Session& session) :
@@ -45,6 +45,7 @@ void Bot::run_sender() {
 void Bot::run_interpreter() {
   Logger& logger = Logger::getInstance();
   
+  IRCInterpreter interpreter;
   while (m_running) {
     std::unique_lock<std::mutex> rlock{m_received_mtx};
     m_received_cv.wait(rlock, [this]() { return not this->m_received.empty(); });
@@ -55,11 +56,8 @@ void Bot::run_interpreter() {
     m_received_cv.notify_all();
 
     logger(LogLevel::DEBUG, "Interpreting: ", message);
-    Interpreter intp; // @TODO: supporting messages divided into parts
-    auto x = intp.run(message);
+    auto x = interpreter.run(message);
     logger(LogLevel::DEBUG, "Command: ", x.command, "; params: ", x.params);
-
-    // @TODO: do sth with interpreted message
 
     m_outgoing_mtx.lock();
     m_outgoing.push_back(message);

@@ -1,10 +1,10 @@
-#include "ircbot/interpreter.hpp"
+#include "ircbot/irc_interpreter.hpp"
 
 #include <string>
 #include <vector>
 #include <stdexcept>
 
-InterpreterResult Interpreter::run(std::string message) {
+IRCInterpreterResult IRCInterpreter::run(std::string message) {
   enum class State {
     START,
     PREFIX,
@@ -103,5 +103,5 @@ InterpreterResult Interpreter::run(std::string message) {
     }
   }
 
-  return InterpreterResult{command, params};
+  return IRCInterpreterResult{command, params};
 }
