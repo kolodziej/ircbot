@@ -78,7 +78,7 @@ int main(int argc, char** argv) {
   std::thread io_thread{[&io_service]() { io_service.run(); }};
 
   Session sess{io_service, cfg.irc_server, cfg.irc_port};
-  Bot bot{sess};
+  Bot bot{sess, cfg};
 
   try {
     logger(LogLevel::INFO, "Connecting to ", cfg.irc_server, ":", cfg.irc_port);

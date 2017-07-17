@@ -1,13 +1,15 @@
 #include "ircbot/bot.hpp"
 
-#include "ircbot/session.hpp"
 #include "ircbot/irc_interpreter.hpp"
 #include "ircbot/logger.hpp"
 
-Bot::Bot(Session& session) :
+Bot::Bot(Session& session, const BotConfig& config) :
   m_session{session},
+  m_config(config),
   m_running{true}
-{}
+{
+  m_outgoing.push_back(m_client.initialize("KolK1", "server", "bot.server"));
+}
 
 void Bot::run_receiver() {
   Logger& logger = Logger::getInstance();
@@ -46,6 +48,7 @@ void Bot::run_interpreter() {
   Logger& logger = Logger::getInstance();
   
   IRCInterpreter interpreter;
+  IRCClient client;
   while (m_running) {
     std::unique_lock<std::mutex> rlock{m_received_mtx};
     m_received_cv.wait(rlock, [this]() { return not this->m_received.empty(); });
@@ -56,11 +59,15 @@ void Bot::run_interpreter() {
     m_received_cv.notify_all();
 
     logger(LogLevel::DEBUG, "Interpreting: ", message);
-    auto x = interpreter.run(message);
-    logger(LogLevel::DEBUG, "Command: ", x.command, "; params: ", x.params);
+    auto x = interpreter.parse(message);
+    logger(LogLevel::DEBUG, "Interpreted message: ", x);
+
+    auto response = client.getResponse(x);
+    if (response.empty())
+      continue;
 
     m_outgoing_mtx.lock();
-    m_outgoing.push_back(message);
+    m_outgoing.push_back(response);
     m_outgoing_mtx.unlock();
 
     m_outgoing_cv.notify_all();

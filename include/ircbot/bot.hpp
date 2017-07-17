@@ -10,10 +10,12 @@
 #include <atomic>
 
 #include "ircbot/session.hpp"
+#include "ircbot/bot_config.hpp"
+#include "ircbot/irc_client.hpp"
 
 class Bot {
  public:
-  Bot(Session& session);
+  Bot(Session&, const BotConfig&);
 
   void run_receiver();
   void run_sender();
@@ -21,6 +23,8 @@ class Bot {
 
  private:
   Session& m_session;
+  BotConfig m_config;
+  IRCClient m_client;
 
   std::deque<std::string> m_received;
   std::condition_variable m_received_cv;
