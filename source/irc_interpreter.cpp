@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 
-IRCInterpreterResult IRCInterpreter::run(std::string message) {
+IRCInterpreterResult IRCInterpreter::parse(std::string message) {
   enum class State {
     START,
     PREFIX,

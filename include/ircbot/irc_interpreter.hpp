@@ -7,7 +7,7 @@ class IRCInterpreter {
  public:
   IRCInterpreter() = default;
 
-  IRCInterpreterResult run(std::string message);
+  IRCInterpreterResult parse(std::string message);
 };
 
 #endif
