@@ -34,3 +34,11 @@ void Logger::log(std::string s, Rest... r) {
   m_stream << filterString(s);
   log(r...);
 }
+
+template <typename T, typename... Rest>
+void Logger::log(std::vector<T> v, Rest... r) {
+  for (const auto& x : v)
+    m_stream << "\'" << x << "\' ";
+
+  log(r...);
+}

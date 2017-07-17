@@ -26,6 +26,9 @@ class Logger {
   template <typename... Rest>
   void log(std::string s, Rest... r);
 
+  template <typename T, typename... Rest>
+  void log(std::vector<T> s, Rest... r);
+
   void log();
 
   std::string filterString(std::string);
