@@ -17,6 +17,7 @@ SET(SOURCES
     source/session.cpp
     source/bot.cpp
     source/irc_interpreter.cpp
+    source/irc_interpreter_result.cpp
     source/main.cpp
 )
 
