@@ -57,6 +57,7 @@ void Bot::run_interpreter() {
     logger(LogLevel::DEBUG, "Interpreting: ", message);
     Interpreter intp; // @TODO: supporting messages divided into parts
     auto x = intp.run(message);
+    logger(LogLevel::DEBUG, "Command: ", x.command, "; params: ", x.params);
 
     // @TODO: do sth with interpreted message
 
