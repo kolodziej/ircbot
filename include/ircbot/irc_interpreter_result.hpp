@@ -8,6 +8,12 @@
 struct IRCInterpreterResult {
   std::string command;
   std::vector<std::string> params;
+
+  IRCInterpreterResult() = default;
+  IRCInterpreterResult(std::string command, std::vector<std::string> params) :
+      command{command},
+      params(params)
+  {}
 };
 
 std::ostream& operator<<(std::ostream& stream,

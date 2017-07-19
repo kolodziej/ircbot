@@ -59,16 +59,22 @@ void Bot::run_interpreter() {
     m_received_cv.notify_all();
 
     logger(LogLevel::DEBUG, "Interpreting: ", message);
-    auto x = interpreter.parse(message);
-    logger(LogLevel::DEBUG, "Interpreted message: ", x);
+    size_t added = interpreter.parse(message);
+    logger(LogLevel::DEBUG, "Interpreter: added ", added, " new results");
 
-    auto response = client.getResponse(x);
-    if (response.empty())
-      continue;
+    logger(LogLevel::DEBUG, "Interpreter has ", interpreter.resultsNumber(),
+           " results to process");
 
-    m_outgoing_mtx.lock();
-    m_outgoing.push_back(response);
-    m_outgoing_mtx.unlock();
+    while (interpreter.resultsNumber()) {
+      auto result = interpreter.nextResult();
+      auto response = client.getResponse(result);
+      if (response.empty())
+        continue;
+
+      m_outgoing_mtx.lock();
+      m_outgoing.push_back(response);
+      m_outgoing_mtx.unlock();
+    }
 
     m_outgoing_cv.notify_all();
   }
