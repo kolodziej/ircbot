@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <cctype>
 
 #include "ircbot/logger.hpp"
 
@@ -15,7 +16,7 @@ size_t IRCInterpreter::parse(std::string message) {
   logger(LogLevel::DEBUG, "Running IRC parser for message of size ", message.size());
   logger(LogLevel::DEBUG, "Message content: ", message);
 
-  size_t added_results = 0;
+  size_t added_commands = 0;
 
   size_t index = 0;
   while (index < message.size()) {
@@ -25,8 +26,8 @@ size_t IRCInterpreter::parse(std::string message) {
       case State::START:
         logger(LogLevel::DEBUG, "Interpreter state machine: START");
         if (x == ':') {
-          m_state = State::PREFIX;
-          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to PREFIX");
+          m_state = State::NICK_SERVERNAME;
+          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to NICK_SERVERNAME");
           ++index;
         } else {
           m_state = State::COMMAND;
@@ -35,10 +36,40 @@ size_t IRCInterpreter::parse(std::string message) {
 
         break;
 
-      case State::PREFIX:
-        if (x == ' ') {
+      case State::NICK_SERVERNAME:
+        if (isspace(static_cast<int>(x))) {
           m_state = State::COMMAND;
           logger(LogLevel::DEBUG, "Interpreter state machine: transpose to COMMAND");
+        } else if (x == '!') {
+          m_state = State::USER;
+          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to USER");
+        } else if (x == '@') {
+          m_state = State::HOST;
+          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to HOST");
+        } else {
+          m_nick_servername.push_back(x);
+        }
+
+        ++index;
+        break;
+
+      case State::USER:
+        if (isspace(static_cast<int>(x))) {
+          m_state = State::COMMAND;
+        } else if (x == '@') {
+          m_state = State::HOST;
+        } else {
+          m_user.push_back(x);
+        }
+
+        ++index;
+        break;
+
+      case State::HOST:
+        if (isspace(static_cast<int>(x))) {
+          m_state = State::COMMAND;
+        } else {
+          m_user.push_back(x);
         }
 
         ++index;
@@ -114,8 +145,10 @@ size_t IRCInterpreter::parse(std::string message) {
 
       case State::CRLF:
         ++index;
-        m_results.emplace_back(m_command, m_params);
-        ++added_results;
+
+        IRCCommand cmd{m_command, m_params, m_nick_servername, m_user, m_host};
+        m_commands.push_back(cmd);
+        ++added_commands;
 
         m_params.clear();
         m_param.clear();
@@ -126,15 +159,15 @@ size_t IRCInterpreter::parse(std::string message) {
     }
   }
 
-  return added_results;
+  return added_commands;
 }
 
-IRCInterpreterResult IRCInterpreter::nextResult() {
-  auto x = m_results.front();
-  m_results.pop_front();
+IRCCommand IRCInterpreter::nextCommand() {
+  auto x = m_commands.front();
+  m_commands.pop_front();
   return x;
 }
 
-size_t IRCInterpreter::resultsNumber() const {
-  return m_results.size();
+size_t IRCInterpreter::commandsNumber() const {
+  return m_commands.size();
 }

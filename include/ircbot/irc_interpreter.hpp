@@ -3,13 +3,15 @@
 
 #include <deque>
 
-#include "ircbot/irc_interpreter_result.hpp"
+#include "ircbot/irc_command.hpp"
 
 class IRCInterpreter {
  public:
   enum class State {
     START,
-    PREFIX,
+    NICK_SERVERNAME,
+    USER,
+    HOST,
     COMMAND,
     PARAMS,
     TRAILING,
@@ -21,15 +23,16 @@ class IRCInterpreter {
 
   size_t parse(std::string message);
 
-  IRCInterpreterResult nextResult();
-  size_t resultsNumber() const;
+  IRCCommand nextCommand();
+  size_t commandsNumber() const;
 
  private:
   State m_state;
 
+  std::string m_nick_servername, m_user, m_host;
   std::string m_command, m_param;
   std::vector<std::string> m_params;
-  std::deque<IRCInterpreterResult> m_results;
+  std::deque<IRCCommand> m_commands;
 };
 
 #endif

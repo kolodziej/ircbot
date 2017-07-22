@@ -61,11 +61,11 @@ void Bot::run_interpreter() {
     size_t added = interpreter.parse(message);
     logger(LogLevel::DEBUG, "Interpreter: added ", added, " new results");
 
-    logger(LogLevel::DEBUG, "Interpreter has ", interpreter.resultsNumber(),
+    logger(LogLevel::DEBUG, "Interpreter has ", interpreter.commandsNumber(),
            " results to process");
 
-    while (interpreter.resultsNumber()) {
-      auto result = interpreter.nextResult();
+    while (interpreter.commandsNumber()) {
+      auto command = interpreter.nextCommand();
 
       // run plugins
       std::string response; // temporarily suppress compilation error;
