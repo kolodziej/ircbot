@@ -11,7 +11,7 @@
 
 #include "ircbot/session.hpp"
 #include "ircbot/bot_config.hpp"
-#include "ircbot/irc_client.hpp"
+#include "ircbot/plugin_runner.hpp"
 
 class Bot {
  public:
@@ -24,7 +24,6 @@ class Bot {
  private:
   Session& m_session;
   BotConfig m_config;
-  IRCClient m_client;
 
   std::deque<std::string> m_received;
   std::condition_variable m_received_cv;

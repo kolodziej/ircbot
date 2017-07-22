@@ -8,7 +8,7 @@ Bot::Bot(Session& session, const BotConfig& config) :
   m_config(config),
   m_running{true}
 {
-  m_outgoing.push_back(m_client.initialize("KolK1", "server", "bot.server"));
+  // initialize plugins
 }
 
 void Bot::run_receiver() {
@@ -48,7 +48,6 @@ void Bot::run_interpreter() {
   Logger& logger = Logger::getInstance();
   
   IRCInterpreter interpreter;
-  IRCClient client;
   while (m_running) {
     std::unique_lock<std::mutex> rlock{m_received_mtx};
     m_received_cv.wait(rlock, [this]() { return not this->m_received.empty(); });
@@ -67,9 +66,9 @@ void Bot::run_interpreter() {
 
     while (interpreter.resultsNumber()) {
       auto result = interpreter.nextResult();
-      auto response = client.getResponse(result);
-      if (response.empty())
-        continue;
+
+      // run plugins
+      std::string response; // temporarily suppress compilation error;
 
       m_outgoing_mtx.lock();
       m_outgoing.push_back(response);
