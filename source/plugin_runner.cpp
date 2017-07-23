@@ -1,11 +1,11 @@
 #include "ircbot/plugin_runner.hpp"
 
-void PluginRunner::appendPlugin(Plugin::Ptr plugin) {
+void PluginRunner::appendPlugin(std::shared_ptr<Plugin> plugin) {
   std::lock_guard<std::mutex> lock{m_mtx};
   m_plugins.push_back(plugin);
 }
 
-void PluginRunner::insertPlugin(Plugin::Ptr plugin, size_t i) {
+void PluginRunner::insertPlugin(std::shared_ptr<Plugin> plugin, size_t i) {
   std::lock_guard<std::mutex> lock{m_mtx};
   auto it = m_plugins.begin();
   std::advance(it, i + 1);
@@ -17,4 +17,15 @@ void PluginRunner::removePlugin(size_t i) {
   auto it = m_plugins.begin();
   std::advance(it, i);
   m_plugins.erase(it);
+}
+
+std::list<IRCCommand> PluginRunner::run(const IRCCommand& cmd) {
+  std::list<IRCCommand> commands;
+
+  for (auto& plugin : m_plugins) {
+    auto p_commands = plugin->run(cmd);
+    commands.insert(commands.end(), p_commands.begin(), p_commands.end());
+  }
+
+  return commands;
 }

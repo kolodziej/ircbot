@@ -3,11 +3,13 @@
 
 #include <memory>
 
+#include "ircbot/irc_command.hpp"
+
 class Plugin {
  public:
-  using Ptr = std::shared_ptr<Plugin>;
-
   Plugin() = default;
+
+  virtual std::list<IRCCommand> run(const IRCCommand&) = 0;
 };
 
 #endif

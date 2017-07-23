@@ -2,6 +2,7 @@
 #define _PLUGIN_RUNNER_HPP
 
 #include <list>
+#include <memory>
 #include <mutex>
 
 #include "ircbot/plugin.hpp"
@@ -10,14 +11,14 @@ class PluginRunner {
  public:
   PluginRunner() = default;
 
-  void appendPlugin(Plugin::Ptr);
-  void insertPlugin(Plugin::Ptr, size_t);
+  void appendPlugin(std::shared_ptr<Plugin>);
+  void insertPlugin(std::shared_ptr<Plugin>, size_t);
   void removePlugin(size_t);
-
-  // run plugins
+  
+  std::list<IRCCommand> run(const IRCCommand& cmd);
 
  private:
-  std::list<Plugin::Ptr> m_plugins;
+  std::list<std::shared_ptr<Plugin>> m_plugins;
   std::mutex m_mtx;
 };
 
