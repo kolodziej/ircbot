@@ -10,3 +10,6 @@ cmake_install.cmake
 *.so
 ircbot
 !include/ircbot
+
+# cscope
+cscope.out
