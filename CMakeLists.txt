@@ -8,6 +8,8 @@ INCLUDE_DIRECTORIES(
     "${Boost_INCLUDE_DIR}"
 )
 
+SET(GTest_LIBS "gtest gtest_main")
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -Wextra")
 
 SET(SOURCES
@@ -35,6 +37,8 @@ SET(HEADERS
     include/ircbot/plugin.hpp
     include/ircbot/plugin_runner.hpp
 )
+
+ADD_SUBDIRECTORY(tests)
 
 ADD_EXECUTABLE("ircbot" ${SOURCES})
 TARGET_LINK_LIBRARIES("ircbot" "${Boost_LIBRARIES}" "${CMAKE_THREAD_LIBS_INIT}")

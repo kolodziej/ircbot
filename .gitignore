@@ -13,3 +13,6 @@ ircbot
 
 # cscope
 cscope.out
+
+# dirs
+googletest
