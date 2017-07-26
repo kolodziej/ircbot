@@ -56,8 +56,10 @@ size_t IRCInterpreter::parse(std::string message) {
       case State::USER:
         if (isspace(static_cast<int>(x))) {
           m_state = State::COMMAND;
+          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to COMMAND");
         } else if (x == '@') {
           m_state = State::HOST;
+          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to HOST");
         } else {
           m_user.push_back(x);
         }
@@ -68,8 +70,9 @@ size_t IRCInterpreter::parse(std::string message) {
       case State::HOST:
         if (isspace(static_cast<int>(x))) {
           m_state = State::COMMAND;
+          logger(LogLevel::DEBUG, "Interpreter state machine: transpose to COMMAND");
         } else {
-          m_user.push_back(x);
+          m_host.push_back(x);
         }
 
         ++index;
@@ -122,15 +125,18 @@ size_t IRCInterpreter::parse(std::string message) {
           if (x == '\r') {
             m_state = State::CR;
             logger(LogLevel::DEBUG, "Interpreter state machine: transpose to CR");
+            ++index;
           } else if (x == '\n') {
             m_state = State::CRLF;
             logger(LogLevel::DEBUG, "Interpreter state machine: transpose to CRLF");
+          } else {
+            ++index;
           }
         } else {
           m_param.push_back(x);
+          ++index;
         }
 
-        ++index;
         break;
 
       case State::CR:
@@ -150,6 +156,9 @@ size_t IRCInterpreter::parse(std::string message) {
         m_commands.push_back(cmd);
         ++added_commands;
 
+        m_nick_servername.clear();
+        m_user.clear();
+        m_host.clear();
         m_params.clear();
         m_param.clear();
         m_command.clear();
