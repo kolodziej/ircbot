@@ -66,15 +66,13 @@ void Bot::run_interpreter() {
 
     while (interpreter.commandsNumber()) {
       auto command = interpreter.nextCommand();
-
-      // run plugins
-      std::string response; // temporarily suppress compilation error;
-
-      m_outgoing_mtx.lock();
-      m_outgoing.push_back(response);
-      m_outgoing_mtx.unlock();
+      std::lock_guard<std::mutex> lg{m_interpreted_mtx};
+      m_interpreted.push_back(command);
+      logger(LogLevel::DEBUG, "Command: ", command.toString(),
+          " added to interpreted queue");
     }
 
-    m_outgoing_cv.notify_all();
+    if (m_interpreted.size())
+      m_interpreted_cv.notify_all();
   }
 }

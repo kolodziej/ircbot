@@ -29,6 +29,10 @@ class Bot {
   std::condition_variable m_received_cv;
   std::mutex m_received_mtx;
 
+  std::deque<IRCCommand> m_interpreted;
+  std::condition_variable m_interpreted_cv;
+  std::mutex m_interpreted_mtx;
+
   std::deque<std::string> m_outgoing;
   std::condition_variable m_outgoing_cv;
   std::mutex m_outgoing_mtx;
