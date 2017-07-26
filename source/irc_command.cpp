@@ -16,9 +16,9 @@ std::string IRCCommand::toString() const {
     stream << " ";
   }
 
-  stream << command;
+  stream << command << " ";
   for (size_t i = 0; i < params.size() - 1; ++i)
-    stream << params[i];
+    stream << params[i] << " ";
 
   stream << ":" << params.back() << "\r\n";
   return stream.str();
