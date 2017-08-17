@@ -5,13 +5,13 @@
 
 #include <mutex>
 #include <condition_variable>
-#include <deque>
+#include <queue>
 #include <string>
 #include <atomic>
 
 #include "ircbot/session.hpp"
 #include "ircbot/bot_config.hpp"
-#include "ircbot/plugin_runner.hpp"
+#include "ircbot/plugin_manager.hpp"
 
 class Bot {
  public:
@@ -20,20 +20,18 @@ class Bot {
   void run_receiver();
   void run_sender();
   void run_interpreter();
+  void run_responder();
 
  private:
   Session& m_session;
   BotConfig m_config;
+  PluginManager m_plugin_manager;
 
-  std::deque<std::string> m_received;
+  std::queue<std::string> m_received;
   std::condition_variable m_received_cv;
   std::mutex m_received_mtx;
 
-  std::deque<IRCCommand> m_interpreted;
-  std::condition_variable m_interpreted_cv;
-  std::mutex m_interpreted_mtx;
-
-  std::deque<std::string> m_outgoing;
+  std::queue<std::string> m_outgoing;
   std::condition_variable m_outgoing_cv;
   std::mutex m_outgoing_mtx;
 

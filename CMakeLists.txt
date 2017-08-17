@@ -18,7 +18,7 @@ SET(SOURCES
     source/bot.cpp
     source/irc_interpreter.cpp
     source/irc_command.cpp
-    source/plugin_runner.cpp
+    source/plugin_manager.cpp
     source/main.cpp
 )
 
@@ -33,7 +33,7 @@ SET(HEADERS
     include/ircbot/irc_interpreter.hpp
     include/ircbot/irc_command.hpp
     include/ircbot/plugin.hpp
-    include/ircbot/plugin_runner.hpp
+    include/ircbot/plugin_manager.hpp
 )
 
 ADD_EXECUTABLE("ircbot" ${SOURCES})

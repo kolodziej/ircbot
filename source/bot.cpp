@@ -20,7 +20,7 @@ void Bot::run_receiver() {
     logger(LogLevel::DEBUG, "Message of length ", message.size(), " received.");
 
     m_received_mtx.lock();
-    m_received.push_back(message);
+    m_received.push(message);
     m_received_mtx.unlock();
     m_received_cv.notify_all();
 
@@ -36,9 +36,8 @@ void Bot::run_sender() {
     m_outgoing_cv.wait(lock, [this]() { return not this->m_outgoing.empty(); });
 
     auto message = m_outgoing.front();
-    m_outgoing.pop_front();
+    m_outgoing.pop();
     lock.unlock();
-    m_outgoing_cv.notify_all();
 
     m_session.send(message);
   }
@@ -49,13 +48,12 @@ void Bot::run_interpreter() {
   
   IRCInterpreter interpreter;
   while (m_running) {
-    std::unique_lock<std::mutex> rlock{m_received_mtx};
-    m_received_cv.wait(rlock, [this]() { return not this->m_received.empty(); });
+    std::unique_lock<std::mutex> lock{m_received_mtx};
+    m_received_cv.wait(lock, [this]() { return not this->m_received.empty(); });
 
     auto message = m_received.front();
-    m_received.pop_front();
-    rlock.unlock();
-    m_received_cv.notify_all();
+    m_received.pop();
+    lock.unlock();
 
     logger(LogLevel::DEBUG, "Interpreting: ", message);
     size_t added = interpreter.parse(message);
@@ -66,13 +64,14 @@ void Bot::run_interpreter() {
 
     while (interpreter.commandsNumber()) {
       auto command = interpreter.nextCommand();
-      std::lock_guard<std::mutex> lg{m_interpreted_mtx};
-      m_interpreted.push_back(command);
-      logger(LogLevel::DEBUG, "Command: ", command.toString(),
-          " added to interpreted queue");
+      m_plugin_manager.run(command);
     }
+  }
+}
 
-    if (m_interpreted.size())
-      m_interpreted_cv.notify_all();
+void Bot::run_responder() {
+  Logger& logger = Logger::getInstance();
+
+  while (m_running) {
   }
 }

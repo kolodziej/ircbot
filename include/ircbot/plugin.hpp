@@ -7,9 +7,12 @@
 
 class Plugin {
  public:
-  Plugin() = default;
+  Plugin();
 
-  virtual std::list<IRCCommand> run(const IRCCommand&) = 0;
+  virtual void cmd(const IRCCommand&) = 0;
+
+ protected:
+  void respond(const IRCCommand&);
 };
 
 #endif
