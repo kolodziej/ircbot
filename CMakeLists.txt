@@ -19,6 +19,7 @@ SET(SOURCES
     source/irc_interpreter.cpp
     source/irc_command.cpp
     source/plugin_manager.cpp
+    source/plugin.cpp
     source/main.cpp
 )
 

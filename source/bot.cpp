@@ -64,7 +64,7 @@ void Bot::run_interpreter() {
 
     while (interpreter.commandsNumber()) {
       auto command = interpreter.nextCommand();
-      m_plugin_manager.run(command);
+      m_plugin_manager.push(command);
     }
   }
 }

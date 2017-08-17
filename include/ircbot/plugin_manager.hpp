@@ -16,7 +16,7 @@ class PluginManager {
   void insertPlugin(std::shared_ptr<Plugin>, size_t);
   void removePlugin(size_t);
   
-  void run(const IRCCommand& cmd);
+  void push(const IRCCommand& cmd);
 
  private:
   std::list<std::shared_ptr<Plugin>> m_plugins;

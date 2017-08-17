@@ -9,7 +9,13 @@ class Plugin {
  public:
   Plugin();
 
-  virtual void cmd(const IRCCommand&) = 0;
+  void push(const IRCCommand&);
+
+  bool available() const;
+  IRCCommand pull();
+
+ protected:
+
 };
 
 #endif

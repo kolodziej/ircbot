@@ -19,8 +19,8 @@ void PluginManager::removePlugin(size_t i) {
   m_plugins.erase(it);
 }
 
-void PluginManager::run(const IRCCommand& cmd) {
+void PluginManager::push(const IRCCommand& cmd) {
   for (auto& plugin : m_plugins) {
-    plugin->cmd(cmd);
+    plugin->push(cmd);
   }
 }
