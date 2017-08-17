@@ -10,9 +10,6 @@ class Plugin {
   Plugin();
 
   virtual void cmd(const IRCCommand&) = 0;
-
- protected:
-  void respond(const IRCCommand&);
 };
 
 #endif
