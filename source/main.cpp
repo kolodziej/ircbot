@@ -75,7 +75,7 @@ int main(int argc, char** argv) {
   }
 
   boost::asio::io_service io_service;
-  std::thread io_thread{[&io_service]() { io_service.run(); }};
+  std::thread io_thread{[&io_service]{ io_service.run(); }};
 
   Session sess{io_service, cfg.irc_server, cfg.irc_port};
   Bot bot{sess, cfg};
