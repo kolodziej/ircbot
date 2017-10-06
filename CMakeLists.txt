@@ -12,6 +12,7 @@ SET(SOURCES
     source/log_output.cpp
     source/log_level.cpp
     source/logger.cpp
+    source/irc_parser.cpp
     source/main.cpp
 )
 
@@ -20,7 +21,8 @@ SET(HEADERS
     include/ircbot/log_output.hpp
     include/ircbot/logger.impl.hpp
     include/ircbot/logger.hpp
+    include/ircbot/irc_parser.hpp
 )
 
-ADD_EXECUTABLE("ircbot" ${SOURCES})
+ADD_EXECUTABLE("ircbot" ${HEADERS} ${SOURCES})
 TARGET_LINK_LIBRARIES("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
