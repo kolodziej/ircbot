@@ -18,6 +18,8 @@ SET(SOURCES
     source/irc_parser.cpp
     source/irc_command.cpp
     source/client.cpp
+    source/plugin.cpp
+    source/ping_plugin.cpp
 )
 
 SET(HEADERS
@@ -28,6 +30,8 @@ SET(HEADERS
     include/ircbot/irc_parser.hpp
     include/ircbot/irc_command.hpp
     include/ircbot/client.hpp
+    include/ircbot/plugin.hpp
+    include/ircbot/ping_plugin.hpp
 )
 
 ADD_LIBRARY("ircbot" SHARED ${HEADERS} ${SOURCES})
