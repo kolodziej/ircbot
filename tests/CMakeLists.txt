@@ -1,5 +1,6 @@
 SET(TESTS
     irc_parser_test
+    client_test
 )
 
 FOREACH(TEST ${TESTS})

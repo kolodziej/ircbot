@@ -20,17 +20,38 @@ void Client::connect(std::string host, uint16_t port) {
   asio::ip::tcp::resolver resolver{m_io_service};
 
   boost::system::error_code ec;
+  m_logger(LogLevel::INFO, "Trying to resolve ", host, ':', port);
   auto endp = resolver.resolve({host, std::to_string(port)}, ec);
 
-  if (not ec) {
+  if (ec) {
+    m_logger(LogLevel::ERROR, "Could not resolve address; ec = ", ec);
     throw std::runtime_error{"Could not resolve address!"};
   }
 
-  asio::connect(m_socket, endp);
+  m_logger(LogLevel::INFO, "Trying to connect...");
+  asio::connect(m_socket, endp, ec);
 
-  if (not ec) {
+  if (ec) {
     throw std::runtime_error{"Could not connect to host!"};
   }
+
+  startAsyncReceive();
+}
+
+void Client::startAsyncReceive() {
+  using asio::mutable_buffers_1;
+  
+  auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
+    m_parser.parse(std::string(m_buffer.data(), bytes));
+    startAsyncReceive();
+  };
+
+  m_socket.async_receive(
+      mutable_buffers_1(m_buffer.data(), m_buffer.size()), handler);
+}
+
+void Client::stopAsyncReceive() {
+  m_socket.cancel();
 }
 
 void Client::disconnect() {
