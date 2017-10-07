@@ -17,6 +17,7 @@ SET(SOURCES
     source/logger.cpp
     source/irc_parser.cpp
     source/irc_command.cpp
+    source/client.cpp
 )
 
 SET(HEADERS
@@ -26,6 +27,7 @@ SET(HEADERS
     include/ircbot/logger.hpp
     include/ircbot/irc_parser.hpp
     include/ircbot/irc_command.hpp
+    include/ircbot/client.hpp
 )
 
 ADD_LIBRARY("ircbot" SHARED ${HEADERS} ${SOURCES})
