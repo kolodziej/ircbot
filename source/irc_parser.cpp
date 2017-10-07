@@ -1,110 +1,269 @@
 #include "ircbot/irc_parser.hpp"
 
+#include "ircbot/logger.hpp"
+
+IRCParser::IRCParser() :
+    m_state{State::NONE},
+    m_last_token{TokenType::LF}
+{}
+
 void IRCParser::parse(const std::string& message) {
+  lexer(message);
+}
+
+size_t IRCParser::commandsCount() const {
+  return m_commands.size();
+}
+
+bool IRCParser::commandsEmpty() const {
+  return m_commands.empty();
+}
+
+IRCCommand IRCParser::getCommand() {
+  IRCCommand cmd = m_commands.front();
+  m_commands.pop_front();
+  return cmd;
+}
+
+void IRCParser::lexer(const std::string& message) {
   std::stringstream token;
   const char space = 0x20;
   const char cr = 0xd;
   const char lf = 0xa;
 
+  Logger& logger = Logger::getInstance();
+
+  logger(LogLevel::DEBUG, "Running lexer for message: ", message);
+
   for (size_t index = 0; index < message.size(); ++index) {
     const char& x = message[index];
 
-    if (state == State::NONE) {
+    if (m_state == State::NONE) {
       if (x == ':') {
-        state = State::SERVERNAME_NICK;
+        m_state = State::SERVERNAME_NICK;
+        logger(LogLevel::DEBUG, "Lexer transforming state to SERVERNAME_NICK");
+      } else {
+        token.put(x);
+        m_state = State::COMMAND;
+        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
       }
-    } else if (state == State::SERVERNAME_NICK) {
+    } else if (m_state == State::SERVERNAME_NICK) {
       if (x != space and x != '!' and x != '@') {
         token.put(x);
       } else if (x == space) {
-        tokens.emplace_back(TokenType::SERVERNAME, token.str());
-        token.str(std::string());
-        state = State::COMMAND;
+        putToken(TokenType::SERVERNAME, token);
+        m_state = State::COMMAND;
+        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
       } else if (x == '!' or x == '@') {
-        tokens.emplace_back(TokenType::NICK, token.str());
-        token.str(std::string());
-        if (x == '!')
-          state = State::USER;
-        else if (x == '@')
-          state = State::HOST;
-        else if (x == space) 
-          state = State::COMMAND;
+        putToken(TokenType::NICK, token);
+        if (x == '!') {
+          m_state = State::USER;
+          logger(LogLevel::DEBUG, "Lexer transforming state to USER");
+        } else if (x == '@') {
+          m_state = State::HOST;
+          logger(LogLevel::DEBUG, "Lexer transforming state to HOST");
+        } else if (x == space) {
+          m_state = State::COMMAND;
+          logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+        }
       }
-    } else if (state == State::USER) {
+    } else if (m_state == State::USER) {
       if (x != space and x != '@') {
         token.put(x);
       } else {
         putToken(TokenType::USER, token);
         
         if (x == space) {
-          state = State::COMMAND;
-        else
-          state = State::HOST;
+          m_state = State::COMMAND;
+          logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+        } else {
+          m_state = State::HOST;
+          logger(LogLevel::DEBUG, "Lexer transforming state to HOST");
+        }
       }
-    } else if (state == State::HOST) {
+    } else if (m_state == State::HOST) {
       if (x != space) {
         token.put(x);
       } else {
         putToken(TokenType::HOST, token);
-        state = State::COMMAND;
+        m_state = State::COMMAND;
+        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
       }
-    } else if (state == State::COMMAND) {
+    } else if (m_state == State::COMMAND) {
       if ('0' <= x and x <= '9') {
         token.put(x);
-        state = State::COMMAND_NUM;
+        m_state = State::COMMAND_NUM;
+        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND_NUM");
       } else if (('a' <= x and x <= 'z') or ('A' <= x and x <= 'Z')) {
         token.put(x);
-        state = State::COMMAND_LETTER;
+        m_state = State::COMMAND_LETTER;
+        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND_LETTER");
       }
-    } else if (state == State::COMMAND_NUM) {
+    } else if (m_state == State::COMMAND_NUM) {
       if ('0' <= x and x <= '9') {
         token.put(x);
       } else if (x == space) {
         putToken(TokenType::COMMAND, token);
-        state = State::PARAMS;
+        m_state = State::PARAMS;
+        logger(LogLevel::DEBUG, "Lexer transforming state to PARAMS");
       } else {
         // error report!
       }
-    } else if (state == State::COMMAND_LETTER) {
+    } else if (m_state == State::COMMAND_LETTER) {
       if (('a' <= x and x <= 'z') or ('A' <= x and x <= 'Z')) {
         token.put(x);
       } else if (x == space) {
         putToken(TokenType::COMMAND, token);
-        state = State::PARAMS;
+        m_state = State::PARAMS;
+        logger(LogLevel::DEBUG, "Lexer transforming state to PARAMS");
       } else {
         // error report!
       }
-    } else if (state == State::PARAMS) {
+    } else if (m_state == State::PARAMS) {
       if (x != ':' and x != space and x != '\0' and x != cr and x != lf) {
         token.put(x);
       } else if (x == ':') {
-        state = State::TRAILING;
+        m_state = State::TRAILING;
+        logger(LogLevel::DEBUG, "Lexer transforming state to TRAILING");
       } else if (x == space) {
-        putToken(TokenType::PARAM, token);
+        if (not token.str().empty())
+          putToken(TokenType::PARAM, token);
       } else if (x == cr) {
+        if (not token.str().empty())
+          putToken(TokenType::PARAM, token);
+
         putToken(TokenType::CR);
+        m_state = State::CR;
+        logger(LogLevel::DEBUG, "Lexer transforming state to CR");
       } else if (x == lf) {
+        if (not token.str().empty())
+          putToken(TokenType::PARAM, token);
+
         putToken(TokenType::LF);
+        m_state = State::LF;
+        logger(LogLevel::DEBUG, "Lexer transforming state to LF");
       }
-    } else if (state == State::TRAILING) {
+    } else if (m_state == State::TRAILING) {
       if (x != '\0' and x != cr and x != lf) {
         token.put(x);
-      } else if (x == cr) {
-        putToken(TokenType::CR);
-      } else if (x == lf) {
+      } else if (x == cr or x == lf) {
+        putToken(TokenType::PARAM, token);
+
+        if (x == cr) {
+          putToken(TokenType::CR);
+          m_state = State::CR;
+          logger(LogLevel::DEBUG, "Lexer transforming state to CR");
+        } else {
+          putToken(TokenType::LF);
+          m_state = State::LF;
+          logger(LogLevel::DEBUG, "Lexer transforming state to LF");
+        }
+      } else {
+        // report error!
+      }
+    } else if (m_state == State::CR) {
+      if (x == lf) {
         putToken(TokenType::LF);
+        m_state = State::LF;
+        logger(LogLevel::DEBUG, "Lexer transforming state to LF");
       } else {
         // report error!
       }
     }
+    
+    if (m_state == State::LF) {
+      parser();
+      m_state = State::NONE;
+      logger(LogLevel::DEBUG, "Lexer transforming state to NONE");
+    }
+  }
+}
+
+void IRCParser::parser() {
+  Logger& logger = Logger::getInstance();
+
+  logger(LogLevel::DEBUG, "Running parser, tokens to process: ", m_tokens.size());
+
+  while (not m_tokens.empty()) {
+    Token token = m_tokens.front();
+    TokenType type = token.type;
+    m_tokens.pop_front();
+
+    if (m_last_token == TokenType::LF) {
+      if (type == TokenType::SERVERNAME) {
+        m_command.servername = token.value;
+        logger(LogLevel::DEBUG, "Parser is setting SERVERNAME");
+      } else if (type == TokenType::NICK) {
+        m_command.nick = token.value;
+        logger(LogLevel::DEBUG, "Parser is setting NICK");
+      } else if (type == TokenType::COMMAND) {
+        m_command.command = token.value;
+        logger(LogLevel::DEBUG, "Parser is setting COMMAND");
+      } else {
+        // report error!
+      }
+    } else if (m_last_token == TokenType::SERVERNAME) {
+      if (type == TokenType::COMMAND) {
+        m_command.command = token.value;
+      } else {
+        // report error!
+      }
+    } else if (m_last_token == TokenType::NICK) {
+      if (type == TokenType::USER) {
+        m_command.user = token.value;
+        logger(LogLevel::DEBUG, "Parser is setting USER");
+      } else if (type == TokenType::HOST) {
+        m_command.host = token.value;
+        logger(LogLevel::DEBUG, "Parser is setting HOST");
+      } else if (type == TokenType::COMMAND) {
+        m_command.command = token.value;
+        logger(LogLevel::DEBUG, "Parser is setting COMMAND");
+      } else {
+        // report error!
+      }
+    } else if (m_last_token == TokenType::USER) {
+      if (type == TokenType::HOST) {
+        m_command.host = token.value;
+      } else if (type == TokenType::COMMAND) {
+        m_command.command = token.value;
+      } else {
+        // report error!
+      }
+    } else if (m_last_token == TokenType::HOST) {
+      if (type == TokenType::COMMAND) {
+        m_command.command = token.value;
+      } else {
+        // report error!
+      }
+    } else if (m_last_token == TokenType::COMMAND or
+               m_last_token == TokenType::PARAM) {
+      if (type == TokenType::PARAM) {
+        m_command.params.push_back(token.value);
+        logger(LogLevel::DEBUG, "Parser is adding new PARAM");
+      } else if (type == TokenType::LF) {
+        m_commands.push_back(m_command);
+        logger(LogLevel::DEBUG, "IRCCommand parsed...");
+        m_command = IRCCommand{};
+      } else if (type != TokenType::CR) {
+        // report error!
+      }
+    } else if (m_last_token == TokenType::CR) {
+      if (type == TokenType::LF) {
+        m_commands.push_back(m_command);
+        logger(LogLevel::DEBUG, "IRCCommand parsed...");
+        m_command = IRCCommand{};
+      }
+    }
+
+    m_last_token = type;
   }
 }
 
 void IRCParser::putToken(TokenType type, std::stringstream& token) {
-  tokens.emplace_back(type, token.str());
+  m_tokens.emplace_back(type, token.str());
   token.str(std::string());
 }
 
 void IRCParser::putToken(TokenType type) {
-  tokens.emplace_back(type);
+  m_tokens.emplace_back(type);
 }
