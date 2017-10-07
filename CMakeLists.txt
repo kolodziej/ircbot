@@ -6,6 +6,9 @@ FIND_PACKAGE(Boost 1.62 REQUIRED COMPONENTS system program_options)
 INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/include")
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
 
+INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/gtest/include")
+LINK_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
+
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
 SET(SOURCES
@@ -13,7 +16,7 @@ SET(SOURCES
     source/log_level.cpp
     source/logger.cpp
     source/irc_parser.cpp
-    source/main.cpp
+    source/irc_command.cpp
 )
 
 SET(HEADERS
@@ -22,7 +25,14 @@ SET(HEADERS
     include/ircbot/logger.impl.hpp
     include/ircbot/logger.hpp
     include/ircbot/irc_parser.hpp
+    include/ircbot/irc_command.hpp
 )
 
-ADD_EXECUTABLE("ircbot" ${HEADERS} ${SOURCES})
+ADD_LIBRARY("ircbot" SHARED ${HEADERS} ${SOURCES})
 TARGET_LINK_LIBRARIES("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
+
+IF(${TESTS})
+    ADD_SUBDIRECTORY(gtest)
+    ADD_SUBDIRECTORY(tests)
+ENDIF()

@@ -8,7 +8,7 @@ cmake_install.cmake
 *.o
 *.a
 *.so
-ircbot
+build
 
 # cscope
 cscope.out
