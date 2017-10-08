@@ -11,6 +11,7 @@
 
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_command.hpp"
+#include "ircbot/plugin_manager.hpp"
 #include "ircbot/logger.hpp"
 
 namespace asio = boost::asio;
@@ -44,6 +45,8 @@ class Client {
   std::thread m_plugin_thread;
   std::thread m_parser_thread;
   std::atomic<bool> m_running;
+
+  PluginManager m_plugins;
 
   /* Logger reference */
   Logger& m_logger;

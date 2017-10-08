@@ -4,12 +4,16 @@
 #include <thread>
 #include <chrono>
 
+#include "ircbot/ping_plugin.hpp"
+
 Client::Client(asio::io_service& io_service) :
     m_io_service{io_service},
     m_socket{io_service},
     m_running{false},
     m_logger{Logger::getInstance()}
-{}
+{
+  m_plugins.addPlugin(std::make_unique<PingPlugin>());
+}
 
 Client::Client(asio::io_service& io_service, std::string host, uint16_t port) :
     Client{io_service} {
@@ -42,6 +46,10 @@ void Client::startAsyncReceive() {
   using asio::mutable_buffers_1;
   
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
+    if (ec) {
+      stopAsyncReceive();
+      return;
+    }
     m_parser.parse(std::string(m_buffer.data(), bytes));
     startAsyncReceive();
   };
@@ -55,6 +63,12 @@ void Client::stopAsyncReceive() {
 }
 
 void Client::disconnect() {
+  m_running = false;
+  m_plugin_thread.join();
+  m_parser_thread.join();
+
+  stopAsyncReceive();
+
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   m_socket.close();
 }
@@ -77,21 +91,36 @@ void Client::send(std::string msg) {
 }
 
 void Client::spawn() {
+  m_running = true;
   m_plugin_thread = std::move(std::thread{[this] { pluginLoop(); }});
   m_parser_thread = std::move(std::thread{[this] { parserLoop(); }});
 }
 
 void Client::pluginLoop() {
   using namespace std::literals::chrono_literals;
+  Logger& logger = Logger::getInstance();
+
+  logger(LogLevel::INFO, "Starting plugin loop");
 
   while (m_running) {
-    std::this_thread::sleep_for(5ms);
+    std::vector<IRCCommand> cmds = m_plugins.getOutgoing();
+    if (cmds.empty()) {
+      std::this_thread::sleep_for(30us);
+      continue;
+    }
+
+    for (const auto& cmd : cmds) {
+      logger(LogLevel::DEBUG, "Sending command: ", cmd.toString());
+      send(cmd);
+    }
   }
-  // for plugin, check if it has message to send
 }
 
 void Client::parserLoop() {
   using namespace std::literals::chrono_literals;
+  Logger& logger = Logger::getInstance();
+
+  logger(LogLevel::INFO, "Starting parser loop");
 
   while (m_running) {
     if (not m_parser.commandsCount()) {
@@ -101,7 +130,8 @@ void Client::parserLoop() {
 
     while (m_parser.commandsCount()) {
       IRCCommand cmd = m_parser.getCommand(); 
-      // push to plugins
+      logger(LogLevel::DEBUG, "Pushing command to plugins: ", cmd.toString());
+      m_plugins.putIncoming(cmd);
     }
   }
 }

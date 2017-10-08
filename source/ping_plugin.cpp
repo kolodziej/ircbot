@@ -1,10 +1,13 @@
 #include "ircbot/ping_plugin.hpp"
 
+#include "ircbot/logger.hpp"
+
 PingPlugin::PingPlugin() :
     Plugin{"Ping"}
 {}
 
 void PingPlugin::putIncoming(IRCCommand cmd) {
+  Logger::getInstance()(LogLevel::DEBUG, "PingPlugin is processing ", cmd.toString());
   if (cmd.command == "PING") {
     size_t index = cmd.params.size() - 1;
     m_ping = true;

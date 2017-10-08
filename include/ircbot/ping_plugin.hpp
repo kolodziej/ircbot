@@ -7,9 +7,9 @@ class PingPlugin : public Plugin {
  public:
   PingPlugin();
 
-  void putIncoming(IRCCommand cmd);
-  IRCCommand getOutgoing();
-  size_t outgoingCount() const;
+  void putIncoming(IRCCommand cmd) override;
+  IRCCommand getOutgoing() override;
+  size_t outgoingCount() const override;
 
  private:
   bool m_ping;

@@ -2,10 +2,10 @@
 
 #include <sstream>
 
-IRCCommand::operator std::string() {
+IRCCommand::operator std::string() const {
   std::stringstream stream;
 
-  if (servername.empty()) {
+  if (servername.empty() and not nick.empty()) {
     stream << ':' << nick;
     if (not user.empty())
       stream << '!' << user;
@@ -14,7 +14,7 @@ IRCCommand::operator std::string() {
       stream << '@' << host;
 
     stream << ' ';
-  } else {
+  } else if (not servername.empty()) {
     stream << ':' << servername << ' ';
   }
 
@@ -30,3 +30,6 @@ IRCCommand::operator std::string() {
   return stream.str();
 }
 
+std::string IRCCommand::toString() const {
+  return static_cast<std::string>(*this);
+}

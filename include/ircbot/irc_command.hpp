@@ -14,7 +14,8 @@ struct IRCCommand {
   std::string command;
   std::vector<std::string> params;
 
-  operator std::string();
+  operator std::string() const;
+  std::string toString() const;
 };
 
 #endif
