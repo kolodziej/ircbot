@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 
+#include "ircbot/init_plugin.hpp"
 #include "ircbot/ping_plugin.hpp"
 
 Client::Client(asio::io_service& io_service) :
@@ -12,6 +13,7 @@ Client::Client(asio::io_service& io_service) :
     m_running{false},
     m_logger{Logger::getInstance()}
 {
+  m_plugins.addPlugin(std::make_unique<InitPlugin>());
   m_plugins.addPlugin(std::make_unique<PingPlugin>());
 }
 
@@ -105,7 +107,7 @@ void Client::pluginLoop() {
   while (m_running) {
     std::vector<IRCCommand> cmds = m_plugins.getOutgoing();
     if (cmds.empty()) {
-      std::this_thread::sleep_for(30us);
+      std::this_thread::sleep_for(200us);
       continue;
     }
 
@@ -124,7 +126,7 @@ void Client::parserLoop() {
 
   while (m_running) {
     if (not m_parser.commandsCount()) {
-      std::this_thread::sleep_for(50us);
+      std::this_thread::sleep_for(200us);
       continue;
     }
 
