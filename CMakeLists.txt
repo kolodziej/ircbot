@@ -19,6 +19,7 @@ SET(SOURCES
     source/irc_command.cpp
     source/client.cpp
     source/plugin.cpp
+    source/init_plugin.cpp
     source/ping_plugin.cpp
     source/plugin_manager.cpp
 )
@@ -32,6 +33,7 @@ SET(HEADERS
     include/ircbot/irc_command.hpp
     include/ircbot/client.hpp
     include/ircbot/plugin.hpp
+    include/ircbot/init_plugin.hpp
     include/ircbot/ping_plugin.hpp
     include/ircbot/plugin_manager.hpp
 )
