@@ -1,6 +1,7 @@
 #include "ircbot/irc_parser.hpp"
 
 #include "ircbot/logger.hpp"
+#include "ircbot/helpers.hpp"
 
 IRCParser::IRCParser() :
     m_state{State::NONE},
@@ -30,10 +31,11 @@ void IRCParser::lexer(const std::string& message) {
   const char space = 0x20;
   const char cr = 0xd;
   const char lf = 0xa;
+  using helpers::removeLineFeed;
 
   Logger& logger = Logger::getInstance();
 
-  logger(LogLevel::DEBUG, "Running lexer for message: ", message);
+  logger(LogLevel::DEBUG, "Running lexer for message: ", removeLineFeed(message));
 
   for (size_t index = 0; index < message.size(); ++index) {
     const char& x = message[index];
