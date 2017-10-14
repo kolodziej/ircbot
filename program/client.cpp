@@ -7,6 +7,7 @@
 #include <boost/program_options.hpp>
 
 #include "ircbot/client.hpp"
+#include "ircbot/plugin_loader.hpp"
 #include "ircbot/logger.hpp"
 
 namespace asio = boost::asio;
@@ -25,6 +26,14 @@ int main(int argc, char **argv) {
   asio::io_service io;
 
   Client client(io, server, std::stoi(port));
+
+  PluginLoader loader{"./plugins"};
+  PluginManager& plugins = client.pluginManager();
+  auto plugin = loader.loadPlugin("libhelloworld.so");
+  if (plugin != nullptr) {
+    logger(LogLevel::INFO, "Loading plugin HelloWorld!");
+    plugins.addPlugin(std::move(plugin));
+  }
 
   std::thread io_thread([&io] { io.run(); });
   client.spawn();

@@ -98,6 +98,10 @@ void Client::spawn() {
   m_parser_thread = std::move(std::thread{[this] { parserLoop(); }});
 }
 
+PluginManager& Client::pluginManager() {
+  return m_plugins;
+}
+
 void Client::pluginLoop() {
   using namespace std::literals::chrono_literals;
   Logger& logger = Logger::getInstance();

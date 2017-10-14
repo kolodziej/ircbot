@@ -32,6 +32,8 @@ class Client {
 
   void spawn();
 
+  PluginManager& pluginManager();
+
  private:
   void pluginLoop();
   void parserLoop();
