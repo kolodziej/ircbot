@@ -4,8 +4,13 @@
 #include <string>
 #include <vector>
 #include <ostream>
+#include <initializer_list>
 
 struct IRCCommand {
+  IRCCommand() = default;
+  IRCCommand(const std::string& command,
+             std::initializer_list<std::string> params);
+
   std::string servername;
   std::string user;
   std::string nick;

@@ -2,6 +2,13 @@
 
 #include <sstream>
 
+
+IRCCommand::IRCCommand(const std::string& command,
+                       std::initializer_list<std::string> params) :
+    command{command},
+    params{params} {
+}
+
 IRCCommand::operator std::string() const {
   return toString();
 }
