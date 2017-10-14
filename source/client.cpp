@@ -112,7 +112,7 @@ void Client::pluginLoop() {
     }
 
     for (const auto& cmd : cmds) {
-      logger(LogLevel::DEBUG, "Sending command: ", cmd.toString());
+      logger(LogLevel::DEBUG, "Sending command: ", cmd.toString(true));
       send(cmd);
     }
   }
@@ -132,7 +132,7 @@ void Client::parserLoop() {
 
     while (m_parser.commandsCount()) {
       IRCCommand cmd = m_parser.getCommand(); 
-      logger(LogLevel::DEBUG, "Pushing command to plugins: ", cmd.toString());
+      logger(LogLevel::DEBUG, "Pushing command to plugins: ", cmd.toString(true));
       m_plugins.putIncoming(cmd);
     }
   }

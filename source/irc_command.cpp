@@ -6,7 +6,7 @@ IRCCommand::operator std::string() const {
   return toString();
 }
 
-std::string IRCCommand::toString() const {
+std::string IRCCommand::toString(bool stripCRLF) const {
   std::stringstream stream;
 
   if (servername.empty() and not nick.empty()) {
@@ -30,6 +30,8 @@ std::string IRCCommand::toString() const {
     stream << " :" << params.back();
   }
 
-  stream << "\r\n";
+  if (not stripCRLF)
+    stream << "\r\n";
+
   return stream.str();
 }

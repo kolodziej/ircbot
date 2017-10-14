@@ -7,7 +7,7 @@ PingPlugin::PingPlugin() :
 {}
 
 void PingPlugin::putIncoming(IRCCommand cmd) {
-  Logger::getInstance()(LogLevel::DEBUG, "PingPlugin is processing ", cmd.toString());
+  Logger::getInstance()(LogLevel::DEBUG, "PingPlugin is processing ", cmd.toString(true));
   if (cmd.command == "PING") {
     size_t index = cmd.params.size() - 1;
     m_ping = true;

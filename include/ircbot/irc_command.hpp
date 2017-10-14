@@ -15,7 +15,7 @@ struct IRCCommand {
   std::vector<std::string> params;
 
   operator std::string() const;
-  std::string toString() const;
+  std::string toString(bool stripCRLF = false) const;
 };
 
 #endif
