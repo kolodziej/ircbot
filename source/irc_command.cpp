@@ -3,6 +3,10 @@
 #include <sstream>
 
 IRCCommand::operator std::string() const {
+  return toString();
+}
+
+std::string IRCCommand::toString() const {
   std::stringstream stream;
 
   if (servername.empty() and not nick.empty()) {
@@ -28,8 +32,4 @@ IRCCommand::operator std::string() const {
 
   stream << "\r\n";
   return stream.str();
-}
-
-std::string IRCCommand::toString() const {
-  return static_cast<std::string>(*this);
 }
