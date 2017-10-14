@@ -1,0 +1,23 @@
+#ifndef _PLUGIN_HELLOWORLD_HPP
+#define _PLUGIN_HELLOWORLD_HPP
+
+#include "ircbot/plugin.hpp"
+
+#include <deque>
+#include <string>
+
+class HelloWorld : public Plugin {
+ public:
+  HelloWorld();
+
+  void putIncoming(IRCCommand cmd);
+  IRCCommand getOutgoing();
+  size_t outgoingCount() const;
+  
+ private:
+  std::deque<std::string> m_names;
+};
+
+IRCBOT_PLUGIN(HelloWorld);
+
+#endif

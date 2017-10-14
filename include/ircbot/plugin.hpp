@@ -1,7 +1,15 @@
 #ifndef _PLUGIN_HPP
 #define _PLUGIN_HPP
 
+#include <memory>
+
 #include "ircbot/irc_command.hpp"
+#include "ircbot/logger.hpp"
+
+#define IRCBOT_PLUGIN(PluginName) \
+    extern "C" std::unique_ptr<Plugin> getPlugin() { \
+      return std::make_unique<PluginName>(); \
+    }
 
 class Plugin {
  public:
