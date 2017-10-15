@@ -1,9 +1,9 @@
-SET(TESTS
+set(TESTS
     irc_parser_test
     client_test
 )
 
-FOREACH(TEST ${TESTS})
-    ADD_EXECUTABLE(${TEST} "${TEST}.cpp")
-    TARGET_LINK_LIBRARIES(${TEST} gtest gtest_main ircbot dl)
-ENDFOREACH()
+foreach(TEST ${TESTS})
+    add_executable(${TEST} "${TEST}.cpp")
+    target_link_libraries(${TEST} gtest gtest_main ircbot dl)
+endforeach()

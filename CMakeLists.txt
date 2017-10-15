@@ -1,17 +1,17 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.0.0)
 
-FIND_PACKAGE(Threads REQUIRED)
-FIND_PACKAGE(Boost 1.62 REQUIRED COMPONENTS system program_options)
+find_package(Threads REQUIRED)
+find_package(Boost 1.62 REQUIRED COMPONENTS system program_options)
 
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/include")
-INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+include_directories("${CMAKE_SOURCE_DIR}/include")
+include_directories(${Boost_INCLUDE_DIR})
 
-INCLUDE_DIRECTORIES("${CMAKE_SOURCE_DIR}/gtest/include")
-LINK_DIRECTORIES("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
+include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
+link_directories("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 
-SET(SOURCES
+set(SOURCES
     source/log_output.cpp
     source/log_level.cpp
     source/logger.cpp
@@ -25,7 +25,7 @@ SET(SOURCES
     source/helpers.cpp
 )
 
-SET(HEADERS
+set(HEADERS
     include/ircbot/log_level.hpp
     include/ircbot/log_output.hpp
     include/ircbot/logger.impl.hpp
@@ -40,13 +40,13 @@ SET(HEADERS
     include/ircbot/helpers.hpp
 )
 
-ADD_LIBRARY("ircbot" SHARED ${HEADERS} ${SOURCES})
-TARGET_LINK_LIBRARIES("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
+target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
-ADD_SUBDIRECTORY(program)
-ADD_SUBDIRECTORY(plugins)
+add_subdirectory(program)
+add_subdirectory(plugins)
 
-IF(${TESTS})
-    ADD_SUBDIRECTORY(gtest)
-    ADD_SUBDIRECTORY(tests)
-ENDIF()
+if(${TESTS})
+    add_subdirectory(gtest)
+    add_subdirectory(tests)
+endif()
