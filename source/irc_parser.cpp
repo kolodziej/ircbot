@@ -21,8 +21,11 @@ bool IRCParser::commandsEmpty() const {
 }
 
 IRCCommand IRCParser::getCommand() {
+  std::unique_lock<std::mutex> lock{m_commands_mtx};
+  m_commands_cv.wait(lock, [this] { return commandsCount() > 0; });
   IRCCommand cmd = m_commands.front();
   m_commands.pop_front();
+  lock.unlock();
   return cmd;
 }
 
@@ -252,8 +255,9 @@ void IRCParser::parser() {
     } else if (m_last_token == TokenType::CR) {
       if (type == TokenType::LF) {
         m_commands.push_back(m_command);
-        logger(LogLevel::DEBUG, "IRCCommand parsed...");
+        logger(LogLevel::DEBUG, "Next command parsed");
         m_command = IRCCommand{};
+        m_commands_cv.notify_all();
       }
     }
 

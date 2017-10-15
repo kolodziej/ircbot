@@ -3,6 +3,8 @@
 
 #include <deque>
 #include <sstream>
+#include <mutex>
+#include <condition_variable>
 
 #include "irc_command.hpp"
 
@@ -64,6 +66,8 @@ class IRCParser {
 
   IRCCommand m_command;
   std::deque<IRCCommand> m_commands;
+  std::mutex m_commands_mtx;
+  std::condition_variable m_commands_cv;
 };
 
 #endif

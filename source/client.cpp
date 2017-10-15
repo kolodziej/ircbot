@@ -111,7 +111,7 @@ void Client::pluginLoop() {
   while (m_running) {
     std::vector<IRCCommand> cmds = m_plugins.getOutgoing();
     if (cmds.empty()) {
-      std::this_thread::sleep_for(200us);
+      std::this_thread::sleep_for(1ms);
       continue;
     }
 
@@ -129,16 +129,9 @@ void Client::parserLoop() {
   logger(LogLevel::INFO, "Starting parser loop");
 
   while (m_running) {
-    if (not m_parser.commandsCount()) {
-      std::this_thread::sleep_for(200us);
-      continue;
-    }
-
-    while (m_parser.commandsCount()) {
-      IRCCommand cmd = m_parser.getCommand(); 
-      logger(LogLevel::DEBUG, "Pushing command to plugins: ", cmd.toString(true));
-      m_plugins.putIncoming(cmd);
-    }
+    IRCCommand cmd = m_parser.getCommand(); 
+    logger(LogLevel::DEBUG, "Pushing command to plugins: ", cmd.toString(true));
+    m_plugins.putIncoming(cmd);
   }
 }
 
