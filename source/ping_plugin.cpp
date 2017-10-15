@@ -2,28 +2,19 @@
 
 #include "ircbot/logger.hpp"
 
-PingPlugin::PingPlugin() :
-    Plugin{"Ping"}
+PingPlugin::PingPlugin(PluginManager& manager) :
+    Plugin{manager, "Ping"}
 {}
 
-void PingPlugin::putIncoming(IRCCommand cmd) {
-  Logger::getInstance()(LogLevel::DEBUG, "PingPlugin is processing ", cmd.toString(true));
-  if (cmd.command == "PING") {
-    size_t index = cmd.params.size() - 1;
-    m_ping = true;
-    m_server = cmd.params[index];
-  }
+void PingPlugin::run() {
+  auto cmd = getCommand();
+  IRCCommand response{
+    "PONG",
+    { cmd.params.back() }
+  };
+  send(response);
 }
 
-IRCCommand PingPlugin::getOutgoing() {
-  m_ping = false;
-  // TODO(KolK): create proper ctors for IRCCommand
-  IRCCommand cmd;
-  cmd.command = "PONG";
-  cmd.params.push_back(m_server);
-  return cmd;
-}
-
-size_t PingPlugin::outgoingCount() const {
-  return m_ping;
+bool PingPlugin::filter(const IRCCommand& cmd) {
+  return (cmd.command == "PING");
 }

@@ -8,11 +8,10 @@
 
 class HelloWorld : public Plugin {
  public:
-  HelloWorld();
+  HelloWorld(PluginManager& manager);
 
-  void putIncoming(IRCCommand cmd);
-  IRCCommand getOutgoing();
-  size_t outgoingCount() const;
+  void run() override;
+  bool filter(const IRCCommand& cmd) override;
   
  private:
   std::deque<std::string> m_names;

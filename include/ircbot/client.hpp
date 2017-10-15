@@ -35,7 +35,7 @@ class Client {
   PluginManager& pluginManager();
 
  private:
-  void pluginLoop();
+  void sendLoop();
   void parserLoop();
 
   asio::io_service& m_io_service;

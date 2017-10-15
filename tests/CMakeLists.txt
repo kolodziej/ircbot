@@ -1,7 +1,6 @@
 SET(TESTS
     irc_parser_test
     client_test
-    plugin_loader_test
 )
 
 FOREACH(TEST ${TESTS})

@@ -5,11 +5,10 @@
 
 class PingPlugin : public Plugin {
  public:
-  PingPlugin();
+  PingPlugin(PluginManager& manager);
 
-  void putIncoming(IRCCommand cmd) override;
-  IRCCommand getOutgoing() override;
-  size_t outgoingCount() const override;
+  void run() override;
+  bool filter(const IRCCommand& cmd) override;
 
  private:
   bool m_ping;

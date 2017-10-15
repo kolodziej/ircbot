@@ -1,27 +1,52 @@
 #include "ircbot/plugin_manager.hpp"
 
 #include <algorithm>
+#include <functional>
+
+#include <dlfcn.h>
 
 #include "ircbot/logger.hpp"
+#include "ircbot/plugin.hpp"
 
 void PluginManager::putIncoming(IRCCommand cmd) {
+  Logger& logger = Logger::getInstance();
+
   for (auto& plugin : m_plugins) {
-    plugin->putIncoming(cmd);
+    if (plugin->filter(cmd)) {
+      logger(LogLevel::DEBUG, "Plugin ", plugin->name(),
+             " filtering passed for command: ", cmd.toString(true));
+      plugin->receive(cmd);
+    }
   }
 }
 
-std::vector<IRCCommand> PluginManager::getOutgoing() {
-  std::vector<IRCCommand> cmds;
-  for (auto& plugin : m_plugins) {
-    while (plugin->outgoingCount())
-      cmds.push_back(plugin->getOutgoing());
-  }
+IRCCommand PluginManager::getOutgoing() {
+  Logger& logger = Logger::getInstance();
 
-  return cmds;
+  std::unique_lock<std::mutex> lock{m_outgoing_mtx};
+  logger(LogLevel::DEBUG, "Trying to get message to send...");
+  m_outgoing_cv.wait(lock, [this] { return m_outgoing.size() > 0; });
+  logger(LogLevel::DEBUG, "Getting message from queue...");
+  auto cmd = m_outgoing.front();
+  m_outgoing.pop_front();
+  lock.unlock();
+  return cmd;
+}
+
+void PluginManager::addOutgoing(IRCCommand cmd) {
+  Logger& logger = Logger::getInstance();
+
+  std::unique_lock<std::mutex> lock{m_outgoing_mtx};
+  logger(LogLevel::DEBUG, "PluginManager is adding message to send queue");
+  m_outgoing.push_back(cmd);
+  lock.unlock();
+
+  m_outgoing_cv.notify_all();
 }
 
 void PluginManager::addPlugin(std::unique_ptr<Plugin>&& plugin) {
   Logger& logger = Logger::getInstance();
+  plugin->spawn();
   logger(LogLevel::INFO, "Adding plugin ", plugin->name());
   m_plugins.push_back(std::move(plugin));
 }
@@ -42,4 +67,24 @@ std::vector<std::string> PluginManager::listPlugins() const {
   for (const auto& plugin : m_plugins) {
     names.push_back(plugin->name());
   }
+}
+
+std::unique_ptr<Plugin> PluginManager::loadSoPlugin(const std::string& fname) {
+  Logger& logger = Logger::getInstance();
+  void* plugin = dlopen(fname.data(), RTLD_NOW);
+  if (plugin == nullptr) {
+    logger(LogLevel::ERROR, "Could not load file: ", dlerror());
+    return nullptr;
+  }
+
+  std::function<std::unique_ptr<Plugin>(PluginManager*)> func =
+      reinterpret_cast<std::unique_ptr<Plugin> (*)(PluginManager*)>
+      (dlsym(plugin, "getPlugin"));
+
+  if (func == nullptr) {
+    logger(LogLevel::ERROR, "Could not load plugin: ", dlerror());
+    return nullptr;
+  }
+
+  return func(this);
 }

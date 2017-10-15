@@ -1,34 +1,25 @@
 #include "ircbot/init_plugin.hpp"
 
-InitPlugin::InitPlugin() :
-    Plugin{"Init"},
+InitPlugin::InitPlugin(PluginManager& manager) :
+    Plugin{manager, "Init"},
     m_stage{0}
 {}
 
-void InitPlugin::putIncoming(IRCCommand cmd) {
-  return;
+void InitPlugin::run() {
+  IRCCommand nickMsg{
+    "NICK",
+    { "KolK_IRCBot" }
+  };
+
+  IRCCommand userMsg{
+    "USER",
+    { "KolK_IRCBot", "0", "*", "kolodziej.it/ircbot" }
+  };
+  send(nickMsg);
+  send(userMsg);
+  stop();
 }
 
-IRCCommand InitPlugin::getOutgoing() {
-  IRCCommand cmd;
-  if (m_stage == 0) {
-    cmd.command = "NICK";
-    cmd.params = { "KolK1" };
-    ++m_stage;
-  } else if (m_stage == 1) {
-    cmd.command = "USER";
-    cmd.params = {
-      "KolK1",
-      "KolK1",
-      "KolK1",
-      "KolK1"
-    };
-    ++m_stage;
-  }
-
-  return cmd;
-}
-
-size_t InitPlugin::outgoingCount() const {
-  return 2 - m_stage;
+bool InitPlugin::filter(const IRCCommand& cmd) {
+  return false;
 }

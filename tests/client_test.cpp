@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 
 #include "ircbot/client.hpp"
+#include "ircbot/plugin.hpp"
 #include "ircbot/logger.hpp"
 
 namespace asio = boost::asio;
@@ -57,7 +58,6 @@ TestServer::~TestServer() {
 TEST(ClientTest, Basic) {
   Logger& logger = Logger::getInstance();
   logger.addOutput(LogOutput{std::cerr, LogLevel::DEBUG});
-  // TestServer server;
 
   asio::io_service io_service;
   Client client{io_service};

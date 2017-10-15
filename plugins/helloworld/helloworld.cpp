@@ -1,30 +1,24 @@
 #include "helloworld.hpp"
 
-HelloWorld::HelloWorld() :
-    Plugin{"HelloWorld"}
+HelloWorld::HelloWorld(PluginManager& manager) :
+    Plugin{manager, "HelloWorld"}
 {}
 
-void HelloWorld::putIncoming(IRCCommand cmd) {
-  static Logger& logger = Logger::getInstance();
-  if (cmd.command == "PRIVMSG") {
-    logger(LogLevel::INFO, "HelloWorld plugin: ", cmd.nick);
-    m_names.push_back(cmd.nick);
-  }
-}
+void HelloWorld::run() {
+  Logger& logger = Logger::getInstance();
 
-IRCCommand HelloWorld::getOutgoing() {
-  static Logger& logger = Logger::getInstance();
-  auto name = m_names.front();
-  m_names.pop_front();
-  IRCCommand cmd{
+  logger(LogLevel::DEBUG, "HelloWorld plugin is trying to get incoming message...");
+  auto cmd = getCommand();
+  logger(LogLevel::DEBUG, "HelloWorld plugin got incoming message!");
+
+  IRCCommand response{
     "PRIVMSG",
-    { name, "Hi, it's Hello World plugin :-)" }
+    { cmd.nick, "Hi, it's HelloWorld plugin :-)" }
   };
-  logger(LogLevel::INFO, "HelloWorld plugin sending to ", cmd.user);
 
-  return cmd;
+  send(response);
 }
 
-size_t HelloWorld::outgoingCount() const {
-  return m_names.size();
+bool HelloWorld::filter(const IRCCommand& cmd) {
+  return (cmd.command == "PRIVMSG");
 }

@@ -13,8 +13,8 @@ Client::Client(asio::io_service& io_service) :
     m_running{false},
     m_logger{Logger::getInstance()}
 {
-  m_plugins.addPlugin(std::make_unique<InitPlugin>());
-  m_plugins.addPlugin(std::make_unique<PingPlugin>());
+  m_plugins.addPlugin(std::make_unique<InitPlugin>(m_plugins));
+  m_plugins.addPlugin(std::make_unique<PingPlugin>(m_plugins));
 }
 
 Client::Client(asio::io_service& io_service, std::string host, uint16_t port) :
@@ -94,7 +94,7 @@ void Client::send(std::string msg) {
 
 void Client::spawn() {
   m_running = true;
-  m_plugin_thread = std::move(std::thread{[this] { pluginLoop(); }});
+  m_plugin_thread = std::move(std::thread{[this] { sendLoop(); }});
   m_parser_thread = std::move(std::thread{[this] { parserLoop(); }});
 }
 
@@ -102,28 +102,19 @@ PluginManager& Client::pluginManager() {
   return m_plugins;
 }
 
-void Client::pluginLoop() {
-  using namespace std::literals::chrono_literals;
+void Client::sendLoop() {
   Logger& logger = Logger::getInstance();
 
   logger(LogLevel::INFO, "Starting plugin loop");
 
   while (m_running) {
-    std::vector<IRCCommand> cmds = m_plugins.getOutgoing();
-    if (cmds.empty()) {
-      std::this_thread::sleep_for(1ms);
-      continue;
-    }
-
-    for (const auto& cmd : cmds) {
-      logger(LogLevel::DEBUG, "Sending command: ", cmd.toString(true));
-      send(cmd);
-    }
+    IRCCommand cmd = m_plugins.getOutgoing();
+    logger(LogLevel::DEBUG, "Sending command: ", cmd.toString(true));
+    send(cmd);
   }
 }
 
 void Client::parserLoop() {
-  using namespace std::literals::chrono_literals;
   Logger& logger = Logger::getInstance();
 
   logger(LogLevel::INFO, "Starting parser loop");
@@ -134,4 +125,3 @@ void Client::parserLoop() {
     m_plugins.putIncoming(cmd);
   }
 }
-

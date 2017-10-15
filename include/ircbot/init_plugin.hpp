@@ -5,11 +5,10 @@
 
 class InitPlugin : public Plugin {
  public:
-  InitPlugin();
+  InitPlugin(PluginManager& manager);
 
-  void putIncoming(IRCCommand cmd);
-  IRCCommand getOutgoing();
-  size_t outgoingCount() const;
+  void run() override;
+  bool filter(const IRCCommand& cmd) override;
 
  private:
   uint32_t m_stage;
