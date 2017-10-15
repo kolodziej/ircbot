@@ -60,6 +60,8 @@ std::vector<std::string> PluginManager::listPlugins() const {
   for (const auto& plugin : m_plugins) {
     names.push_back(plugin->name());
   }
+
+  return names;
 }
 
 std::unique_ptr<Plugin> PluginManager::loadSoPlugin(const std::string& fname) {

@@ -13,5 +13,7 @@ const char* LogLevelDesc(LogLevel level) {
     case LogLevel::CRITICAL:
       return "CRITICAL";
   }
+
+  return "";
 }
 
