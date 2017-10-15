@@ -9,8 +9,8 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
 
-set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -pedantic -Wextra")
-set(CMAKE_CXX_FLAGS_DEBUG "-DLOG_DEBUG")
+set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -pedantic -Wextra -O2")
+set(CMAKE_CXX_FLAGS_DEBUG "-DLOG_DEBUG -g")
 
 set(SOURCES
     source/log_output.cpp
