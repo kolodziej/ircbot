@@ -30,7 +30,7 @@ int main(int argc, char **argv) {
   PluginManager& plugins = client.pluginManager();
   auto plugin = plugins.loadSoPlugin("./plugins/libhelloworld.so");
   if (plugin != nullptr) {
-    logger(LogLevel::INFO, "Loading plugin HelloWorld!");
+    LOG(INFO, "Loading plugin HelloWorld!");
     plugins.addPlugin(std::move(plugin));
   }
 

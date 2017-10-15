@@ -20,11 +20,9 @@ void Plugin::stop() {
 }
 
 void Plugin::receive(IRCCommand cmd) {
-  Logger& logger = Logger::getInstance();
-
   std::unique_lock<std::mutex> lock{m_incoming_mtx};
   m_incoming.push_back(cmd); 
-  logger(LogLevel::DEBUG, "New message added to plugin's incoming queue");
+  DEBUG("New message added to plugin's incoming queue");
   lock.unlock();
 
   m_incoming_cv.notify_all();

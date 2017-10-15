@@ -5,11 +5,9 @@ HelloWorld::HelloWorld(PluginManager& manager) :
 {}
 
 void HelloWorld::run() {
-  Logger& logger = Logger::getInstance();
-
-  logger(LogLevel::DEBUG, "HelloWorld plugin is trying to get incoming message...");
+  DEBUG("HelloWorld plugin is trying to get incoming message...");
   auto cmd = getCommand();
-  logger(LogLevel::DEBUG, "HelloWorld plugin got incoming message!");
+  DEBUG("HelloWorld plugin got incoming message!");
 
   IRCCommand response{
     "PRIVMSG",

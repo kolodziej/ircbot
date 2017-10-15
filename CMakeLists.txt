@@ -9,7 +9,8 @@ include_directories(${Boost_INCLUDE_DIR})
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -pedantic -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "-DLOG_DEBUG")
 
 set(SOURCES
     source/log_output.cpp
@@ -30,6 +31,7 @@ set(HEADERS
     include/ircbot/log_output.hpp
     include/ircbot/logger.impl.hpp
     include/ircbot/logger.hpp
+    include/ircbot/logger_macros.hpp
     include/ircbot/irc_parser.hpp
     include/ircbot/irc_command.hpp
     include/ircbot/client.hpp

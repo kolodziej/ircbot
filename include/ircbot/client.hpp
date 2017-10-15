@@ -49,9 +49,6 @@ class Client {
   std::atomic<bool> m_running;
 
   PluginManager m_plugins;
-
-  /* Logger reference */
-  Logger& m_logger;
 };
 
 #endif

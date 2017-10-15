@@ -17,6 +17,6 @@ class HelloWorld : public Plugin {
   std::deque<std::string> m_names;
 };
 
-IRCBOT_PLUGIN(HelloWorld);
+IRCBOT_PLUGIN(HelloWorld)
 
 #endif

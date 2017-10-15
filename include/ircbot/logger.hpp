@@ -5,8 +5,10 @@
 #include <sstream>
 #include <mutex>
 
-#include "log_level.hpp"
-#include "log_output.hpp"
+#include "ircbot/log_level.hpp"
+#include "ircbot/log_output.hpp"
+
+#include "ircbot/logger_macros.hpp"
 
 class Logger {
  public:
@@ -31,7 +33,7 @@ class Logger {
 
   std::stringstream m_stream;
 
- private:
+ public:
   static Logger m_logger_instance;
 };
 

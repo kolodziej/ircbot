@@ -36,9 +36,7 @@ void IRCParser::lexer(const std::string& message) {
   const char lf = 0xa;
   using helpers::removeLineFeed;
 
-  Logger& logger = Logger::getInstance();
-
-  logger(LogLevel::DEBUG, "Running lexer for message: ", removeLineFeed(message));
+  DEBUG("Running lexer for message: ", removeLineFeed(message));
 
   for (size_t index = 0; index < message.size(); ++index) {
     const char& x = message[index];
@@ -46,11 +44,11 @@ void IRCParser::lexer(const std::string& message) {
     if (m_state == State::NONE) {
       if (x == ':') {
         m_state = State::SERVERNAME_NICK;
-        logger(LogLevel::DEBUG, "Lexer transforming state to SERVERNAME_NICK");
+        DEBUG("Lexer transforming state to SERVERNAME_NICK");
       } else {
         token.put(x);
         m_state = State::COMMAND;
-        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+        DEBUG("Lexer transforming state to COMMAND");
       }
     } else if (m_state == State::SERVERNAME_NICK) {
       if (x != space and x != '!' and x != '@') {
@@ -58,18 +56,18 @@ void IRCParser::lexer(const std::string& message) {
       } else if (x == space) {
         putToken(TokenType::SERVERNAME, token);
         m_state = State::COMMAND;
-        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+        DEBUG("Lexer transforming state to COMMAND");
       } else if (x == '!' or x == '@') {
         putToken(TokenType::NICK, token);
         if (x == '!') {
           m_state = State::USER;
-          logger(LogLevel::DEBUG, "Lexer transforming state to USER");
+          DEBUG("Lexer transforming state to USER");
         } else if (x == '@') {
           m_state = State::HOST;
-          logger(LogLevel::DEBUG, "Lexer transforming state to HOST");
+          DEBUG("Lexer transforming state to HOST");
         } else if (x == space) {
           m_state = State::COMMAND;
-          logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+          DEBUG("Lexer transforming state to COMMAND");
         }
       }
     } else if (m_state == State::USER) {
@@ -80,10 +78,10 @@ void IRCParser::lexer(const std::string& message) {
         
         if (x == space) {
           m_state = State::COMMAND;
-          logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+          DEBUG("Lexer transforming state to COMMAND");
         } else {
           m_state = State::HOST;
-          logger(LogLevel::DEBUG, "Lexer transforming state to HOST");
+          DEBUG("Lexer transforming state to HOST");
         }
       }
     } else if (m_state == State::HOST) {
@@ -92,17 +90,17 @@ void IRCParser::lexer(const std::string& message) {
       } else {
         putToken(TokenType::HOST, token);
         m_state = State::COMMAND;
-        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND");
+        DEBUG("Lexer transforming state to COMMAND");
       }
     } else if (m_state == State::COMMAND) {
       if ('0' <= x and x <= '9') {
         token.put(x);
         m_state = State::COMMAND_NUM;
-        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND_NUM");
+        DEBUG("Lexer transforming state to COMMAND_NUM");
       } else if (('a' <= x and x <= 'z') or ('A' <= x and x <= 'Z')) {
         token.put(x);
         m_state = State::COMMAND_LETTER;
-        logger(LogLevel::DEBUG, "Lexer transforming state to COMMAND_LETTER");
+        DEBUG("Lexer transforming state to COMMAND_LETTER");
       }
     } else if (m_state == State::COMMAND_NUM) {
       if ('0' <= x and x <= '9') {
@@ -110,7 +108,7 @@ void IRCParser::lexer(const std::string& message) {
       } else if (x == space) {
         putToken(TokenType::COMMAND, token);
         m_state = State::PARAMS;
-        logger(LogLevel::DEBUG, "Lexer transforming state to PARAMS");
+        DEBUG("Lexer transforming state to PARAMS");
       } else {
         // error report!
       }
@@ -120,7 +118,7 @@ void IRCParser::lexer(const std::string& message) {
       } else if (x == space) {
         putToken(TokenType::COMMAND, token);
         m_state = State::PARAMS;
-        logger(LogLevel::DEBUG, "Lexer transforming state to PARAMS");
+        DEBUG("Lexer transforming state to PARAMS");
       } else {
         // error report!
       }
@@ -129,7 +127,7 @@ void IRCParser::lexer(const std::string& message) {
         token.put(x);
       } else if (x == ':') {
         m_state = State::TRAILING;
-        logger(LogLevel::DEBUG, "Lexer transforming state to TRAILING");
+        DEBUG("Lexer transforming state to TRAILING");
       } else if (x == space) {
         if (not token.str().empty())
           putToken(TokenType::PARAM, token);
@@ -139,14 +137,14 @@ void IRCParser::lexer(const std::string& message) {
 
         putToken(TokenType::CR);
         m_state = State::CR;
-        logger(LogLevel::DEBUG, "Lexer transforming state to CR");
+        DEBUG("Lexer transforming state to CR");
       } else if (x == lf) {
         if (not token.str().empty())
           putToken(TokenType::PARAM, token);
 
         putToken(TokenType::LF);
         m_state = State::LF;
-        logger(LogLevel::DEBUG, "Lexer transforming state to LF");
+        DEBUG("Lexer transforming state to LF");
       }
     } else if (m_state == State::TRAILING) {
       if (x != '\0' and x != cr and x != lf) {
@@ -157,11 +155,11 @@ void IRCParser::lexer(const std::string& message) {
         if (x == cr) {
           putToken(TokenType::CR);
           m_state = State::CR;
-          logger(LogLevel::DEBUG, "Lexer transforming state to CR");
+          DEBUG("Lexer transforming state to CR");
         } else {
           putToken(TokenType::LF);
           m_state = State::LF;
-          logger(LogLevel::DEBUG, "Lexer transforming state to LF");
+          DEBUG("Lexer transforming state to LF");
         }
       } else {
         // report error!
@@ -170,7 +168,7 @@ void IRCParser::lexer(const std::string& message) {
       if (x == lf) {
         putToken(TokenType::LF);
         m_state = State::LF;
-        logger(LogLevel::DEBUG, "Lexer transforming state to LF");
+        DEBUG("Lexer transforming state to LF");
       } else {
         // report error!
       }
@@ -179,15 +177,13 @@ void IRCParser::lexer(const std::string& message) {
     if (m_state == State::LF) {
       parser();
       m_state = State::NONE;
-      logger(LogLevel::DEBUG, "Lexer transforming state to NONE");
+      DEBUG("Lexer transforming state to NONE");
     }
   }
 }
 
 void IRCParser::parser() {
-  Logger& logger = Logger::getInstance();
-
-  logger(LogLevel::DEBUG, "Running parser, tokens to process: ", m_tokens.size());
+  DEBUG("Running parser, tokens to process: ", m_tokens.size());
 
   while (not m_tokens.empty()) {
     Token token = m_tokens.front();
@@ -197,13 +193,13 @@ void IRCParser::parser() {
     if (m_last_token == TokenType::LF) {
       if (type == TokenType::SERVERNAME) {
         m_command.servername = token.value;
-        logger(LogLevel::DEBUG, "Parser is setting SERVERNAME");
+        DEBUG("Parser is setting SERVERNAME");
       } else if (type == TokenType::NICK) {
         m_command.nick = token.value;
-        logger(LogLevel::DEBUG, "Parser is setting NICK");
+        DEBUG("Parser is setting NICK");
       } else if (type == TokenType::COMMAND) {
         m_command.command = token.value;
-        logger(LogLevel::DEBUG, "Parser is setting COMMAND");
+        DEBUG("Parser is setting COMMAND");
       } else {
         // report error!
       }
@@ -216,13 +212,13 @@ void IRCParser::parser() {
     } else if (m_last_token == TokenType::NICK) {
       if (type == TokenType::USER) {
         m_command.user = token.value;
-        logger(LogLevel::DEBUG, "Parser is setting USER");
+        DEBUG("Parser is setting USER");
       } else if (type == TokenType::HOST) {
         m_command.host = token.value;
-        logger(LogLevel::DEBUG, "Parser is setting HOST");
+        DEBUG("Parser is setting HOST");
       } else if (type == TokenType::COMMAND) {
         m_command.command = token.value;
-        logger(LogLevel::DEBUG, "Parser is setting COMMAND");
+        DEBUG("Parser is setting COMMAND");
       } else {
         // report error!
       }
@@ -244,10 +240,10 @@ void IRCParser::parser() {
                m_last_token == TokenType::PARAM) {
       if (type == TokenType::PARAM) {
         m_command.params.push_back(token.value);
-        logger(LogLevel::DEBUG, "Parser is adding new PARAM");
+        DEBUG("Parser is adding new PARAM");
       } else if (type == TokenType::LF) {
         m_commands.push_back(m_command);
-        logger(LogLevel::DEBUG, "IRCCommand parsed...");
+        DEBUG("IRCCommand parsed...");
         m_command = IRCCommand{};
       } else if (type != TokenType::CR) {
         // report error!
@@ -255,7 +251,7 @@ void IRCParser::parser() {
     } else if (m_last_token == TokenType::CR) {
       if (type == TokenType::LF) {
         m_commands.push_back(m_command);
-        logger(LogLevel::DEBUG, "Next command parsed");
+        DEBUG("Next command parsed");
         m_command = IRCCommand{};
         m_commands_cv.notify_all();
       }
