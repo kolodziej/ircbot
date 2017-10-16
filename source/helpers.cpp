@@ -1,5 +1,9 @@
 #include "ircbot/helpers.hpp"
 
+#include <pthread.h>
+
+#include "ircbot/logger.hpp"
+
 namespace helpers {
 
 std::string removeLineFeed(const std::string& str) {
@@ -15,6 +19,13 @@ std::string removeLineFeed(const std::string& str) {
   }
 
   return str.substr(0, len);
+}
+
+void setThreadName(std::thread& thread, const std::string& name) {
+    auto native = thread.native_handle();
+    pthread_setname_np(native, name.data());
+    LOG(INFO, "Change thread ", std::this_thread::get_id(),
+              " name to ", name);
 }
 
 }

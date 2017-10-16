@@ -6,6 +6,7 @@
 
 #include "ircbot/init_plugin.hpp"
 #include "ircbot/ping_plugin.hpp"
+#include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service) :
     m_io_service{io_service},
@@ -96,6 +97,10 @@ void Client::spawn() {
   m_running = true;
   m_plugin_thread = std::move(std::thread{[this] { sendLoop(); }});
   m_parser_thread = std::move(std::thread{[this] { parserLoop(); }});
+
+  using helpers::setThreadName;
+  setThreadName(m_plugin_thread, "plugin loop");
+  setThreadName(m_parser_thread, "parser loop");
 }
 
 PluginManager& Client::pluginManager() {

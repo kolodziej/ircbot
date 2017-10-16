@@ -1,5 +1,7 @@
 #include "ircbot/plugin.hpp"
 
+#include "ircbot/helpers.hpp"
+
 Plugin::Plugin(PluginManager& manager, std::string name) :
     m_manager{manager},
     m_name{name},
@@ -57,4 +59,5 @@ void Plugin::spawn() {
     }
   };
   m_thread = std::thread(loopFunction);
+  helpers::setThreadName(m_thread, name());
 }

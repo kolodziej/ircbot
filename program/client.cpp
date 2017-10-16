@@ -9,6 +9,7 @@
 #include "ircbot/client.hpp"
 #include "ircbot/plugin.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/helpers.hpp"
 
 namespace asio = boost::asio;
 
@@ -35,6 +36,7 @@ int main(int argc, char **argv) {
   }
 
   std::thread io_thread([&io] { io.run(); });
+  helpers::setThreadName(io_thread, "asio io service");
   client.spawn();
 
   io_thread.join();
