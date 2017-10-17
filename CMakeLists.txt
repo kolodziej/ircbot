@@ -24,6 +24,7 @@ set(SOURCES
     source/ping_plugin.cpp
     source/plugin_manager.cpp
     source/helpers.cpp
+    source/config.cpp
 )
 
 set(HEADERS
@@ -40,6 +41,7 @@ set(HEADERS
     include/ircbot/ping_plugin.hpp
     include/ircbot/plugin_manager.hpp
     include/ircbot/helpers.hpp
+    include/ircbot/config.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})

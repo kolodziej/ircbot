@@ -1,0 +1,9 @@
+{
+    "server": "irc.freenode.net",
+    "port": 6667,
+    "plugins": [
+        {
+            "path": "./plugins/helloworld/libhelloworld.so"
+        }
+    ]
+}
