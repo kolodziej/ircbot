@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
   Client client(io, server, std::stoi(port));
 
   PluginManager& plugins = client.pluginManager();
-  auto plugin = plugins.loadSoPlugin("./plugins/libhelloworld.so");
+  auto plugin = plugins.loadSoPlugin("./plugins/helloworld.so");
   if (plugin != nullptr) {
     LOG(INFO, "Loading plugin HelloWorld!");
     plugins.addPlugin(std::move(plugin));
