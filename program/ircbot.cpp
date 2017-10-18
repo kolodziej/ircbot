@@ -9,6 +9,7 @@
 #include "ircbot/client.hpp"
 #include "ircbot/plugin.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/version.hpp"
 #include "ircbot/helpers.hpp"
 
 namespace asio = boost::asio;
@@ -20,6 +21,7 @@ int main(int argc, char **argv) {
   opt::options_description cmd_opts("IRCBot client");
   cmd_opts.add_options()
     ("help,h", "show help message")
+    ("version,v", "show version information")
     ("config,c",
        opt::value<std::string>(&config_fname)->required(),
        "configuration file")
@@ -27,13 +29,21 @@ int main(int argc, char **argv) {
 
   opt::variables_map var_map;
 
-
   try {
     try {
       opt::store(opt::parse_command_line(argc, argv, cmd_opts), var_map);
 
       if (var_map.count("help")) {
         std::clog << cmd_opts;
+        return 0;
+      }
+
+      if (var_map.count("version")) {
+        std::cout << "IRCBot " << version::str() << '\n';
+        std::cout << "Builtin plugins:\n";
+        for (const auto& plugin : version::builtinPlugins()) {
+          std::cout << "\t+ " << plugin << '\n';
+        }
         return 0;
       }
 
