@@ -7,6 +7,10 @@
 
 #include "ircbot/logger.hpp"
 #include "ircbot/plugin.hpp"
+#include "ircbot/version.hpp"
+
+PluginManager::PluginManager() {
+}
 
 void PluginManager::initializePlugins(Config& cfg) {
   for (auto plugin : cfg.tree().get_child("plugins")) {

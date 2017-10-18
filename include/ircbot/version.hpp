@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 
+class Plugin;
+
 namespace version {
 
 static const uint16_t
@@ -21,7 +23,7 @@ static const char* git_branch = GIT_BRANCH;
 static const char* git_commit = GIT_COMMIT;
 
 std::string str();
-std::vector<std::string> builtinPlugins();
+std::vector<std::string> getBuiltinPluginsList();
 
 }
 #endif

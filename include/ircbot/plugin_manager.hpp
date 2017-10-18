@@ -14,7 +14,7 @@ class Plugin;
 
 class PluginManager {
  public:
-  PluginManager() = default;
+  PluginManager();
 
   void initializePlugins(Config& cfg);
 
