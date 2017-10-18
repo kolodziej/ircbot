@@ -6,7 +6,7 @@
 
 namespace pt = boost::property_tree;
 
-class Config : public pt::ptree {
+class Config {
  public:
   Config() = default;
   Config(const std::string& fname);
@@ -17,8 +17,11 @@ class Config : public pt::ptree {
   void saveFile();
   void saveFile(const std::string& fname);
 
+  pt::ptree& tree();
+
  private:
   std::string m_fname;
+  pt::ptree m_pt;
 };
 
 #endif

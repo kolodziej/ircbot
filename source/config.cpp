@@ -12,7 +12,7 @@ void Config::loadFile() {
     throw std::logic_error("Could not load! Config's filename is empty!");
   }
 
-  pt::read_json(m_fname, *this);
+  pt::read_json(m_fname, m_pt);
 }
 
 void Config::loadFile(const std::string& fname) {
@@ -25,10 +25,14 @@ void Config::saveFile() {
     throw std::logic_error("Could not save! Config's filename is empty!");
   }
 
-  pt::write_json(m_fname, *this);
+  pt::write_json(m_fname, m_pt);
 }
 
 void Config::saveFile(const std::string& fname) {
   m_fname = fname;
   saveFile();
+}
+
+pt::ptree& Config::tree() {
+  return m_pt;
 }
