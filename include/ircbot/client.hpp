@@ -12,14 +12,16 @@
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/plugin_manager.hpp"
+#include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
 namespace asio = boost::asio;
 
 class Client {
  public:
-  Client(asio::io_service& io_service);
-  Client(asio::io_service& io_service, std::string host, uint16_t port);
+  Client(asio::io_service& io_service, Config cfg);
+
+  void init();
 
   void connect(std::string host, uint16_t port);
   void disconnect();
@@ -40,8 +42,11 @@ class Client {
 
   asio::io_service& m_io_service;
   asio::ip::tcp::socket m_socket;
+
   IRCParser m_parser;
   std::array<char, 4096> m_buffer;
+
+  Config m_cfg;
 
   /* Objects needed to run in separate thread */
   std::thread m_plugin_thread;

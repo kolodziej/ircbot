@@ -10,6 +10,7 @@
 
 #include "ircbot/plugin_manager.hpp"
 #include "ircbot/irc_command.hpp"
+#include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
 #define IRCBOT_PLUGIN(PluginName) \
@@ -30,6 +31,9 @@ class Plugin {
   virtual void run() = 0;
   virtual bool filter(const IRCCommand& cmd);
 
+  void setConfig(Config cfg);
+  Config& getConfig();
+  const Config& getConfig() const;
   void spawn();
 
  protected:
@@ -40,6 +44,7 @@ class Plugin {
  private:
   PluginManager& m_manager;
   std::string m_name;
+  Config m_cfg;
 
   std::atomic<bool> m_running;
 

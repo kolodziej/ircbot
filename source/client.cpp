@@ -3,23 +3,39 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <stdexcept>
 
 #include "ircbot/init_plugin.hpp"
 #include "ircbot/ping_plugin.hpp"
 #include "ircbot/helpers.hpp"
 
-Client::Client(asio::io_service& io_service) :
+Client::Client(asio::io_service& io_service, Config cfg) :
     m_io_service{io_service},
     m_socket{io_service},
+    m_cfg{cfg},
     m_running{false}
 {
-  m_plugins.addPlugin(std::make_unique<InitPlugin>(m_plugins));
-  m_plugins.addPlugin(std::make_unique<PingPlugin>(m_plugins));
+  init();
 }
 
-Client::Client(asio::io_service& io_service, std::string host, uint16_t port) :
-    Client{io_service} {
-  connect(host, port);
+void Client::init() {
+  try {
+    std::string server = m_cfg.tree().get<std::string>("server");
+    uint16_t port = m_cfg.tree().get<uint16_t>("port");
+
+    connect(server, port);
+
+    m_plugins.initializePlugins(m_cfg);
+
+  } catch (pt::ptree_bad_path& exc) {
+    LOG(ERROR, "Could not find path in configuration!");
+    LOG(ERROR, exc.what());
+    throw std::runtime_error{"Client initialization failed!"};
+  } catch (pt::ptree_bad_data& exc) {
+    LOG(ERROR, "Bad data format in Client's configuration!");
+    LOG(ERROR, exc.what());
+    throw std::runtime_error{"Client initialization failed!"};
+  }
 }
 
 void Client::connect(std::string host, uint16_t port) {

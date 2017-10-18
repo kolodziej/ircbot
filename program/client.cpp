@@ -11,24 +11,28 @@
 #include "ircbot/logger.hpp"
 #include "ircbot/helpers.hpp"
 
+#include "ircbot/init_plugin.hpp"
+#include "ircbot/ping_plugin.hpp"
+
 namespace asio = boost::asio;
 
 int main(int argc, char **argv) {
-  if (argc < 3) {
-    std::cerr << "Usage: " << argv[0] << " server port\n";
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " config_file\n";
     return 1;
   }
 
   Logger& logger = Logger::getInstance();
   logger.addOutput(LogOutput{std::clog, LogLevel::DEBUG});
 
-  std::string server = argv[1], port = argv[2];
-
   asio::io_service io;
 
-  Client client(io, server, std::stoi(port));
+  Config cfg(argv[1]);
+  Client client(io, cfg);
 
   PluginManager& plugins = client.pluginManager();
+  plugins.addPlugin(std::make_unique<InitPlugin>(plugins));
+  plugins.addPlugin(std::make_unique<PingPlugin>(plugins));
   auto plugin = plugins.loadSoPlugin("./plugins/helloworld.so");
   if (plugin != nullptr) {
     LOG(INFO, "Loading plugin HelloWorld!");

@@ -10,6 +10,7 @@ class Config {
  public:
   Config() = default;
   Config(const std::string& fname);
+  Config(const pt::ptree& pt);
 
   void loadFile();
   void loadFile(const std::string& fname);

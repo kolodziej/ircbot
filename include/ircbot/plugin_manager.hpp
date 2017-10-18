@@ -8,12 +8,15 @@
 #include <condition_variable>
 
 #include "ircbot/irc_command.hpp"
+#include "ircbot/config.hpp"
 
 class Plugin;
 
 class PluginManager {
  public:
   PluginManager() = default;
+
+  void initializePlugins(Config& cfg);
 
   void putIncoming(IRCCommand cmd);
   IRCCommand getOutgoing();
@@ -23,8 +26,9 @@ class PluginManager {
   void addPlugin(std::unique_ptr<Plugin>&& plugin);
   void removePlugin(const std::string& name);
   std::vector<std::string> listPlugins() const;
-
   std::unique_ptr<Plugin> loadSoPlugin(const std::string& fname);
+
+  void startPlugins();
 
  private:
   std::vector<std::unique_ptr<Plugin>> m_plugins;

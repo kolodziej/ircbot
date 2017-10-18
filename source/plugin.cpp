@@ -52,6 +52,18 @@ bool Plugin::filter(const IRCCommand& cmd) {
   return true;
 }
 
+void Plugin::setConfig(Config cfg) {
+  m_cfg = cfg;
+}
+
+Config& Plugin::getConfig() {
+  return m_cfg;
+}
+
+const Config& Plugin::getConfig() const {
+  return m_cfg;
+}
+
 void Plugin::spawn() {
   auto loopFunction = [this] {
     while (m_running) {

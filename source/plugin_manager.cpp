@@ -8,6 +8,41 @@
 #include "ircbot/logger.hpp"
 #include "ircbot/plugin.hpp"
 
+void PluginManager::initializePlugins(Config& cfg) {
+  for (auto plugin : cfg.tree().get_child("plugins")) {
+    LOG(INFO, "Processing plugin: ", plugin.first);
+    auto name_pred = [pn = plugin.first] (const std::unique_ptr<Plugin>& p) {
+      return p->name() == pn;
+    };
+
+    std::string soPath =
+      plugin.second.get("soPath", std::string());
+
+    auto it = std::find_if(m_plugins.begin(), m_plugins.end(), name_pred);
+    if (it != m_plugins.end()) {
+      if (soPath.empty()) {
+        std::unique_ptr<Plugin>& it_plugin = *it;
+        it_plugin->setConfig(Config(plugin.second));
+      } else {
+        LOG(WARNING, "Cannot load plugin ", plugin.first, ". Such plugin exists!");
+      }
+
+    } else {
+      if (soPath.empty()) {
+        LOG(WARNING, "Empty soPath for ", plugin.first, " plugin. Omitting!");
+        continue;
+      }
+
+      LOG(INFO, "Loading SO plugin from: ", soPath);
+      auto soPlugin = loadSoPlugin(soPath);
+      if (soPlugin != nullptr) {
+        soPlugin->setConfig(Config(plugin.second));
+        addPlugin(std::move(soPlugin));
+      }
+    }
+  }
+}
+
 void PluginManager::putIncoming(IRCCommand cmd) {
   for (auto& plugin : m_plugins) {
     if (plugin->filter(cmd)) {
@@ -39,7 +74,6 @@ void PluginManager::addOutgoing(IRCCommand cmd) {
 }
 
 void PluginManager::addPlugin(std::unique_ptr<Plugin>&& plugin) {
-  plugin->spawn();
   LOG(INFO, "Adding plugin ", plugin->name());
   m_plugins.push_back(std::move(plugin));
 }
@@ -67,7 +101,7 @@ std::vector<std::string> PluginManager::listPlugins() const {
 std::unique_ptr<Plugin> PluginManager::loadSoPlugin(const std::string& fname) {
   void* plugin = dlopen(fname.data(), RTLD_NOW);
   if (plugin == nullptr) {
-    LOG(ERROR, "Could not load file: ", dlerror());
+    LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
     return nullptr;
   }
 
@@ -76,9 +110,17 @@ std::unique_ptr<Plugin> PluginManager::loadSoPlugin(const std::string& fname) {
       (dlsym(plugin, "getPlugin"));
 
   if (func == nullptr) {
-    LOG(ERROR, "Could not load plugin: ", dlerror());
+    LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
     return nullptr;
   }
 
   return func(this);
 }
+
+void PluginManager::startPlugins() {
+  for (auto& plugin : m_plugins) {
+    LOG(INFO, "Starting plugin ", plugin->name());
+    plugin->spawn();
+  }
+}
+

@@ -1,9 +1,21 @@
 {
     "server": "irc.freenode.net",
     "port": 6667,
-    "plugins": [
-        {
-            "path": "./plugins/helloworld/libhelloworld.so"
+    "plugins": {
+        "Init": {
+          "config": {
+            "nick": "KolK_IRCBot",
+            "user": "KolK_IRCBot",
+            "real_name": "IRCBot - KolK",
+            "invisible": false,
+            "wallops": false
+          }
+        },
+        "HelloWorld": {
+            "soPath": "./plugins/helloworld.so",
+            "config": {
+              "message": "Hi! I'am hello world plugin!"
+            }
         }
-    ]
+    }
 }

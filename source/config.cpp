@@ -7,6 +7,10 @@ Config::Config(const std::string& fname) :
   loadFile();
 }
 
+Config::Config(const pt::ptree& pt) :
+  m_pt{pt} {
+}
+
 void Config::loadFile() {
   if (m_fname.empty()) {
     throw std::logic_error("Could not load! Config's filename is empty!");
