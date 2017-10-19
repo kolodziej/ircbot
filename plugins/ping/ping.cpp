@@ -1,12 +1,12 @@
-#include "ircbot/ping_plugin.hpp"
+#include "ping.hpp"
 
 #include "ircbot/logger.hpp"
 
-PingPlugin::PingPlugin(PluginManager& manager) :
+Ping::Ping(PluginManager& manager) :
     Plugin{manager, "Ping"}
 {}
 
-void PingPlugin::run() {
+void Ping::run() {
   auto cmd = getCommand();
   IRCCommand response{
     "PONG",
@@ -15,6 +15,6 @@ void PingPlugin::run() {
   send(response);
 }
 
-bool PingPlugin::filter(const IRCCommand& cmd) {
+bool Ping::filter(const IRCCommand& cmd) {
   return (cmd.command == "PING");
 }

@@ -3,9 +3,9 @@
 
 #include "ircbot/plugin.hpp"
 
-class PingPlugin : public Plugin {
+class Ping : public Plugin {
  public:
-  PingPlugin(PluginManager& manager);
+  Ping(PluginManager& manager);
 
   void run() override;
   bool filter(const IRCCommand& cmd) override;
@@ -14,5 +14,7 @@ class PingPlugin : public Plugin {
   bool m_ping;
   std::string m_server;
 };
+
+IRCBOT_PLUGIN(Ping)
 
 #endif

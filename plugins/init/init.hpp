@@ -3,9 +3,9 @@
 
 #include "ircbot/plugin.hpp"
 
-class InitPlugin : public Plugin {
+class Init : public Plugin {
  public:
-  InitPlugin(PluginManager& manager);
+  Init(PluginManager& manager);
 
   void run() override;
   bool filter(const IRCCommand& cmd) override;
@@ -13,5 +13,7 @@ class InitPlugin : public Plugin {
  private:
   uint32_t m_stage;
 };
+
+IRCBOT_PLUGIN(Init)
 
 #endif

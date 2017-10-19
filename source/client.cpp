@@ -5,8 +5,7 @@
 #include <chrono>
 #include <stdexcept>
 
-#include "ircbot/init_plugin.hpp"
-#include "ircbot/ping_plugin.hpp"
+#include "ircbot/plugin.hpp"
 #include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service, Config cfg) :

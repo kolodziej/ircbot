@@ -8,31 +8,14 @@ include_directories("${CMAKE_BINARY_DIR}/include")
 include_directories(${Boost_INCLUDE_DIR})
 
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
+
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
+link_directories("${CMAKE_BINARY_DIR}/plugins/")
 
 set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -pedantic -Wextra -O2")
 set(CMAKE_CXX_FLAGS_DEBUG "-DLOG_DEBUG -g")
 
-include(cmake/version.conf)
-
-set(BUILTIN_PLUGINS_NAMES
-  Init
-  Ping
-)
-
-set(PLUGINS_SOURCES
-  source/init_plugin.cpp
-  source/ping_plugin.cpp
-)
-set(PLUGINS_HEADERS
-  include/ircbot/init_plugin.hpp
-  include/ircbot/ping_plugin.hpp
-)
-
-set(BUILTIN_PLUGINS)
-foreach(NAME ${BUILTIN_PLUGINS_NAMES})
-  string(CONCAT BUILTIN_PLUGINS ${BUILTIN_PLUGINS} "\"${NAME}\", \\\n")
-endforeach()
+include(${CMAKE_SOURCE_DIR}/cmake/version.conf)
 
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
@@ -61,19 +44,18 @@ set(HEADERS
     include/ircbot/irc_command.hpp
     include/ircbot/client.hpp
     include/ircbot/plugin.hpp
-    include/ircbot/init_plugin.hpp
-    include/ircbot/ping_plugin.hpp
     include/ircbot/plugin_manager.hpp
     include/ircbot/helpers.hpp
     include/ircbot/config.hpp
     include/ircbot/version.hpp
 )
 
-add_library("ircbot" SHARED ${HEADERS} ${PLUGINS_HEADERS} ${SOURCES} ${PLUGINS_SOURCES})
-target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
+target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
+    ${BUILTIN_PLUGINS})
 
-add_subdirectory(program)
 add_subdirectory(plugins)
+add_subdirectory(program)
 
 if(${TESTS})
     add_subdirectory(gtest)

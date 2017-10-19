@@ -11,9 +11,6 @@
 #include "ircbot/logger.hpp"
 #include "ircbot/helpers.hpp"
 
-#include "ircbot/init_plugin.hpp"
-#include "ircbot/ping_plugin.hpp"
-
 namespace asio = boost::asio;
 
 int main(int argc, char **argv) {
@@ -31,13 +28,7 @@ int main(int argc, char **argv) {
   Client client(io, cfg);
 
   PluginManager& plugins = client.pluginManager();
-  plugins.addPlugin(std::make_unique<InitPlugin>(plugins));
-  plugins.addPlugin(std::make_unique<PingPlugin>(plugins));
-  auto plugin = plugins.loadSoPlugin("./plugins/helloworld.so");
-  if (plugin != nullptr) {
-    LOG(INFO, "Loading plugin HelloWorld!");
-    plugins.addPlugin(std::move(plugin));
-  }
+  plugins.startPlugins();
 
   std::thread io_thread([&io] { io.run(); });
   helpers::setThreadName(io_thread, "asio io service");

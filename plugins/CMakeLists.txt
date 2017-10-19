@@ -1,4 +1,8 @@
+include_directories("${CMAKE_SOURCE_DIR}/library/include")
+
 set(PLUGINS
+    init
+    ping
     helloworld
 )
 

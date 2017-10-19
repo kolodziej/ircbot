@@ -1,11 +1,11 @@
-#include "ircbot/init_plugin.hpp"
+#include "init.hpp"
 
-InitPlugin::InitPlugin(PluginManager& manager) :
+Init::Init(PluginManager& manager) :
     Plugin{manager, "Init"},
     m_stage{0}
 {}
 
-void InitPlugin::run() {
+void Init::run() {
   IRCCommand nickMsg{
     "NICK",
     { "KolK_IRCBot" }
@@ -20,6 +20,6 @@ void InitPlugin::run() {
   stop();
 }
 
-bool InitPlugin::filter(const IRCCommand& cmd) {
+bool Init::filter(const IRCCommand& cmd) {
   return false;
 }

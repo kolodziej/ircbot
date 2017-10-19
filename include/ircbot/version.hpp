@@ -4,6 +4,7 @@
 #include "version_configuration.hpp"
 
 #include <vector>
+#include <map>
 #include <string>
 
 class Plugin;
@@ -15,15 +16,10 @@ static const uint16_t
   minor = VERSION_MINOR,
   patch = VERSION_PATCH;
 
-static const char* builtin_plugins[] = {
-  BUILTIN_PLUGINS
-};
-
 static const char* git_branch = GIT_BRANCH;
 static const char* git_commit = GIT_COMMIT;
 
 std::string str();
-std::vector<std::string> getBuiltinPluginsList();
 
 }
 #endif

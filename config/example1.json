@@ -11,6 +11,12 @@
             "wallops": false
           }
         },
+        "Init": {
+            "soPath": "./plugins/init.so"
+        },
+        "Ping": {
+            "soPath": "./plugins/ping.so"
+        },
         "HelloWorld": {
             "soPath": "./plugins/helloworld.so",
             "config": {

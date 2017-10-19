@@ -40,10 +40,6 @@ int main(int argc, char **argv) {
 
       if (var_map.count("version")) {
         std::cout << "IRCBot " << version::str() << '\n';
-        std::cout << "Builtin plugins:\n";
-        for (const auto& plugin : version::getBuiltinPluginsList()) {
-          std::cout << "\t+ " << plugin << '\n';
-        }
         return 0;
       }
 
