@@ -11,7 +11,7 @@ void HelloWorld::run() {
 
   IRCCommand response{
     "PRIVMSG",
-    { cmd.nick, "Hi, it's HelloWorld plugin :-)" }
+    { cmd.nick, cfg().get("config.message", std::string("HelloWorld plugin")) }
   };
 
   send(response);

@@ -40,6 +40,7 @@ class Plugin {
   size_t commandsCount() const;
   IRCCommand getCommand();
   void send(const IRCCommand& cmd);
+  pt::ptree& cfg();
 
  private:
   PluginManager& m_manager;

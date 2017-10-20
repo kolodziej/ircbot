@@ -48,6 +48,10 @@ void Plugin::send(const IRCCommand& cmd) {
   m_manager.addOutgoing(cmd);
 }
 
+pt::ptree& Plugin::cfg() {
+  return m_cfg.tree();
+}
+
 bool Plugin::filter(const IRCCommand& cmd) {
   return true;
 }

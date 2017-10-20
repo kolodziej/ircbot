@@ -3,6 +3,7 @@
     "port": 6667,
     "plugins": {
         "Init": {
+          "soPath": "./plugins/init.so",
           "config": {
             "nick": "KolK_IRCBot",
             "user": "KolK_IRCBot",
@@ -10,9 +11,6 @@
             "invisible": false,
             "wallops": false
           }
-        },
-        "Init": {
-            "soPath": "./plugins/init.so"
         },
         "Ping": {
             "soPath": "./plugins/ping.so"

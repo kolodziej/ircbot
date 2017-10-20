@@ -127,7 +127,7 @@ void Client::sendLoop() {
 
   while (m_running) {
     IRCCommand cmd = m_plugins.getOutgoing();
-    DEBUG("Sending command: ", cmd.toString(true));
+    LOG(INFO, "Sending command: ", cmd.toString(true));
     send(cmd);
   }
 }
