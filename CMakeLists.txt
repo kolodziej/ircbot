@@ -17,6 +17,7 @@ set(CMAKE_CXX_FLAGS_DEBUG "-DLOG_DEBUG -g")
 
 include(${CMAKE_SOURCE_DIR}/cmake/version.conf)
 
+file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 
