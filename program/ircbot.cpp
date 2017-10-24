@@ -35,6 +35,7 @@ int main(int argc, char **argv) {
 
   opt::variables_map var_map;
 
+  std::vector<std::ofstream> log_files;
   try {
     try {
       opt::store(opt::parse_command_line(argc, argv, cmd_opts), var_map);
@@ -56,11 +57,6 @@ int main(int argc, char **argv) {
       return 1;
     }
 
-    Logger& logger = Logger::getInstance();
-    if (not daemon) {
-      logger.addOutput(LogOutput{std::cerr, LogLevel::INFO});
-    }
-
     if (daemon) {
       pid_t id = fork();
       if (id == -1) {
@@ -73,8 +69,26 @@ int main(int argc, char **argv) {
 
     asio::io_service io;
     Config config(config_fname);
-    Client client(io, config);
 
+    // add logger outputs
+    Logger& logger = Logger::getInstance();
+    for (auto log : config.tree().get_child("log")) {
+      std::string level_str = log.second.get<std::string>("level");
+      std::string log_fname = log.second.get<std::string>("file");
+      LogLevel level = GetLogLevel(level_str);
+      if (log_fname == "-") {
+        logger.addOutput(LogOutput{std::cout, level});
+      } else {
+        std::ofstream log_file{log_fname};
+        if (not log_file) {
+          throw std::runtime_error{std::string{"Could not open log file: "} + log_fname};
+        }
+        log_files.push_back(std::move(log_file));
+        logger.addOutput(LogOutput{log_files.back(), level});
+      }
+    }
+
+    Client client(io, config);
 
     client.pluginManager().startPlugins();
 

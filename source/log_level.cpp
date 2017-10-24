@@ -1,5 +1,8 @@
 #include "ircbot/log_level.hpp"
 
+#include <map>
+#include <stdexcept>
+
 const char* LogLevelDesc(LogLevel level) {
   switch (level) {
     case LogLevel::DEBUG:
@@ -17,3 +20,18 @@ const char* LogLevelDesc(LogLevel level) {
   return "";
 }
 
+LogLevel GetLogLevel(const std::string& desc) {
+  static std::map<std::string, LogLevel> levels{
+    { "DEBUG", LogLevel::DEBUG },
+    { "INFO", LogLevel::INFO },
+    { "WARNING", LogLevel::WARNING },
+    { "ERROR", LogLevel::ERROR },
+    { "CRITICAL", LogLevel::CRITICAL }
+  };
+
+  if (not levels.count(desc)) {
+    throw std::runtime_error{"Could not convert description to LogLevel!"};
+  }
+
+  return levels[desc];
+}

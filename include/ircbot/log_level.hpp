@@ -2,6 +2,7 @@
 #define _LOG_LEVEL_HPP
 
 #include <cstdint>
+#include <string>
 
 enum class LogLevel : uint8_t {
   DEBUG = 0,
@@ -12,5 +13,7 @@ enum class LogLevel : uint8_t {
 };
 
 const char* LogLevelDesc(LogLevel level);
+
+LogLevel GetLogLevel(const std::string& desc);
 
 #endif

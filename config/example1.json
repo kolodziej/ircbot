@@ -1,6 +1,16 @@
 {
     "server": "irc.freenode.net",
     "port": 6667,
+    "log": [
+        {
+            "level": "INFO",
+            "file": "/var/log/ircbot/info.log"
+        },
+        {
+            "level": "DEBUG",
+            "file": "/var/log/ircbot/debug.log"
+        }
+    ],
     "plugins": {
         "Init": {
           "soPath": "./plugins/init.so",
