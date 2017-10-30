@@ -8,12 +8,14 @@ Init::Init(PluginManager& manager) :
 void Init::run() {
   IRCCommand nickMsg{
     "NICK",
-    { "KolK_IRCBot" }
+    { cfg().get<std::string>("config.nick") }
   };
 
   IRCCommand userMsg{
     "USER",
-    { "KolK_IRCBot", "0", "*", "kolodziej.it/ircbot" }
+    { cfg().get<std::string>("config.user"),
+      "0", "*", 
+      cfg().get<std::string>("config.real_name") }
   };
   send(nickMsg);
   send(userMsg);
