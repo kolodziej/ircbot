@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <thread>
+#include <memory>
 
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
@@ -9,6 +10,7 @@
 #include "ircbot/client.hpp"
 #include "ircbot/plugin.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/clog_log_output.hpp"
 #include "ircbot/helpers.hpp"
 
 namespace asio = boost::asio;
@@ -20,7 +22,7 @@ int main(int argc, char **argv) {
   }
 
   Logger& logger = Logger::getInstance();
-  logger.addOutput(LogOutput{std::clog, LogLevel::DEBUG});
+  logger.addOutput(std::make_unique<ClogLogOutput>(LogLevel::DEBUG));
 
   asio::io_service io;
 

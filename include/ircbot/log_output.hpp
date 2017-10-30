@@ -8,15 +8,14 @@
 
 class LogOutput {
  public:
-  LogOutput(std::ostream& output, LogLevel level) :
-      m_output{output},
-      m_level{level}
-  {}
+  LogOutput(LogLevel level);
   
   void log(LogLevel level, std::string msg);
+  LogLevel level() const;
+
+  virtual std::ostream& output() = 0;
 
  private:
-  std::ostream& m_output;
   LogLevel m_level;
 };
 

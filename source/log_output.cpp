@@ -2,7 +2,15 @@
 
 #include <ostream>
 
+LogOutput::LogOutput(LogLevel level) :
+  m_level{level} {
+}
+
 void LogOutput::log(LogLevel level, std::string message) {
   if (level >= m_level)
-    m_output << message << std::flush;
+    output() << message << std::flush;
+}
+
+LogLevel LogOutput::level() const {
+  return m_level;
 }

@@ -14,6 +14,9 @@
 #include "ircbot/version.hpp"
 #include "ircbot/helpers.hpp"
 
+#include "ircbot/clog_log_output.hpp"
+#include "ircbot/file_log_output.hpp"
+
 namespace asio = boost::asio;
 namespace opt = boost::program_options;
 
@@ -77,14 +80,9 @@ int main(int argc, char **argv) {
       std::string log_fname = log.second.get<std::string>("file");
       LogLevel level = GetLogLevel(level_str);
       if (log_fname == "-") {
-        logger.addOutput(LogOutput{std::cout, level});
+        logger.addOutput(std::make_unique<ClogLogOutput>(level));
       } else {
-        std::ofstream log_file{log_fname};
-        if (not log_file) {
-          throw std::runtime_error{std::string{"Could not open log file: "} + log_fname};
-        }
-        log_files.push_back(std::move(log_file));
-        logger.addOutput(LogOutput{log_files.back(), level});
+        logger.addOutput(std::make_unique<FileLogOutput>(log_fname, level));
       }
     }
 
@@ -98,9 +96,8 @@ int main(int argc, char **argv) {
     io_thread.join();
 
   } catch (std::exception& exc) {
-    std::clog << "Terminating application due to unhandled exception. "
-        << "Check logs for details.\n";
-    LOG(ERROR, "Unhandled exception: ", exc.what(), ". Terminating.");
+    std::cerr << "Terminating application due to unhandled exception!\n";
+    std::cerr << "Unhandled exception: " << exc.what() << ". Terminating.\n";
     return 2;
   }
 

@@ -19,8 +19,8 @@ void Logger::operator()(LogLevel level, Args... args) {
   log(args...);
 
   std::string log_msg = m_stream.str();
-  for (auto& log : m_outputs)
-    log.log(level, log_msg);
+  for (auto& output : m_outputs)
+    output->log(level, log_msg);
 }
 
 template <typename First, typename... Rest>

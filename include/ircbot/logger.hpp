@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <mutex>
+#include <memory>
 
 #include "ircbot/log_level.hpp"
 #include "ircbot/log_output.hpp"
@@ -12,13 +13,13 @@
 
 class Logger {
  public:
-  void addOutput(const LogOutput& output);
+  using LogOutputPtr = std::unique_ptr<LogOutput>;
+  void addOutput(LogOutputPtr&& output);
 
   template <typename... Args>
   void operator()(LogLevel level, Args... args);
 
   static Logger& getInstance();
-
  private:
   Logger() = default;
 
@@ -28,7 +29,7 @@ class Logger {
   void log();
 
  private:
-  std::vector<LogOutput> m_outputs;
+  std::vector<LogOutputPtr> m_outputs;
   std::mutex m_mtx;
 
   std::stringstream m_stream;

@@ -33,6 +33,10 @@ set(SOURCES
     source/helpers.cpp
     source/config.cpp
     source/version.cpp
+    source/cout_log_output.cpp
+    source/clog_log_output.cpp
+    source/cerr_log_output.cpp
+    source/file_log_output.cpp
 )
 
 set(HEADERS
@@ -49,6 +53,10 @@ set(HEADERS
     include/ircbot/helpers.hpp
     include/ircbot/config.hpp
     include/ircbot/version.hpp
+    include/ircbot/cout_log_output.hpp
+    include/ircbot/clog_log_output.hpp
+    include/ircbot/cerr_log_output.hpp
+    include/ircbot/file_log_output.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
