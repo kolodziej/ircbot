@@ -17,6 +17,7 @@
           "config": {
             "nick": "KolK_IRCBot",
             "user": "KolK_IRCBot",
+            "alternative_nicks": [ "KolK_IRCBot_1", "KolK_IRCBot_2" ],
             "real_name": "IRCBot - KolK",
             "invisible": false,
             "wallops": false

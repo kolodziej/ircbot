@@ -3,6 +3,9 @@
 
 #include "ircbot/plugin.hpp"
 
+#include <vector>
+#include <string>
+
 class Init : public Plugin {
  public:
   Init(PluginManager& manager);
@@ -17,6 +20,9 @@ class Init : public Plugin {
 
  private:
   uint32_t m_stage;
+
+  std::vector<std::string> m_alt_nicks;
+  uint32_t m_alt_nicks_index;
 };
 
 IRCBOT_PLUGIN(Init)
