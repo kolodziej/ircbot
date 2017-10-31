@@ -11,6 +11,11 @@ class Init : public Plugin {
   bool filter(const IRCCommand& cmd) override;
 
  private:
+  void sendNickMsg(const std::string& nick);
+  void sendUserMsg(const std::string& user,
+                   const std::string& realname);
+
+ private:
   uint32_t m_stage;
 };
 
