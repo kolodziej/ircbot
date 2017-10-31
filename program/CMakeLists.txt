@@ -9,3 +9,7 @@ foreach(PROGRAM ${PROGRAMS})
       PROPERTIES OUTPUT_NAME ${PROGRAM})
     target_link_libraries(program-${PROGRAM} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ircbot dl)
 endforeach()
+
+install(TARGETS program-ircbot
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
