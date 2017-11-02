@@ -3,12 +3,14 @@ cmake_minimum_required(VERSION 3.0.0)
 find_package(Threads REQUIRED)
 find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem)
 find_package(Doxygen)
+find_package(Lua REQUIRED)
 
 include(GNUInstallDirs)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${LUA_INCUDE_DIR})
 
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 
@@ -57,6 +59,8 @@ set(SOURCES
     source/so_plugin.cpp
     source/unexpected_character.cpp
     source/admin_port.cpp
+    source/lua_plugin.cpp
+    source/lua/state.cpp
 )
 
 set(HEADERS
@@ -82,11 +86,16 @@ set(HEADERS
     include/ircbot/unexpected_character.hpp
     include/ircbot/plugin_config.hpp
     include/ircbot/admin_port.hpp
+    include/ircbot/lua_plugin.hpp
+    include/ircbot/lua/state.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
-target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
-    ${BUILTIN_PLUGINS})
+target_link_libraries("ircbot"
+    ${Boost_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${LUA_LIBRARIES}
+)
 
 if(${BUILD_PLUGINS})
     add_subdirectory(plugins)
