@@ -2,7 +2,7 @@
 
 #include "ircbot/helpers.hpp"
 
-Plugin::Plugin(PluginManager& manager, std::string name) :
+Plugin::Plugin(PluginManager& manager, const std::string& name) :
     m_manager{manager},
     m_name{name},
     m_running{true}

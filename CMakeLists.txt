@@ -2,12 +2,14 @@ cmake_minimum_required(VERSION 3.0.0)
 
 find_package(Threads REQUIRED)
 find_package(Boost 1.62 REQUIRED COMPONENTS system program_options)
+find_package(Lua REQUIRED)
 
 include(GNUInstallDirs)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${LUA_INCUDE_DIR})
 
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 
@@ -39,6 +41,8 @@ set(SOURCES
     source/clog_log_output.cpp
     source/cerr_log_output.cpp
     source/file_log_output.cpp
+    source/lua_plugin.cpp
+    source/lua/state.cpp
 )
 
 set(HEADERS
@@ -59,11 +63,16 @@ set(HEADERS
     include/ircbot/clog_log_output.hpp
     include/ircbot/cerr_log_output.hpp
     include/ircbot/file_log_output.hpp
+    include/ircbot/lua_plugin.hpp
+    include/ircbot/lua/state.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
-target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
-    ${BUILTIN_PLUGINS})
+target_link_libraries("ircbot"
+    ${Boost_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${LUA_LIBRARIES}
+)
 
 add_subdirectory(plugins)
 add_subdirectory(program)

@@ -20,8 +20,8 @@
 
 class Plugin {
  public:
-  Plugin(PluginManager& manager, std::string name);
-  ~Plugin();
+  Plugin(PluginManager& manager, const std::string& name);
+  virtual ~Plugin();
 
   std::string name() const;
   void stop();
