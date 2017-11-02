@@ -12,13 +12,14 @@ extern "C" {
 }
 
 
-namespace LuaPluginFunctions {
+namespace lua_plugin_functions {
 
-int LuaPluginStop(lua_State* state);
-int LuaPluginCommandsCount(lua_State* state);
-int LuaPluginGetCommand(lua_State* state);
-int LuaPluginSend(lua_State* state);
-int LuaPluginCfg(lua_State* state);
+int stop(lua_State* state);
+int commandsCount(lua_State* state);
+int getCommand(lua_State* state);
+int send(lua_State* state);
+int cfg(lua_State* state);
+int log(lua_State* state);
 
 }
 
@@ -28,7 +29,12 @@ class LuaPlugin : public Plugin {
 
  private:
   lua::State m_state; 
-  
+
+  friend lua_plugin_functions::stop(lua_State*);
+  friend lua_plugin_functions::commandsCount(lua_State*);
+  friend lua_plugin_functions::getCommand(lua_State*);
+  friend lua_plugin_functions::send(lua_State*);
+  friend lua_plugin_functions::cfg(lua_State*);
 };
 
 #endif
