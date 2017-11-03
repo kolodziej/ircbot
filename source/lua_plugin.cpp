@@ -47,7 +47,7 @@ int getCommand(lua_State* state) {
     lua_pushstring(state, cmd.nick.data());
     lua_settable(state, -3);
 
-    lua_pushstring("host");
+    lua_pushstring(state, "host");
     lua_pushstring(state, cmd.host.data());
     lua_settable(state, -3);
 
@@ -60,8 +60,8 @@ int getCommand(lua_State* state) {
 
     for (uint32_t i = 0; i < cmd.params.size(); ++i) {
       lua_pushinteger(state, i);
-      lua_pushstring(state, cmd.param[i].data());
-      lua_setvalue(state, -3);
+      lua_pushstring(state, cmd.params[i].data());
+      lua_settable(state, -3);
     }
 
     lua_settable(state, -3); // push params table to command
@@ -76,13 +76,4 @@ int getCommand(lua_State* state) {
 
 LuaPlugin::LuaPlugin(PluginManager& manager, const std::string& name) :
     Plugin{manager, name} {
-}
-
-size_t LuaPlugin::addLuaCommand(const IRCCommand& cmd) {
-  m_lua_commands.push_back(cmd);
-  return m_lua_commands.size() - 1;
-}
-
-void LuaPlugin::removeLuaCommand(size_t index) {
-  
 }
