@@ -30,11 +30,11 @@ class LuaPlugin : public Plugin {
  private:
   lua::State m_state; 
 
-  friend lua_plugin_functions::stop(lua_State*);
-  friend lua_plugin_functions::commandsCount(lua_State*);
-  friend lua_plugin_functions::getCommand(lua_State*);
-  friend lua_plugin_functions::send(lua_State*);
-  friend lua_plugin_functions::cfg(lua_State*);
+  friend int lua_plugin_functions::stop(lua_State*);
+  friend int lua_plugin_functions::commandsCount(lua_State*);
+  friend int lua_plugin_functions::getCommand(lua_State*);
+  friend int lua_plugin_functions::send(lua_State*);
+  friend int lua_plugin_functions::cfg(lua_State*);
 };
 
 #endif
