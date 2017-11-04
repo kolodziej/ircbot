@@ -71,6 +71,40 @@ int main(int argc, char **argv) {
       return 1;
     }
 
+    asio::io_service io;
+    Config config(config_fname);
+
+    bool stdout_logging = false;
+    // add logger outputs
+    Logger& logger = Logger::getInstance();
+    for (auto log : config.tree().get_child("log")) {
+      std::string level_str = log.second.get<std::string>("level");
+      std::string log_fname = log.second.get<std::string>("file");
+      LogLevel level = GetLogLevel(level_str);
+#ifndef LOG_DEBUG
+      if (level == LogLevel::DEBUG) {
+        std::cerr << "DEBUG log has been chosen for output " << log_fname
+                  << ", but DEBUG logs are not available in this compilation!";
+        return 2;
+      }
+#endif
+      if (log_fname == "-" or log_fname == "-stderr") {
+        logger.addOutput(std::make_unique<ClogLogOutput>(level));
+        stdout_logging = true;
+      } else if (log_fname == "-stdout") {
+        logger.addOutput(std::make_unique<CoutLogOutput>(level));
+        stdout_logging = true;
+      } else {
+        logger.addOutput(std::make_unique<FileLogOutput>(log_fname, level));
+      }
+    }
+
+    if (stdout_logging and daemon) {
+      std::clog << "You have chosen logging to stdout/stderr and daemon mode. "
+                << "It can can cause printing text in terminal which is not running "
+                << "ircbot in foreground!\n";
+    }
+
     if (daemon) {
       pid_t id = fork();
       if (id == -1) {
@@ -78,24 +112,6 @@ int main(int argc, char **argv) {
       } else if (id > 0) {
         LOG(INFO, "Succesfully forked daemon process (PID ", id, ") to background!");
         return 0;
-      }
-    }
-
-    asio::io_service io;
-    Config config(config_fname);
-
-    // add logger outputs
-    Logger& logger = Logger::getInstance();
-    for (auto log : config.tree().get_child("log")) {
-      std::string level_str = log.second.get<std::string>("level");
-      std::string log_fname = log.second.get<std::string>("file");
-      LogLevel level = GetLogLevel(level_str);
-      if (log_fname == "-" or log_fname == "-stderr") {
-        logger.addOutput(std::make_unique<ClogLogOutput>(level));
-      } else if (log_fname == "-stdout") {
-        logger.addOutput(std::make_unique<CoutLogOutput>(level));
-      } else {
-        logger.addOutput(std::make_unique<FileLogOutput>(log_fname, level));
       }
     }
 
