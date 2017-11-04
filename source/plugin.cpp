@@ -84,6 +84,13 @@ const Config& Plugin::getConfig() const {
 }
 
 void Plugin::spawn() {
-  m_thread = std::thread([this] { run(); });
+  auto plugin_call = [this] {
+    try {
+      run();
+    } catch (std::exception& exc) {
+      LOG(ERROR, "Plugin ", name(), " caused an exception: ", exc.what());
+    }
+  };
+  m_thread = std::thread(plugin_call);
   helpers::setThreadName(m_thread, name());
 }
