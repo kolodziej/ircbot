@@ -20,6 +20,16 @@
 namespace asio = boost::asio;
 namespace opt = boost::program_options;
 
+namespace signal_handling {
+
+static Client* client;
+
+void signal_handler(int signal) {
+  client->signal(signal);
+}
+
+}
+
 int main(int argc, char **argv) {
   std::string config_fname;
   bool daemon;
@@ -87,12 +97,15 @@ int main(int argc, char **argv) {
     }
 
     Client client(io, config);
+    signal_handling::client = &client;
+    signal(SIGINT, signal_handling::signal_handler);
 
     client.pluginManager().startPlugins();
 
     std::thread io_thread([&io] { io.run(); });
     client.spawn();
 
+    LOG(INFO, "Waiting for io_thread");
     io_thread.join();
 
   } catch (std::exception& exc) {

@@ -33,6 +33,7 @@ class Client {
   void send(std::string msg);
 
   void spawn();
+  void signal(int);
 
   PluginManager& pluginManager();
 

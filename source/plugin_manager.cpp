@@ -128,3 +128,9 @@ void PluginManager::startPlugins() {
   }
 }
 
+void PluginManager::stopPlugins() {
+  for (auto& plugin : m_plugins) {
+    LOG(INFO, "Stopping plugin ", plugin->name());
+    plugin->stop();
+  }
+}

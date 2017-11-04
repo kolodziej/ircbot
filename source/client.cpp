@@ -109,6 +109,7 @@ void Client::send(std::string msg) {
 }
 
 void Client::spawn() {
+  LOG(INFO, "Spawning Client threads...");
   m_running = true;
   m_plugin_thread = std::move(std::thread{[this] { sendLoop(); }});
   m_parser_thread = std::move(std::thread{[this] { parserLoop(); }});
@@ -116,6 +117,16 @@ void Client::spawn() {
   using helpers::setThreadName;
   setThreadName(m_plugin_thread, "plugin loop");
   setThreadName(m_parser_thread, "parser loop");
+}
+
+void Client::signal(int signum) {
+  switch (signum) {
+    case SIGINT:
+      m_plugins.stopPlugins();
+      stopAsyncReceive();
+      disconnect();
+      break;
+  }
 }
 
 PluginManager& Client::pluginManager() {

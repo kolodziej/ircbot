@@ -29,6 +29,7 @@ class PluginManager {
   std::unique_ptr<Plugin> loadSoPlugin(const std::string& fname);
 
   void startPlugins();
+  void stopPlugins();
 
  private:
   std::vector<std::unique_ptr<Plugin>> m_plugins;
