@@ -6,8 +6,7 @@ Ping::Ping(PluginManager& manager) :
     Plugin{manager, "Ping"}
 {}
 
-void Ping::run() {
-  auto cmd = getCommand();
+void Ping::onMessage(IRCCommand cmd) {
   IRCCommand response{
     "PONG",
     { cmd.params.back() }

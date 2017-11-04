@@ -1,5 +1,7 @@
 #include "ircbot/plugin.hpp"
 
+#include <chrono>
+
 #include "ircbot/helpers.hpp"
 
 Plugin::Plugin(PluginManager& manager, std::string name) :
@@ -30,17 +32,29 @@ void Plugin::receive(IRCCommand cmd) {
   m_incoming_cv.notify_all();
 }
 
+void Plugin::run() {
+  using namespace std::literals::chrono_literals;
+  while (isRunning()) {
+    std::unique_lock<std::mutex> lock{m_incoming_mtx};
+    if (m_incoming_cv.wait_for(lock, 500ms,
+                               [this] { return commandsCount(); })) {
+      IRCCommand cmd = getCommand();    
+      onMessage(cmd);
+    }
+  }
+}
+
+bool Plugin::isRunning() const {
+  return m_running;
+}
+
 size_t Plugin::commandsCount() const {
   return m_incoming.size();
 }
 
 IRCCommand Plugin::getCommand() {
-  std::unique_lock<std::mutex> lock{m_incoming_mtx};
-  m_incoming_cv.wait(lock, [this] { return commandsCount() > 0; });
   auto cmd = m_incoming.front();
   m_incoming.pop_front();
-  lock.unlock();
-
   return cmd;
 }
 
@@ -69,11 +83,6 @@ const Config& Plugin::getConfig() const {
 }
 
 void Plugin::spawn() {
-  auto loopFunction = [this] {
-    while (m_running) {
-      run();
-    }
-  };
-  m_thread = std::thread(loopFunction);
+  m_thread = std::thread([this] { run(); });
   helpers::setThreadName(m_thread, name());
 }

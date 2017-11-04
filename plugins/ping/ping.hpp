@@ -7,7 +7,7 @@ class Ping : public Plugin {
  public:
   Ping(PluginManager& manager);
 
-  void run() override;
+  void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;
 
  private:

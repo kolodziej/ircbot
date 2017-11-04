@@ -1,10 +1,8 @@
 #ifndef _IRC_PARSER_HPP
 #define _IRC_PARSER_HPP
 
-#include <deque>
+#include <queue>
 #include <sstream>
-#include <mutex>
-#include <condition_variable>
 
 #include "irc_command.hpp"
 
@@ -65,9 +63,7 @@ class IRCParser {
   std::stringstream m_stream;
 
   IRCCommand m_command;
-  std::deque<IRCCommand> m_commands;
-  std::mutex m_commands_mtx;
-  std::condition_variable m_commands_cv;
+  std::queue<IRCCommand> m_commands;
 };
 
 #endif

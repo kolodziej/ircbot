@@ -28,7 +28,8 @@ class Plugin {
 
   void receive(IRCCommand cmd);
 
-  virtual void run() = 0;
+  virtual void run();
+  virtual void onMessage(IRCCommand) = 0;
   virtual bool filter(const IRCCommand& cmd);
 
   void setConfig(Config cfg);
@@ -37,6 +38,7 @@ class Plugin {
   void spawn();
 
  protected:
+  bool isRunning() const;
   size_t commandsCount() const;
   IRCCommand getCommand();
   void send(const IRCCommand& cmd);

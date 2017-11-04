@@ -4,9 +4,7 @@ HelloWorld::HelloWorld(PluginManager& manager) :
     Plugin{manager, "HelloWorld"}
 {}
 
-void HelloWorld::run() {
-  DEBUG("HelloWorld plugin is trying to get incoming message...");
-  auto cmd = getCommand();
+void HelloWorld::onMessage(IRCCommand cmd) {
   DEBUG("HelloWorld plugin got incoming message!");
 
   IRCCommand response{

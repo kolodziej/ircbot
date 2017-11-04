@@ -69,6 +69,13 @@ void Client::startAsyncReceive() {
       return;
     }
     m_parser.parse(std::string(m_buffer.data(), bytes));
+    LOG(INFO, "Parsed commands: ", m_parser.commandsCount());
+    while (m_parser.commandsCount() > 0) {
+      auto cmd = m_parser.getCommand();
+      LOG(INFO, "Passing command to plugins: ", cmd.toString());
+      m_plugins.putIncoming(cmd);
+    }
+
     startAsyncReceive();
   };
 
@@ -83,7 +90,6 @@ void Client::stopAsyncReceive() {
 void Client::disconnect() {
   m_running = false;
   m_plugin_thread.join();
-  m_parser_thread.join();
 
   stopAsyncReceive();
 
@@ -112,11 +118,9 @@ void Client::spawn() {
   LOG(INFO, "Spawning Client threads...");
   m_running = true;
   m_plugin_thread = std::move(std::thread{[this] { sendLoop(); }});
-  m_parser_thread = std::move(std::thread{[this] { parserLoop(); }});
 
   using helpers::setThreadName;
   setThreadName(m_plugin_thread, "plugin loop");
-  setThreadName(m_parser_thread, "parser loop");
 }
 
 void Client::signal(int signum) {
@@ -141,14 +145,6 @@ void Client::sendLoop() {
     LOG(INFO, "Sending command: ", cmd.toString(true));
     send(cmd);
   }
-}
 
-void Client::parserLoop() {
-  LOG(INFO, "Starting parser loop");
-
-  while (m_running) {
-    IRCCommand cmd = m_parser.getCommand(); 
-    DEBUG("Pushing command to plugins: ", cmd.toString(true));
-    m_plugins.putIncoming(cmd);
-  }
+  LOG(INFO, "Stopping send loop");
 }

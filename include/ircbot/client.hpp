@@ -39,7 +39,6 @@ class Client {
 
  private:
   void sendLoop();
-  void parserLoop();
 
   asio::io_service& m_io_service;
   asio::ip::tcp::socket m_socket;
@@ -51,7 +50,6 @@ class Client {
 
   /* Objects needed to run in separate thread */
   std::thread m_plugin_thread;
-  std::thread m_parser_thread;
   std::atomic<bool> m_running;
 
   PluginManager m_plugins;
