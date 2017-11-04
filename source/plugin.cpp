@@ -20,6 +20,7 @@ std::string Plugin::name() const {
 }
 
 void Plugin::stop() {
+  LOG(INFO, "Stopping plugin: ", name());
   m_running = false;
 }
 

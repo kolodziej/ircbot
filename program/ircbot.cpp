@@ -98,7 +98,9 @@ int main(int argc, char **argv) {
 
     Client client(io, config);
     signal_handling::client = &client;
+
     signal(SIGINT, signal_handling::signal_handler);
+    signal(SIGTERM, signal_handling::signal_handler);
 
     client.startPlugins();
 

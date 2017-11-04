@@ -93,7 +93,6 @@ void Client::initializePlugins() {
   }
 }
 
-
 void Client::startAsyncReceive() {
   using asio::mutable_buffers_1;
   
@@ -124,14 +123,15 @@ void Client::startAsyncReceive() {
 }
 
 void Client::stopAsyncReceive() {
-  m_socket.cancel();
+  boost::system::error_code ec;
+  m_socket.cancel(ec);
+  if (ec != 0) {
+    LOG(ERROR, "Error canceling async operation on boost socket: ", ec);
+  }
 }
 
 void Client::disconnect() {
   m_running = false;
-
-  stopAsyncReceive();
-
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   m_socket.close();
 }
@@ -160,10 +160,14 @@ void Client::run() {
 
 void Client::signal(int signum) {
   switch (signum) {
+    case SIGTERM:
     case SIGINT:
-      // m_plugins.stopPlugins();
+      LOG(INFO, "Received signal: ", signum)
       stopAsyncReceive();
       disconnect();
+      for (auto& plugin : m_plugins) {
+        plugin->stop();
+      }
       break;
   }
 }
