@@ -100,10 +100,10 @@ int main(int argc, char **argv) {
     signal_handling::client = &client;
     signal(SIGINT, signal_handling::signal_handler);
 
-    client.pluginManager().startPlugins();
+    client.startPlugins();
 
     std::thread io_thread([&io] { io.run(); });
-    client.spawn();
+    client.run();
 
     LOG(INFO, "Waiting for io_thread");
     io_thread.join();

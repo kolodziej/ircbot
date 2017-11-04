@@ -8,19 +8,19 @@
 #include <thread>
 #include <condition_variable>
 
-#include "ircbot/plugin_manager.hpp"
+#include "ircbot/client.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
 #define IRCBOT_PLUGIN(PluginName) \
-    extern "C" std::unique_ptr<Plugin> getPlugin(PluginManager* manager) { \
-      return std::make_unique<PluginName>(*manager); \
+    extern "C" std::unique_ptr<Plugin> getPlugin(Client* client) { \
+      return std::make_unique<PluginName>(*client); \
     }
 
 class Plugin {
  public:
-  Plugin(PluginManager& manager, std::string name);
+  Plugin(Client& client, std::string name);
   ~Plugin();
 
   std::string name() const;
@@ -45,7 +45,7 @@ class Plugin {
   pt::ptree& cfg();
 
  private:
-  PluginManager& m_manager;
+  Client& m_client;
   std::string m_name;
   Config m_cfg;
 

@@ -1,7 +1,7 @@
 #include "helloworld.hpp"
 
-HelloWorld::HelloWorld(PluginManager& manager) :
-    Plugin{manager, "HelloWorld"}
+HelloWorld::HelloWorld(Client& client) :
+    Plugin{client, "HelloWorld"}
 {}
 
 void HelloWorld::onMessage(IRCCommand cmd) {

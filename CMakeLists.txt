@@ -31,7 +31,6 @@ set(SOURCES
     source/irc_command.cpp
     source/client.cpp
     source/plugin.cpp
-    source/plugin_manager.cpp
     source/helpers.cpp
     source/config.cpp
     source/version.cpp
@@ -51,7 +50,6 @@ set(HEADERS
     include/ircbot/irc_command.hpp
     include/ircbot/client.hpp
     include/ircbot/plugin.hpp
-    include/ircbot/plugin_manager.hpp
     include/ircbot/helpers.hpp
     include/ircbot/config.hpp
     include/ircbot/version.hpp

@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-Init::Init(PluginManager& manager) :
-    Plugin{manager, "Init"},
+Init::Init(Client& client) :
+    Plugin{client, "Init"},
     m_stage{0},
     m_alt_nicks_index{0} {
 }

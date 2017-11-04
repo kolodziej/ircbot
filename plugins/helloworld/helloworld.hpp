@@ -8,7 +8,7 @@
 
 class HelloWorld : public Plugin {
  public:
-  HelloWorld(PluginManager& manager);
+  HelloWorld(Client& client);
 
   void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;

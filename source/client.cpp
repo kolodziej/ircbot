@@ -5,6 +5,8 @@
 #include <chrono>
 #include <stdexcept>
 
+#include <dlfcn.h>
+
 #include "ircbot/plugin.hpp"
 #include "ircbot/helpers.hpp"
 
@@ -14,17 +16,13 @@ Client::Client(asio::io_service& io_service, Config cfg) :
     m_cfg{cfg},
     m_running{false}
 {
-  init();
-}
-
-void Client::init() {
   try {
     std::string server = m_cfg.tree().get<std::string>("server");
     uint16_t port = m_cfg.tree().get<uint16_t>("port");
 
     connect(server, port);
 
-    m_plugins.initializePlugins(m_cfg);
+    initializePlugins();
 
   } catch (pt::ptree_bad_path& exc) {
     LOG(ERROR, "Could not find path in configuration!");
@@ -60,6 +58,42 @@ void Client::connect(std::string host, uint16_t port) {
   startAsyncReceive();
 }
 
+void Client::initializePlugins() {
+  for (auto plugin : m_cfg.tree().get_child("plugins")) {
+    LOG(INFO, "Processing plugin: ", plugin.first);
+    auto name_pred = [pn = plugin.first] (const std::unique_ptr<Plugin>& p) {
+      return p->name() == pn;
+    };
+
+    std::string soPath =
+      plugin.second.get("soPath", std::string());
+
+    auto it = std::find_if(m_plugins.begin(), m_plugins.end(), name_pred);
+    if (it != m_plugins.end()) {
+      if (soPath.empty()) {
+        std::unique_ptr<Plugin>& it_plugin = *it;
+        it_plugin->setConfig(Config(plugin.second));
+      } else {
+        LOG(WARNING, "Cannot load plugin ", plugin.first, ". Such plugin exists!");
+      }
+
+    } else {
+      if (soPath.empty()) {
+        LOG(WARNING, "Empty soPath for ", plugin.first, " plugin. Omitting!");
+        continue;
+      }
+
+      LOG(INFO, "Loading SO plugin from: ", soPath);
+      auto soPlugin = loadSoPlugin(soPath);
+      if (soPlugin != nullptr) {
+        soPlugin->setConfig(Config(plugin.second));
+        addPlugin(std::move(soPlugin));
+      }
+    }
+  }
+}
+
+
 void Client::startAsyncReceive() {
   using asio::mutable_buffers_1;
   
@@ -73,7 +107,13 @@ void Client::startAsyncReceive() {
     while (m_parser.commandsCount() > 0) {
       auto cmd = m_parser.getCommand();
       LOG(INFO, "Passing command to plugins: ", cmd.toString());
-      m_plugins.putIncoming(cmd);
+      for (auto& plugin : m_plugins) {
+        if (plugin->filter(cmd)) {
+          DEBUG("Plugin ", plugin->name(),
+                " filtering passed for command: ", cmd.toString(true));
+          plugin->receive(cmd);
+        }
+      }
     }
 
     startAsyncReceive();
@@ -89,7 +129,6 @@ void Client::stopAsyncReceive() {
 
 void Client::disconnect() {
   m_running = false;
-  m_plugin_thread.join();
 
   stopAsyncReceive();
 
@@ -114,37 +153,75 @@ void Client::send(std::string msg) {
   m_socket.async_send(const_buf, write_handler);
 }
 
-void Client::spawn() {
+void Client::run() {
   LOG(INFO, "Spawning Client threads...");
   m_running = true;
-  m_plugin_thread = std::move(std::thread{[this] { sendLoop(); }});
-
-  using helpers::setThreadName;
-  setThreadName(m_plugin_thread, "plugin loop");
 }
 
 void Client::signal(int signum) {
   switch (signum) {
     case SIGINT:
-      m_plugins.stopPlugins();
+      // m_plugins.stopPlugins();
       stopAsyncReceive();
       disconnect();
       break;
   }
 }
 
-PluginManager& Client::pluginManager() {
-  return m_plugins;
+void Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
+  LOG(INFO, "Adding plugin ", plugin->name());
+  m_plugins.push_back(std::move(plugin));
 }
 
-void Client::sendLoop() {
-  LOG(INFO, "Starting plugin loop");
+void Client::removePlugin(const std::string& name) {
+  auto pred = [&name](const auto& plugin) { return plugin->name() == name; };
+  auto remove_it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
 
-  while (m_running) {
-    IRCCommand cmd = m_plugins.getOutgoing();
-    LOG(INFO, "Sending command: ", cmd.toString(true));
-    send(cmd);
+  if (remove_it == m_plugins.end()) {
+    throw std::runtime_error{"Could not find such plugin!"};
   }
 
-  LOG(INFO, "Stopping send loop");
+  m_plugins.erase(remove_it);
+}
+
+std::vector<std::string> Client::listPlugins() const {
+  std::vector<std::string> names;
+  for (const auto& plugin : m_plugins) {
+    names.push_back(plugin->name());
+  }
+
+  return names;
+}
+
+std::unique_ptr<Plugin> Client::loadSoPlugin(const std::string& fname) {
+  void* plugin = dlopen(fname.data(), RTLD_NOW);
+  if (plugin == nullptr) {
+    LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
+    return nullptr;
+  }
+
+  std::function<std::unique_ptr<Plugin>(Client*)> func =
+      reinterpret_cast<std::unique_ptr<Plugin> (*)(Client*)>
+      (dlsym(plugin, "getPlugin"));
+
+  if (func == nullptr) {
+    LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
+    return nullptr;
+  }
+
+  return func(this);
+}
+
+void Client::startPlugins() {
+  for (auto& plugin : m_plugins) {
+    LOG(INFO, "Starting plugin ", plugin->name());
+    plugin->spawn();
+  }
+}
+
+void Client::stopPlugins() {
+  for (auto& plugin : m_plugins) {
+    LOG(INFO, "Stopping plugin ", plugin->name());
+    plugin->stop();
+  }
 }
