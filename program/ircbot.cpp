@@ -14,6 +14,7 @@
 #include "ircbot/version.hpp"
 #include "ircbot/helpers.hpp"
 
+#include "ircbot/cout_log_output.hpp"
 #include "ircbot/clog_log_output.hpp"
 #include "ircbot/file_log_output.hpp"
 
@@ -89,8 +90,10 @@ int main(int argc, char **argv) {
       std::string level_str = log.second.get<std::string>("level");
       std::string log_fname = log.second.get<std::string>("file");
       LogLevel level = GetLogLevel(level_str);
-      if (log_fname == "-") {
+      if (log_fname == "-" or log_fname == "-stderr") {
         logger.addOutput(std::make_unique<ClogLogOutput>(level));
+      } else if (log_fname == "-stdout") {
+        logger.addOutput(std::make_unique<CoutLogOutput>(level));
       } else {
         logger.addOutput(std::make_unique<FileLogOutput>(log_fname, level));
       }

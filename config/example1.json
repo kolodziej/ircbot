@@ -9,6 +9,10 @@
         {
             "level": "DEBUG",
             "file": "/var/log/ircbot/debug.log"
+        },
+        {
+            "level": "WARNING",
+            "file": "-stdout"
         }
     ],
     "plugins": {
