@@ -8,9 +8,10 @@
 
 class Init : public Plugin {
  public:
-  Init(PluginManager& manager);
+  Init(Client& client);
 
   void run() override;
+  void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;
 
  private:

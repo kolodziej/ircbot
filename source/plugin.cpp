@@ -1,9 +1,11 @@
 #include "ircbot/plugin.hpp"
 
+#include <chrono>
+
 #include "ircbot/helpers.hpp"
 
-Plugin::Plugin(PluginManager& manager, const std::string& name) :
-    m_manager{manager},
+Plugin::Plugin(Client& client, std::string name) :
+    m_client{client},
     m_name{name},
     m_running{true}
 {}
@@ -18,6 +20,7 @@ std::string Plugin::name() const {
 }
 
 void Plugin::stop() {
+  LOG(INFO, "Stopping plugin: ", name());
   m_running = false;
 }
 
@@ -30,22 +33,34 @@ void Plugin::receive(IRCCommand cmd) {
   m_incoming_cv.notify_all();
 }
 
+void Plugin::run() {
+  using namespace std::literals::chrono_literals;
+  while (isRunning()) {
+    std::unique_lock<std::mutex> lock{m_incoming_mtx};
+    if (m_incoming_cv.wait_for(lock, 500ms,
+                               [this] { return commandsCount(); })) {
+      IRCCommand cmd = getCommand();    
+      onMessage(cmd);
+    }
+  }
+}
+
+bool Plugin::isRunning() const {
+  return m_running;
+}
+
 size_t Plugin::commandsCount() const {
   return m_incoming.size();
 }
 
 IRCCommand Plugin::getCommand() {
-  std::unique_lock<std::mutex> lock{m_incoming_mtx};
-  m_incoming_cv.wait(lock, [this] { return commandsCount() > 0; });
   auto cmd = m_incoming.front();
   m_incoming.pop_front();
-  lock.unlock();
-
   return cmd;
 }
 
 void Plugin::send(const IRCCommand& cmd) {
-  m_manager.addOutgoing(cmd);
+  m_client.send(cmd);
 }
 
 pt::ptree& Plugin::cfg() {
@@ -69,11 +84,13 @@ const Config& Plugin::getConfig() const {
 }
 
 void Plugin::spawn() {
-  auto loopFunction = [this] {
-    while (m_running) {
+  auto plugin_call = [this] {
+    try {
       run();
+    } catch (std::exception& exc) {
+      LOG(ERROR, "Plugin ", name(), " caused an exception: ", exc.what());
     }
   };
-  m_thread = std::thread(loopFunction);
+  m_thread = std::thread(plugin_call);
   helpers::setThreadName(m_thread, name());
 }

@@ -74,6 +74,6 @@ int getCommand(lua_State* state) {
 
 }
 
-LuaPlugin::LuaPlugin(PluginManager& manager, const std::string& name) :
-    Plugin{manager, name} {
+LuaPlugin::LuaPlugin(Client& client, const std::string& name) :
+    Plugin{client, name} {
 }

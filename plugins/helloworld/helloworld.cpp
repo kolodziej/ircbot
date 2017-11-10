@@ -1,13 +1,17 @@
 #include "helloworld.hpp"
 
-HelloWorld::HelloWorld(PluginManager& manager) :
-    Plugin{manager, "HelloWorld"}
+#include <stdexcept>
+
+HelloWorld::HelloWorld(Client& client) :
+    Plugin{client, "HelloWorld"}
 {}
 
-void HelloWorld::run() {
-  DEBUG("HelloWorld plugin is trying to get incoming message...");
-  auto cmd = getCommand();
+void HelloWorld::onMessage(IRCCommand cmd) {
   DEBUG("HelloWorld plugin got incoming message!");
+
+  if (cmd.params[1] == "!hello error") {
+    throw std::runtime_error{"Hello World plugin error caused by user!"};
+  }
 
   IRCCommand response{
     "PRIVMSG",

@@ -1,5 +1,5 @@
-#ifndef _CLOG_LOG_OUTPUT_HPP
-#define _CLOG_LOG_OUTPUT_HPP
+#ifndef _COUT_LOG_OUTPUT_HPP
+#define _COUT_LOG_OUTPUT_HPP
 
 #include "ircbot/log_output.hpp"
 

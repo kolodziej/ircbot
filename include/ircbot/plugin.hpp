@@ -8,27 +8,28 @@
 #include <thread>
 #include <condition_variable>
 
-#include "ircbot/plugin_manager.hpp"
+#include "ircbot/client.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
 #define IRCBOT_PLUGIN(PluginName) \
-    extern "C" std::unique_ptr<Plugin> getPlugin(PluginManager* manager) { \
-      return std::make_unique<PluginName>(*manager); \
+    extern "C" std::unique_ptr<Plugin> getPlugin(Client* client) { \
+      return std::make_unique<PluginName>(*client); \
     }
 
 class Plugin {
  public:
-  Plugin(PluginManager& manager, const std::string& name);
-  virtual ~Plugin();
+  Plugin(Client& client, std::string name);
+  ~Plugin();
 
   std::string name() const;
   void stop();
 
   void receive(IRCCommand cmd);
 
-  virtual void run() = 0;
+  virtual void run();
+  virtual void onMessage(IRCCommand) = 0;
   virtual bool filter(const IRCCommand& cmd);
 
   void setConfig(Config cfg);
@@ -37,13 +38,14 @@ class Plugin {
   void spawn();
 
  protected:
+  bool isRunning() const;
   size_t commandsCount() const;
   IRCCommand getCommand();
   void send(const IRCCommand& cmd);
   pt::ptree& cfg();
 
  private:
-  PluginManager& m_manager;
+  Client& m_client;
   std::string m_name;
   Config m_cfg;
 

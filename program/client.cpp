@@ -29,12 +29,11 @@ int main(int argc, char **argv) {
   Config cfg(argv[1]);
   Client client(io, cfg);
 
-  PluginManager& plugins = client.pluginManager();
-  plugins.startPlugins();
+  client.startPlugins();
 
   std::thread io_thread([&io] { io.run(); });
   helpers::setThreadName(io_thread, "asio io service");
-  client.spawn();
+  client.run();
 
   io_thread.join();
   return 0;

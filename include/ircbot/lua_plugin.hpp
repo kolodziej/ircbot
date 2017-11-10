@@ -25,7 +25,7 @@ int log(lua_State* state);
 
 class LuaPlugin : public Plugin {
  public:
-  LuaPlugin(PluginManager& manager, const std::string& name);
+  LuaPlugin(Client& client, const std::string& name);
 
  private:
   lua::State m_state; 

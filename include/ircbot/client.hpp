@@ -11,9 +11,10 @@
 
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_command.hpp"
-#include "ircbot/plugin_manager.hpp"
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
+
+class Plugin;
 
 namespace asio = boost::asio;
 
@@ -21,9 +22,8 @@ class Client {
  public:
   Client(asio::io_service& io_service, Config cfg);
 
-  void init();
-
   void connect(std::string host, uint16_t port);
+  void initializePlugins();
   void disconnect();
 
   void startAsyncReceive();
@@ -32,14 +32,18 @@ class Client {
   void send(IRCCommand cmd);
   void send(std::string msg);
 
-  void spawn();
+  void run();
+  void signal(int);
 
-  PluginManager& pluginManager();
+  void addPlugin(std::unique_ptr<Plugin>&& plugin);
+  void removePlugin(const std::string& name);
+  std::vector<std::string> listPlugins() const;
+  std::unique_ptr<Plugin> loadSoPlugin(const std::string& fname);
+
+  void startPlugins();
+  void stopPlugins();
 
  private:
-  void sendLoop();
-  void parserLoop();
-
   asio::io_service& m_io_service;
   asio::ip::tcp::socket m_socket;
 
@@ -48,12 +52,9 @@ class Client {
 
   Config m_cfg;
 
-  /* Objects needed to run in separate thread */
-  std::thread m_plugin_thread;
-  std::thread m_parser_thread;
-  std::atomic<bool> m_running;
-
-  PluginManager m_plugins;
+  std::atomic_bool m_running;
+  std::vector<std::unique_ptr<Plugin>> m_plugins;
+  std::mutex m_plugins_mtx;
 };
 
 #endif

@@ -14,11 +14,22 @@
 #include "ircbot/version.hpp"
 #include "ircbot/helpers.hpp"
 
+#include "ircbot/cout_log_output.hpp"
 #include "ircbot/clog_log_output.hpp"
 #include "ircbot/file_log_output.hpp"
 
 namespace asio = boost::asio;
 namespace opt = boost::program_options;
+
+namespace signal_handling {
+
+static Client* client;
+
+void signal_handler(int signal) {
+  client->signal(signal);
+}
+
+}
 
 int main(int argc, char **argv) {
   std::string config_fname;
@@ -60,6 +71,40 @@ int main(int argc, char **argv) {
       return 1;
     }
 
+    asio::io_service io;
+    Config config(config_fname);
+
+    bool stdout_logging = false;
+    // add logger outputs
+    Logger& logger = Logger::getInstance();
+    for (auto log : config.tree().get_child("log")) {
+      std::string level_str = log.second.get<std::string>("level");
+      std::string log_fname = log.second.get<std::string>("file");
+      LogLevel level = GetLogLevel(level_str);
+#ifndef LOG_DEBUG
+      if (level == LogLevel::DEBUG) {
+        std::cerr << "DEBUG log has been chosen for output " << log_fname
+                  << ", but DEBUG logs are not available in this compilation!";
+        return 2;
+      }
+#endif
+      if (log_fname == "-" or log_fname == "-stderr") {
+        logger.addOutput(std::make_unique<ClogLogOutput>(level));
+        stdout_logging = true;
+      } else if (log_fname == "-stdout") {
+        logger.addOutput(std::make_unique<CoutLogOutput>(level));
+        stdout_logging = true;
+      } else {
+        logger.addOutput(std::make_unique<FileLogOutput>(log_fname, level));
+      }
+    }
+
+    if (stdout_logging and daemon) {
+      std::clog << "You have chosen logging to stdout/stderr and daemon mode. "
+                << "It can can cause printing text in terminal which is not running "
+                << "ircbot in foreground!\n";
+    }
+
     if (daemon) {
       pid_t id = fork();
       if (id == -1) {
@@ -70,29 +115,18 @@ int main(int argc, char **argv) {
       }
     }
 
-    asio::io_service io;
-    Config config(config_fname);
-
-    // add logger outputs
-    Logger& logger = Logger::getInstance();
-    for (auto log : config.tree().get_child("log")) {
-      std::string level_str = log.second.get<std::string>("level");
-      std::string log_fname = log.second.get<std::string>("file");
-      LogLevel level = GetLogLevel(level_str);
-      if (log_fname == "-") {
-        logger.addOutput(std::make_unique<ClogLogOutput>(level));
-      } else {
-        logger.addOutput(std::make_unique<FileLogOutput>(log_fname, level));
-      }
-    }
-
     Client client(io, config);
+    signal_handling::client = &client;
 
-    client.pluginManager().startPlugins();
+    signal(SIGINT, signal_handling::signal_handler);
+    signal(SIGTERM, signal_handling::signal_handler);
+
+    client.startPlugins();
 
     std::thread io_thread([&io] { io.run(); });
-    client.spawn();
+    client.run();
 
+    LOG(INFO, "Waiting for io_thread");
     io_thread.join();
 
   } catch (std::exception& exc) {
