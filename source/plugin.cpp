@@ -34,6 +34,7 @@ void Plugin::receive(IRCCommand cmd) {
 }
 
 void Plugin::run() {
+  LOG(INFO, "Calling run function in Plugin ", name());
   using namespace std::literals::chrono_literals;
   while (isRunning()) {
     std::unique_lock<std::mutex> lock{m_incoming_mtx};

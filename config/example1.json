@@ -35,6 +35,10 @@
             "config": {
               "message": "Hi! I'am hello world plugin!"
             }
+        },
+        "HelloLua": {
+            "luaPath": "../plugins/lua/hello.lua",
+            "config": {}
         }
     }
 }

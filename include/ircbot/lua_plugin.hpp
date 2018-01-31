@@ -11,7 +11,6 @@ extern "C" {
 #include <lualib.h>
 }
 
-
 namespace lua_plugin_functions {
 
 int stop(lua_State* state);
@@ -21,11 +20,19 @@ int send(lua_State* state);
 int cfg(lua_State* state);
 int log(lua_State* state);
 
-}
+} // namespace lua_plugin_functions
 
 class LuaPlugin : public Plugin {
  public:
-  LuaPlugin(Client& client, const std::string& name);
+  LuaPlugin(Client& client, const std::string& name, const std::string& path);
+
+  void run() override;
+  void onMessage(IRCCommand cmd) override;
+  bool filter(const IRCCommand& cmd) override;
+
+ protected:
+  void pushCommandOnLuaStack(const IRCCommand& cmd);
+  IRCCommand popCommandFromLuaStack();
 
  private:
   lua::State m_state; 

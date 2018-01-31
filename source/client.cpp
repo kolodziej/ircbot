@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 
 #include "ircbot/plugin.hpp"
+#include "ircbot/lua_plugin.hpp"
 #include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service, Config cfg) :
@@ -59,35 +60,42 @@ void Client::connect(std::string host, uint16_t port) {
 }
 
 void Client::initializePlugins() {
-  for (auto plugin : m_cfg.tree().get_child("plugins")) {
-    LOG(INFO, "Processing plugin: ", plugin.first);
-    auto name_pred = [pn = plugin.first] (const std::unique_ptr<Plugin>& p) {
+  for (auto cfg : m_cfg.tree().get_child("plugins")) {
+    LOG(INFO, "Processing plugin: ", cfg.first);
+    auto name_pred = [pn = cfg.first] (const std::unique_ptr<Plugin>& p) {
       return p->name() == pn;
     };
 
     std::string soPath =
-      plugin.second.get("soPath", std::string());
+      cfg.second.get("soPath", std::string());
+
+    std::string luaPath =
+      cfg.second.get("luaPath", std::string());
 
     auto it = std::find_if(m_plugins.begin(), m_plugins.end(), name_pred);
     if (it != m_plugins.end()) {
-      if (soPath.empty()) {
+      if (soPath.empty() and luaPath.empty()) {
         std::unique_ptr<Plugin>& it_plugin = *it;
-        it_plugin->setConfig(Config(plugin.second));
+        it_plugin->setConfig(Config(cfg.second));
       } else {
-        LOG(WARNING, "Cannot load plugin ", plugin.first, ". Such plugin exists!");
+        LOG(WARNING, "Cannot load plugin ", cfg.first, ". Such plugin exists!");
       }
 
     } else {
-      if (soPath.empty()) {
-        LOG(WARNING, "Empty soPath for ", plugin.first, " plugin. Omitting!");
-        continue;
+      LOG(INFO, "There is no ", cfg.first, " plugin yet. Trying to load...");
+      std::unique_ptr<Plugin> plugin{nullptr};
+      if (not soPath.empty()) {
+        LOG(INFO, "Loading SO plugin from: ", soPath);
+        plugin = loadSoPlugin(soPath);
+      } else if (not luaPath.empty()) {
+        LOG(INFO, "Loading LUA plugin from: ", luaPath);
+        plugin = std::make_unique<LuaPlugin>(*this, cfg.first, luaPath);
       }
 
-      LOG(INFO, "Loading SO plugin from: ", soPath);
-      auto soPlugin = loadSoPlugin(soPath);
-      if (soPlugin != nullptr) {
-        soPlugin->setConfig(Config(plugin.second));
-        addPlugin(std::move(soPlugin));
+      if (plugin != nullptr) {
+        LOG(INFO, "Plugin ", cfg.first, " loaded. Adding to Client.");
+        plugin->setConfig(Config(cfg.second));
+        addPlugin(std::move(plugin));
       }
     }
   }
@@ -102,10 +110,10 @@ void Client::startAsyncReceive() {
       return;
     }
     m_parser.parse(std::string(m_buffer.data(), bytes));
-    LOG(INFO, "Parsed commands: ", m_parser.commandsCount());
+    DEBUG("Parsed commands: ", m_parser.commandsCount());
     while (m_parser.commandsCount() > 0) {
       auto cmd = m_parser.getCommand();
-      LOG(INFO, "Passing command to plugins: ", cmd.toString());
+      DEBUG("Passing command to plugins: ", cmd.toString());
       for (auto& plugin : m_plugins) {
         if (plugin->filter(cmd)) {
           DEBUG("Plugin ", plugin->name(),

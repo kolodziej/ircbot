@@ -7,18 +7,9 @@ extern "C" {
 #include <lualib.h>
 }
 
+#include <memory>
+
 namespace lua {
-
-class State {
- public:
-  State();
-  ~State();
-
-  lua_State* operator()();
-
- private:
-  lua_State* m_state;
-};
 
 }
 
