@@ -14,10 +14,10 @@ build:ubuntu-16.04:
     - make
     - mkdir install_root
     - make DESTDIR=./install_root install
-    - tar cJf ../ircbot-binary.tar.xz ./install_root/*
+    - tar cJf ../ubuntu1604-ircbot-binary.tar.xz ./install_root/*
   artifacts:
     paths:
-      - ircbot-binary.tar.xz
+      - ubuntu1604-ircbot-binary.tar.xz
 
 build:debian-9:
   image: registry:5000/ircbot-debian:dev
@@ -31,10 +31,11 @@ build:debian-9:
     - make
     - mkdir install_root
     - make DESTDIR=./install_root install
-    - tar cJf ../ircbot-binary.tar.xz ./install_root/*
+    - tar cJf ../deb9-ircbot-binary.tar.xz ./install_root/*
+    - cd ..
   artifacts:
     paths:
-      - ircbot-binary.tar.xz
+      - deb9-ircbot-binary.tar.xz
 
 build:fedora:
   image: registry:5000/ircbot-fedora:dev
@@ -48,7 +49,7 @@ build:fedora:
     - make
     - mkdir install_root
     - make DESTDIR=./install_root install
-    - tar cJf ../ircbot-binary.tar.xz ./install_root/*
+    - tar cJf ../fedora-ircbot-binary.tar.xz ./install_root/*
   artifacts:
     paths:
-      - ircbot-binary.tar.xz
+      - fedora-ircbot-binary.tar.xz
