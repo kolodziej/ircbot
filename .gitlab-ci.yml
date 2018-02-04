@@ -77,4 +77,4 @@ rpm:
     - tar xf fedora-ircbot-binary.tar.xz
     - cd packaging/rpm
     - mkdir rpmbuild
-    - rpmbuild -ba --buildroot ./rpmbuild ircbot.spec
+    - rpmbuild -ba --define "_topdir ./rpmbuild" ircbot.spec
