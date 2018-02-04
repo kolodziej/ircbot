@@ -18,11 +18,12 @@ build:debian-9:
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
     - make
 
-build:centos7:
-  image: registry:5000/ircbot-centos7:dev
+build:fedora:
+  image: registry:5000/ircbot-fedora:dev
   tags:
     - s3
   script:
     - mkdir build
     - cd build
-    - echo "cmake3 -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug .. && make" | scl enable devtoolset-7 bash -
+    - cmake3 -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug .. 
+    - make
