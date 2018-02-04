@@ -67,3 +67,12 @@ deb:
       - "packaging/deb/*.debian.tar.xz"
       - "packaging/deb/*.orig.tar.gz"
       - "packaging/deb/*.deb"
+
+rpm:
+  image: registry:5000/ircbot-fedora:dev
+  stage: Package
+  tags:
+    - s3
+  script:
+    - cd packaging/rpm
+    - rpmbuild -ba ircbot.spec
