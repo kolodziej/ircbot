@@ -1,5 +1,10 @@
+stages:
+  - Build
+  - Package
+
 build:ubuntu-16.04:
   image: registry:5000/ircbot-ubuntu:dev
+  stage: Build
   tags:
     - s3
   script:
@@ -10,6 +15,7 @@ build:ubuntu-16.04:
 
 build:debian-9:
   image: registry:5000/ircbot-debian:dev
+  stage: Build
   tags:
     - s3
   script:
@@ -20,6 +26,7 @@ build:debian-9:
 
 build:fedora:
   image: registry:5000/ircbot-fedora:dev
+  stage: Build
   tags:
     - s3
   script:
