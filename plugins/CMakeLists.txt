@@ -11,6 +11,6 @@ foreach(PLUGIN ${PLUGINS})
     set_target_properties(plugin-${PLUGIN}
         PROPERTIES OUTPUT_NAME "${PLUGIN}" PREFIX "")
     install(TARGETS plugin-${PLUGIN}
-        DESTINATION "usr/lib/ircbot/plugins/"
+        DESTINATION "${CMAKE_INSTALL_LIBDIR}/ircbot/plugins/"
     )
 endforeach()
