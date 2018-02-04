@@ -12,6 +12,12 @@ build:ubuntu-16.04:
     - cd build
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
     - make
+    - mkdir install_root
+    - make DESTDIR=./install_root install
+    - tar cJf ../ircbot-binary.tar.xz ./install_root/*
+  artifacts:
+    paths:
+      - ircbot-binary.tar.xz
 
 build:debian-9:
   image: registry:5000/ircbot-debian:dev
@@ -23,6 +29,12 @@ build:debian-9:
     - cd build
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
     - make
+    - mkdir install_root
+    - make DESTDIR=./install_root install
+    - tar cJf ../ircbot-binary.tar.xz ./install_root/*
+  artifacts:
+    paths:
+      - ircbot-binary.tar.xz
 
 build:fedora:
   image: registry:5000/ircbot-fedora:dev
@@ -34,3 +46,9 @@ build:fedora:
     - cd build
     - cmake3 -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug .. 
     - make
+    - mkdir install_root
+    - make DESTDIR=./install_root install
+    - tar cJf ../ircbot-binary.tar.xz ./install_root/*
+  artifacts:
+    paths:
+      - ircbot-binary.tar.xz
