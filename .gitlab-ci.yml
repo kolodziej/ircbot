@@ -74,5 +74,7 @@ rpm:
   tags:
     - s3
   script:
+    - tar xf fedora-ircbot-binary.tar.xz
     - cd packaging/rpm
-    - rpmbuild -ba ircbot.spec
+    - mkdir rpmbuild
+    - rpmbuild -ba --buildroot ./rpmbuild ircbot.spec
