@@ -1,24 +1,18 @@
 build:ubuntu-16.04:
-  image: ubuntu:16.04
+  image: registry:5000/ircbot-ubuntu:dev
   tags:
-    - x86
+    - s3
   script:
-    - apt-get update
-    - apt-get upgrade -y
-    - apt-get install -y build-essential cmake libboost-all-dev
     - mkdir build
     - cd build
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
     - make
 
 build:debian-9:
-  image: debian:9
+  image: registry:5000/ircbot-debian:dev
   tags:
-    - x86
+    - s3
   script:
-    - apt-get update
-    - apt-get upgrade -y
-    - apt-get install -y build-essential cmake libboost-all-dev
     - mkdir build
     - cd build
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
