@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 find_package(Threads REQUIRED)
-find_package(Boost 1.62 REQUIRED COMPONENTS system program_options)
+find_package(Boost 1.53 REQUIRED COMPONENTS system program_options)
 
 include(GNUInstallDirs)
 
