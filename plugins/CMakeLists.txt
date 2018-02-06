@@ -6,6 +6,7 @@ set(PLUGINS
     init
     ping
     helloworld
+    clipboard
 )
 
 foreach(PLUGIN ${PLUGINS})
