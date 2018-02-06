@@ -73,6 +73,7 @@ bool Plugin::filter(const IRCCommand& cmd) {
 
 void Plugin::setConfig(Config cfg) {
   m_cfg = cfg;
+  onNewConfiguration();
 }
 
 Config& Plugin::getConfig() {

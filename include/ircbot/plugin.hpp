@@ -32,6 +32,8 @@ class Plugin {
   virtual void onMessage(IRCCommand) = 0;
   virtual bool filter(const IRCCommand& cmd);
 
+  virtual void onNewConfiguration() {}
+
   void setConfig(Config cfg);
   Config& getConfig();
   const Config& getConfig() const;
