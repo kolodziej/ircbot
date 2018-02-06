@@ -11,7 +11,7 @@ build:ubuntu-16.04:
     - mkdir build
     - cd build
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
-    - make
+    - make -j $(nproc)
     - mkdir install_root
     - make DESTDIR=./install_root install
     - tar cJf ../ubuntu1604-ircbot-binary.tar.xz ./install_root/*
@@ -28,7 +28,7 @@ build:debian-9:
     - mkdir build
     - cd build
     - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
-    - make
+    - make -j $(nproc)
     - mkdir install_root
     - make DESTDIR=./install_root install
     - tar cJf ../deb9-ircbot-binary.tar.xz ./install_root/*
@@ -46,7 +46,7 @@ build:fedora:
     - mkdir build
     - cd build
     - cmake3 -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug .. 
-    - make
+    - make -j $(nproc)
     - mkdir install_root
     - make DESTDIR=./install_root install
     - tar cJf ../fedora-ircbot-binary.tar.xz ./install_root/*
