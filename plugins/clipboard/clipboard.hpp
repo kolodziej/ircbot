@@ -9,9 +9,13 @@ class Clipboard : public Plugin {
 
   void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;
+  void onNewConfiguration() override;
 
  private:
   std::map<std::string, std::vector<std::string>> m_clipboard;
+
+  size_t m_size;
+  size_t m_message_size;
 };
 
 IRCBOT_PLUGIN(Clipboard)

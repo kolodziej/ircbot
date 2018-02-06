@@ -5,7 +5,9 @@
 #include "ircbot/utils.hpp"
 
 Clipboard::Clipboard(Client& client) :
-    Plugin{client, "Clipboard"} {
+    Plugin{client, "Clipboard"},
+    m_size{10},
+    m_message_size{512} {
 }
 
 void Clipboard::onMessage(IRCCommand cmd) {
@@ -16,8 +18,30 @@ void Clipboard::onMessage(IRCCommand cmd) {
     LOG(INFO, "Using clipboard plugin");
 
     if (data[5] == ' ') {
-      LOG(DEBUG, "Saving data to ", cmd.nick, " clipboard: ", data.substr(6));
-      m_clipboard[cmd.nick].push_back(data.substr(6));
+      std::string content = data.substr(6);
+      LOG(DEBUG, "Saving data to ", cmd.nick, " clipboard: ", content);
+      if (content.size() > m_message_size) {
+        IRCCommand msg{
+          "PRIVMSG",
+          { cmd.nick,
+            std::string{"Your message is too big. Limit is "} +
+            std::to_string(m_message_size) +
+            std::string{" bytes."}
+          }
+        };
+        send(msg);
+      } else {
+        auto& clipboard = m_clipboard[cmd.nick];
+        if (clipboard.size() < m_size) {
+          clipboard.push_back(data.substr(6));
+        } else {
+          IRCCommand msg{
+            "PRIVMSG",
+            { cmd.nick, "You have no free slots in clipboard! Remove something!" }
+          };
+          send(msg);
+        }
+      }
     } else if (startsWith(data, "!clip-ls")) {
       IRCCommand msg{
         "PRIVMSG",
@@ -62,4 +86,9 @@ void Clipboard::onMessage(IRCCommand cmd) {
 
 bool Clipboard::filter(const IRCCommand& cmd) {
   return cmd.command == "PRIVMSG";
+}
+
+void Clipboard::onNewConfiguration() {
+  m_size = cfg().get<size_t>("size");
+  m_message_size = cfg().get<size_t>("message_size");
 }
