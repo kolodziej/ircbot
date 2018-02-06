@@ -89,6 +89,6 @@ bool Clipboard::filter(const IRCCommand& cmd) {
 }
 
 void Clipboard::onNewConfiguration() {
-  m_size = cfg().get<size_t>("size");
-  m_message_size = cfg().get<size_t>("message_size");
+  m_size = cfg().get<size_t>("config.size");
+  m_message_size = cfg().get<size_t>("config.message_size");
 }
