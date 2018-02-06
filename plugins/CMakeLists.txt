@@ -1,5 +1,7 @@
 include_directories("${CMAKE_SOURCE_DIR}/library/include")
 
+include("${CMAKE_SOURCE_DIR}/cmake/plugin.cmake")
+
 set(PLUGINS
     init
     ping
@@ -7,10 +9,5 @@ set(PLUGINS
 )
 
 foreach(PLUGIN ${PLUGINS})
-    add_library(plugin-${PLUGIN} MODULE ${PLUGIN}/${PLUGIN}.cpp)
-    set_target_properties(plugin-${PLUGIN}
-        PROPERTIES OUTPUT_NAME "${PLUGIN}" PREFIX "")
-    install(TARGETS plugin-${PLUGIN}
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/ircbot/plugins/"
-    )
+    add_subdirectory(${PLUGIN})
 endforeach()
