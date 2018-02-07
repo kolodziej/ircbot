@@ -8,7 +8,7 @@ Init::Init(Client& client) :
     m_alt_nicks_index{0} {
 }
 
-void Init::run() {
+void Init::onInit() {
   for (auto nick : cfg().get_child("config.alternative_nicks")) {
     m_alt_nicks.push_back(nick.second.data());
   }
@@ -16,8 +16,6 @@ void Init::run() {
   sendNickMsg(cfg().get<std::string>("config.nick"));
   sendUserMsg(cfg().get<std::string>("config.user"),
               cfg().get<std::string>("config.real_name"));
-
-  Plugin::run();
 }
 
 void Init::onMessage(IRCCommand cmd) {

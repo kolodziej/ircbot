@@ -11,6 +11,8 @@ Plugin::Plugin(Client& client, std::string name) :
 {}
 
 Plugin::~Plugin() {
+  onShutdown();
+
   if (m_thread.joinable())
     m_thread.join();
 }
@@ -35,6 +37,9 @@ void Plugin::receive(IRCCommand cmd) {
 
 void Plugin::run() {
   using namespace std::literals::chrono_literals;
+
+  onInit();
+
   while (isRunning()) {
     std::unique_lock<std::mutex> lock{m_incoming_mtx};
     if (m_incoming_cv.wait_for(lock, 500ms,

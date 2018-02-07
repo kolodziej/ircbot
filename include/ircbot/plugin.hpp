@@ -28,11 +28,12 @@ class Plugin {
 
   void receive(IRCCommand cmd);
 
+  virtual void onInit() {}
   virtual void run();
   virtual void onMessage(IRCCommand) = 0;
-  virtual bool filter(const IRCCommand& cmd);
-
   virtual void onNewConfiguration() {}
+  virtual bool filter(const IRCCommand& cmd);
+  virtual void onShutdown() {}
 
   void setConfig(Config cfg);
   Config& getConfig();
