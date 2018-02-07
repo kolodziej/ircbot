@@ -150,6 +150,7 @@ void Client::send(std::string msg) {
     }
   };
   auto const_buf = asio::const_buffers_1(msg.data(), msg.size());
+  LOG(DEBUG, "Trying to send message: ", msg.data());
   m_socket.async_send(const_buf, write_handler);
 }
 
