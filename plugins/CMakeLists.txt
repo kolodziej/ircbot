@@ -5,6 +5,7 @@ include("${CMAKE_SOURCE_DIR}/cmake/plugin.cmake")
 set(PLUGINS
     init
     ping
+    join
     helloworld
     clipboard
 )
