@@ -10,9 +10,10 @@
 class CommandParser {
  public:
   enum class TokenType {
-    NONE,
     COMMAND,
-    ARGUMENT
+    ARGUMENT,
+    END,
+    IGNORE
   };
 
   enum class State {
@@ -47,6 +48,7 @@ class CommandParser {
 
   bool isCommandCharacter(char x);
 
+  void putToken(TokenType type);
   void putToken(TokenType type, std::stringstream& token);
   void unexpectedCharacter(char x, const std::string& expected);
 
