@@ -10,6 +10,8 @@
 #include "ircbot/plugin.hpp"
 #include "ircbot/logger.hpp"
 
+#include "ircbot/cerr_log_output.hpp"
+
 namespace asio = boost::asio;
 
 class TestServer {
@@ -57,12 +59,12 @@ TestServer::~TestServer() {
 
 TEST(ClientTest, Basic) {
   Logger& logger = Logger::getInstance();
-  logger.addOutput(LogOutput{std::cerr, LogLevel::DEBUG});
+  logger.addOutput(std::make_unique<CerrLogOutput>(LogLevel::DEBUG));
 
   asio::io_service io_service;
-  Client client{io_service};
+  Client client{io_service, Config()};
   client.connect("127.0.0.1", 15001);
-  client.spawn();
+  client.run();
   std::thread io_thread{[&io_service] { io_service.run(); }};
 
   io_thread.join();
