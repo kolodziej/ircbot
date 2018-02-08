@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-#include "ircbot/utils.hpp"
+#include "ircbot/helpers.hpp"
 
 Clipboard::Clipboard(Client& client) :
     Plugin{client, "Clipboard"},
@@ -11,7 +11,7 @@ Clipboard::Clipboard(Client& client) :
 }
 
 void Clipboard::onMessage(IRCCommand cmd) {
-  using utils::startsWith;
+  using helpers::startsWith;
 
   auto name = cmd.params[0];
 

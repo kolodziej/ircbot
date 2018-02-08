@@ -28,4 +28,12 @@ void setThreadName(std::thread& thread, const std::string& name) {
               " name to ", name);
 }
 
+bool startsWith(const std::string& str, const std::string& start) {
+  return str.substr(0, start.size()) == start;
+}
+
+bool isIn(char c, const std::string& s) {
+  return s.find(c) != std::string::npos;
+}
+
 }
