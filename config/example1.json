@@ -11,13 +11,13 @@
             "file": "/var/log/ircbot/debug.log"
         },
         {
-            "level": "WARNING",
+            "level": "DEBUG",
             "file": "-stdout"
         }
     ],
     "plugins": {
         "Init": {
-          "soPath": "./plugins/init.so",
+          "soPath": "./plugins/init/init.so",
           "config": {
             "nick": "KolK_IRCBot",
             "user": "KolK_IRCBot",
@@ -28,12 +28,21 @@
           }
         },
         "Ping": {
-            "soPath": "./plugins/ping.so"
+            "soPath": "./plugins/ping/ping.so"
         },
-        "HelloWorld": {
-            "soPath": "./plugins/helloworld.so",
+        "Join": {
+            "soPath": "./plugins/join/join.so",
             "config": {
-              "message": "Hi! I'am hello world plugin!"
+                "channels": [
+                    "#KolK"
+                ]
+            }
+        },
+        "Clipboard": {
+            "soPath": "./plugins/clipboard/clipboard.so",
+            "config": {
+                "size": 5,
+                "message_size": 20
             }
         }
     }
