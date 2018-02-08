@@ -38,6 +38,7 @@ set(SOURCES
     source/clog_log_output.cpp
     source/cerr_log_output.cpp
     source/file_log_output.cpp
+    source/command_parser.cpp
 )
 
 set(HEADERS
@@ -57,6 +58,8 @@ set(HEADERS
     include/ircbot/clog_log_output.hpp
     include/ircbot/cerr_log_output.hpp
     include/ircbot/file_log_output.hpp
+    include/ircbot/parser_config.hpp
+    include/ircbot/command_parser.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
