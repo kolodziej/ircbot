@@ -1,6 +1,7 @@
 set(TESTS
     irc_parser_test
     client_test
+    command_parser_test
 )
 
 foreach(TEST ${TESTS})
