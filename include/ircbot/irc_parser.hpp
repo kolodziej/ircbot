@@ -59,8 +59,7 @@ class IRCParser {
   State m_state;
   TokenType m_last_token;
 
-  std::deque<Token> m_tokens;
-  std::stringstream m_stream;
+  std::queue<Token> m_tokens;
 
   IRCCommand m_command;
   std::queue<IRCCommand> m_commands;

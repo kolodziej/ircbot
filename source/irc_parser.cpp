@@ -185,7 +185,7 @@ void IRCParser::parser() {
   while (not m_tokens.empty()) {
     Token token = m_tokens.front();
     TokenType type = token.type;
-    m_tokens.pop_front();
+    m_tokens.pop();
 
     if (m_last_token == TokenType::LF) {
       if (type == TokenType::SERVERNAME) {
@@ -258,10 +258,10 @@ void IRCParser::parser() {
 }
 
 void IRCParser::putToken(TokenType type, std::stringstream& token) {
-  m_tokens.emplace_back(type, token.str());
+  m_tokens.emplace(type, token.str());
   token.str(std::string());
 }
 
 void IRCParser::putToken(TokenType type) {
-  m_tokens.emplace_back(type);
+  m_tokens.emplace(type);
 }
