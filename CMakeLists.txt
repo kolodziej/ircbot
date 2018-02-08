@@ -70,6 +70,7 @@ add_subdirectory(plugins)
 add_subdirectory(program)
 
 if(${TESTS})
+    enable_testing()
     add_subdirectory(gtest)
     add_subdirectory(tests)
 endif()
