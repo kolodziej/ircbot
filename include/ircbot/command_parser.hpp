@@ -32,6 +32,7 @@ class CommandParser {
   struct Command {
     std::string command;
     std::vector<std::string> arguments;
+    std::vector<std::string> additional_arguments;
   };
 
   CommandParser(ParserConfig config);

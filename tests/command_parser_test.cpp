@@ -13,7 +13,7 @@ TEST(CommandParserTest, CorrectCommands) {
   Logger& logger = Logger::getInstance();
   logger.addOutput(std::make_unique<CerrLogOutput>(LogLevel::DEBUG));
 
-  ParserConfig config{'/'};
+  ParserConfig config{'/', false};
 
   std::vector<std::string> str_commands{
     "/test arg1 arg2\r\n",
@@ -84,7 +84,7 @@ TEST(CommandParserTest, CorrectCommands) {
 }
 
 TEST(CommandParserTest, IncorrectCommands) {
-  ParserConfig config{'/'};
+  ParserConfig config{'/', false};
 
   std::vector<std::string> str_commands{
     "/x! arg\n",

@@ -3,7 +3,7 @@
 
 struct ParserConfig {
   char prefix;
-
+  bool parseOneCommand;
 };
 
 #endif

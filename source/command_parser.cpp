@@ -168,6 +168,18 @@ void CommandParser::parser() {
       } else if (type == TokenType::END) {
         LOG(INFO, "Adding new command to queue. Command: ",
             m_command.command, ", len(arguments): ", m_command.arguments.size());
+
+        if (m_config.parseOneCommand) {
+          if (not m_tokens.empty()) {
+            LOG(WARNING, "Finishing; parseOneCommand option is turned one, but some tokens left.");
+            size_t token_num = m_tokens.size();
+            while (not m_tokens.empty())
+              m_tokens.pop();
+
+            LOG(WARNING, "Removed ", token_num, " unprocessed tokens!");
+          }
+        }
+
         m_commands.push(m_command);
         m_command = Command{};
       } else {
