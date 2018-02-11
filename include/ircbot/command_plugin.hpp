@@ -20,7 +20,7 @@ class CommandPlugin : public Plugin {
   virtual bool filter(const IRCCommand& cmd) override;
   virtual bool isCommand(const IRCCommand& cmd);
 
- private:
+ protected:
   void addCommand(const std::string& cmd, CmdFunction);
   void removeCommand(const std::string& cmd);
   void callCommand(const CommandParser::Command& command);

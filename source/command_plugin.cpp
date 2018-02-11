@@ -13,20 +13,20 @@ void CommandPlugin::onMessage(IRCCommand cmd) {
     LOG(WARNING, "Too many commands parsed: ", m_parser.commandsCount());
   }
 
-  CommandParser::Command cmd = m_parser.getCommand();
-  cmd.additional_arguments = {
+  CommandParser::Command parser_cmd = m_parser.getCommand();
+  parser_cmd.additional_arguments = {
     cmd.servername,
     cmd.user,
     cmd.nick,
     cmd.host
   };
-  cmd.additional_arguments.insert(
-      cmd.additional_arguments.end(),
+  parser_cmd.additional_arguments.insert(
+      parser_cmd.additional_arguments.end(),
       cmd.params.begin(),
       cmd.params.end() - 1
   );
 
-  callCommand(cmd);
+  callCommand(parser_cmd);
 }
 
 bool CommandPlugin::filter(const IRCCommand& cmd) {
@@ -35,7 +35,7 @@ bool CommandPlugin::filter(const IRCCommand& cmd) {
 
 bool CommandPlugin::isCommand(const IRCCommand& cmd) {
   if (cmd.params.size())
-    return cmd.params.last()[0] == m_parser.getConfig().prefix;
+    return cmd.params.back()[0] == m_parser.getConfig().prefix;
 
   return false;
 }
