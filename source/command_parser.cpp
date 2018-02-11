@@ -27,6 +27,10 @@ CommandParser::Command CommandParser::getCommand() {
   return cmd;
 }
 
+ParserConfig CommandParser::getConfig() const {
+  return m_config;
+}
+
 void CommandParser::lexer(const std::string& message) {
   using helpers::isIn;
 

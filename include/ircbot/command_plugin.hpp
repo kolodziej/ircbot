@@ -18,6 +18,7 @@ class CommandPlugin : public Plugin {
 
   virtual void onMessage(IRCCommand cmd) override;
   virtual bool filter(const IRCCommand& cmd) override;
+  virtual bool isCommand(const IRCCommand& cmd);
 
  private:
   void addCommand(const std::string& cmd, CmdFunction);

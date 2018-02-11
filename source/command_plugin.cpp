@@ -30,7 +30,14 @@ void CommandPlugin::onMessage(IRCCommand cmd) {
 }
 
 bool CommandPlugin::filter(const IRCCommand& cmd) {
-  return (cmd.command == "PRIVMSG");
+  return (cmd.command == "PRIVMSG" and isCommand(cmd));
+}
+
+bool CommandPlugin::isCommand(const IRCCommand& cmd) {
+  if (cmd.params.size())
+    return cmd.params.last()[0] == m_parser.getConfig().prefix;
+
+  return false;
 }
 
 void CommandPlugin::addCommand(const std::string& cmd, CmdFunction f) {

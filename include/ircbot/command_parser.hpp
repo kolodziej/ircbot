@@ -42,6 +42,7 @@ class CommandParser {
   size_t commandsCount() const;
   bool commandsEmpty() const;
   Command getCommand();
+  ParserConfig getConfig() const;
 
  private:
   void lexer(const std::string& command);
