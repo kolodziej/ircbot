@@ -1,0 +1,1 @@
+compile_plugin(simple_commands simple_commands.cpp simple_commands.hpp)

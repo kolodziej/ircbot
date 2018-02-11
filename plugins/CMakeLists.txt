@@ -8,6 +8,7 @@ set(PLUGINS
     join
     helloworld
     clipboard
+    simple_commands
 )
 
 foreach(PLUGIN ${PLUGINS})

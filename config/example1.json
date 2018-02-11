@@ -11,7 +11,7 @@
             "file": "/var/log/ircbot/debug.log"
         },
         {
-            "level": "DEBUG",
+            "level": "WARNING",
             "file": "-stdout"
         }
     ],
@@ -44,6 +44,10 @@
                 "size": 5,
                 "message_size": 20
             }
+        },
+        "SimpleCommands": {
+            "soPath": "./plugins/simple_commands/simple_commands.so",
+            "config": {}
         }
     }
 }
