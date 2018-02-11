@@ -16,10 +16,12 @@ build:ubuntu-16.04:
     - mkdir install_root
     - make DESTDIR=./install_root install
     - tar cJf ../ubuntu1604-ircbot-binary.tar.xz ./install_root/*
-    - tar cJf ../ubuntu1604-build.tar.xz ../build
+    - cd ..
+    - tar cJf ubuntu1604-build.tar.xz ./build
   artifacts:
     paths:
       - ubuntu1604-ircbot-binary.tar.xz
+      - ubuntu1604-build.tar.xz
 
 test:ubuntu-16.04:
     image: registry:5000/ircbot-ubuntu:dev
@@ -28,66 +30,6 @@ test:ubuntu-16.04:
       - s3
     script:
       - tar xf ubuntu1604-build.tar.xz
-      - ls -la .
-      - ls -la build
-      - cd build
-      - ctest
-
-build:debian-9:
-  image: registry:5000/ircbot-debian:dev
-  stage: Build
-  tags:
-    - s3
-  script:
-    - mkdir build
-    - cd build
-    - cmake -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug ..
-    - make -j $(nproc)
-    - mkdir install_root
-    - make DESTDIR=./install_root install
-    - tar cJf ../deb9-ircbot-binary.tar.xz ./install_root/*
-    - tar cJf ../deb9-build.tar.xz ../build
-  artifacts:
-    paths:
-      - deb9-ircbot-binary.tar.xz
-
-test:debian-9:
-    image: registry:5000/ircbot-debian:dev
-    stage: Test
-    tags:
-      - s3
-    script:
-      - tar xf deb9-build.tar.xz
-      - ls -la .
-      - ls -la build
-      - cd build
-      - ctest
-
-build:fedora:
-  image: registry:5000/ircbot-fedora:dev
-  stage: Build
-  tags:
-    - s3
-  script:
-    - mkdir build
-    - cd build
-    - cmake3 -G 'Unix Makefiles' -DCMAKE_BUILD_TYPE=Debug .. 
-    - make -j $(nproc)
-    - mkdir install_root
-    - make DESTDIR=./install_root install
-    - tar cJf ../fedora-ircbot-binary.tar.xz ./install_root/*
-    - tar cJf ../fedora-build.tar.xz ../build
-  artifacts:
-    paths:
-      - fedora-ircbot-binary.tar.xz
-
-test:fedora:
-    image: registry:5000/ircbot-fedora:dev
-    stage: Test
-    tags:
-      - s3
-    script:
-      - tar xf fedora-build.tar.xz
       - ls -la .
       - ls -la build
       - cd build
