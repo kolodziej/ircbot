@@ -30,6 +30,8 @@ test:ubuntu-16.04:
       - tar xf ubuntu1604-build.tar.xz
       - ls -la .
       - ls -la build
+      - cd build
+      - ctest
 
 build:debian-9:
   image: registry:5000/ircbot-debian:dev
@@ -49,6 +51,18 @@ build:debian-9:
     paths:
       - deb9-ircbot-binary.tar.xz
 
+test:debian-9:
+    image: registry:5000/ircbot-debian:dev
+    stage: Test
+    tags:
+      - s3
+    script:
+      - tar xf deb9-build.tar.xz
+      - ls -la .
+      - ls -la build
+      - cd build
+      - ctest
+
 build:fedora:
   image: registry:5000/ircbot-fedora:dev
   stage: Build
@@ -66,3 +80,15 @@ build:fedora:
   artifacts:
     paths:
       - fedora-ircbot-binary.tar.xz
+
+test:fedora:
+    image: registry:5000/ircbot-fedora:dev
+    stage: Test
+    tags:
+      - s3
+    script:
+      - tar xf fedora-build.tar.xz
+      - ls -la .
+      - ls -la build
+      - cd build
+      - ctest
