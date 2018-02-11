@@ -20,6 +20,16 @@ build:ubuntu-16.04:
     paths:
       - ubuntu1604-ircbot-binary.tar.xz
 
+test:ubuntu-16.04:
+    image: registry:5000/ircbot-ubuntu:dev
+    stage: Test
+    tags:
+      - s3
+    script:
+      - tar xf ubuntu1604-build.tar.xz
+      - ls -la .
+      - ls -la build
+
 build:debian-9:
   image: registry:5000/ircbot-debian:dev
   stage: Build
