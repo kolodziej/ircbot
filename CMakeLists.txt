@@ -40,6 +40,7 @@ set(SOURCES
     source/file_log_output.cpp
     source/command_parser.cpp
     source/command_plugin.cpp
+    source/so_plugin_handler.cpp
 )
 
 set(HEADERS
@@ -62,6 +63,7 @@ set(HEADERS
     include/ircbot/parser_config.hpp
     include/ircbot/command_parser.hpp
     include/ircbot/command_plugin.hpp
+    include/ircbot/so_plugin_handler.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})

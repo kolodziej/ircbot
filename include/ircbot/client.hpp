@@ -8,10 +8,12 @@
 #include <mutex>
 #include <atomic>
 #include <array>
+#include <map>
 
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/config.hpp"
+#include "ircbot/so_plugin_handler.hpp"
 #include "ircbot/logger.hpp"
 
 class Plugin;
@@ -38,10 +40,12 @@ class Client {
   void addPlugin(std::unique_ptr<Plugin>&& plugin);
   void removePlugin(const std::string& name);
   std::vector<std::string> listPlugins() const;
-  std::unique_ptr<Plugin> loadSoPlugin(const std::string& fname);
+  SoPluginHandler loadSoPlugin(const std::string& fname);
 
   void startPlugins();
   void stopPlugins();
+  void restartPlugin(const std::string& name);
+  void reloadPlugin(const std::string& name);
 
  private:
   asio::io_service& m_io_service;
@@ -54,6 +58,7 @@ class Client {
 
   std::atomic_bool m_running;
   std::vector<std::unique_ptr<Plugin>> m_plugins;
+  std::map<std::string, void*> m_dl_plugins;
   std::mutex m_plugins_mtx;
 };
 

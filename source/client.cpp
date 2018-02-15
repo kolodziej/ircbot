@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <utility>
 #include <stdexcept>
 
 #include <dlfcn.h>
@@ -84,8 +85,9 @@ void Client::initializePlugins() {
       }
 
       LOG(INFO, "Loading SO plugin from: ", soPath);
-      auto soPlugin = loadSoPlugin(soPath);
-      if (soPlugin != nullptr) {
+      auto pluginHandler = loadSoPlugin(soPath);
+      if (pluginHandler.isValid()) {
+        auto soPlugin = pluginHandler.getPlugin(this);
         soPlugin->setConfig(Config(plugin.second));
         addPlugin(std::move(soPlugin));
       }
@@ -198,23 +200,26 @@ std::vector<std::string> Client::listPlugins() const {
   return names;
 }
 
-std::unique_ptr<Plugin> Client::loadSoPlugin(const std::string& fname) {
+SoPluginHandler Client::loadSoPlugin(const std::string& fname) {
+  SoPluginHandler handler;
+
   void* plugin = dlopen(fname.data(), RTLD_NOW);
   if (plugin == nullptr) {
     LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
-    return nullptr;
+    return handler;
   }
 
-  std::function<std::unique_ptr<Plugin>(Client*)> func =
-      reinterpret_cast<std::unique_ptr<Plugin> (*)(Client*)>
-      (dlsym(plugin, "getPlugin"));
+  void* getPluginFunc = dlsym(plugin, "getPlugin");
+  SoPluginHandler::GetPluginFunc func =
+      reinterpret_cast<std::unique_ptr<Plugin> (*)(Client*)>(getPluginFunc);
 
   if (func == nullptr) {
     LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
-    return nullptr;
+    return handler;
   }
 
-  return func(this);
+  handler = SoPluginHandler{func, plugin};
+  return handler;
 }
 
 void Client::startPlugins() {
@@ -229,4 +234,24 @@ void Client::stopPlugins() {
     LOG(INFO, "Stopping plugin ", plugin->name());
     plugin->stop();
   }
+}
+
+void Client::restartPlugin(const std::string& name) {
+  LOG(INFO, "Trying to restart plugin: ", name);
+}
+
+void Client::reloadPlugin(const std::string& name) {
+  LOG(INFO, "Trying to reload plugin: ", name);
+  auto pred = [name] (const std::unique_ptr<Plugin>& plugin) {
+    return (plugin->name() == name);
+  };
+  auto it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
+  if (it == m_plugins.end()) {
+    LOG(ERROR, "Could not find plugin: ", name);
+    return;
+  }
+
+  // unload
+  // load
+  // start
 }
