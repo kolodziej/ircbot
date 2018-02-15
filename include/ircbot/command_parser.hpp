@@ -21,7 +21,7 @@ class CommandParser {
     PREFIX,
     COMMAND,
     ARGUMENT,
-    UNEXPECTED_CHARACTER
+    UNEXPECTED_CHARACTER,
   };
 
   struct Token {
@@ -37,7 +37,7 @@ class CommandParser {
 
   CommandParser(ParserConfig config);
 
-  void parse(const std::string& command);
+  Command parse(const std::string& command);
 
   size_t commandsCount() const;
   bool commandsEmpty() const;

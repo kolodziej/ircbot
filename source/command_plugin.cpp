@@ -9,9 +9,6 @@ CommandPlugin::CommandPlugin(Client& client,
 
 void CommandPlugin::onMessage(IRCCommand cmd) {
   m_parser.parse(cmd.params.back());
-  if (m_parser.commandsCount() > 1) {
-    LOG(WARNING, "Too many commands parsed: ", m_parser.commandsCount());
-  }
 
   CommandParser::Command parser_cmd = m_parser.getCommand();
   parser_cmd.additional_arguments = {

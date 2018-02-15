@@ -9,8 +9,92 @@ CommandParser::CommandParser(ParserConfig config) :
     m_last_token{TokenType::END} {
 }
 
-void CommandParser::parse(const std::string& command) {
-  lexer(command);
+CommandParser::Command CommandParser::parse(const std::string& command) {
+  using helpers::isIn;
+
+  const char space = 0x20;
+  const char cr = 0xd;
+  const char lf = 0xa;
+  const char dquote = '"';
+  const char quote = '\'';
+  const char escape = '\\';
+
+  int do_escape{0};
+  bool is_quoted{false};
+  bool is_dquote{false};
+
+  State state = State::START;
+  std::stringstream token;
+
+  Command cmd;
+
+  DEBUG("Parser initialized with START state");
+  for (size_t i = 0; i < command.size(); ++i) {
+    char x = command[i];
+
+    if (state == State::START) {
+      if (x == m_config.prefix) {
+        DEBUG("Parser transforms to COMMAND state");
+        state = State::COMMAND;
+      } else {
+        unexpectedCharacter(x, std::string{1, m_config.prefix});
+      }
+    } else if (state == State::COMMAND) {
+      if (isCommandCharacter(x)) {
+        token.put(x);
+      } else if (x == space) {
+        cmd.command = token.str();
+        token.str(std::string{});
+        state = State::ARGUMENT;
+        DEBUG("Parser transforms to ARGUMENT state");
+      } else {
+        unexpectedCharacter(x, "a-zA-Z0-9-");
+      }
+    } else if (state == State::ARGUMENT) {
+      if (do_escape > 0) {
+        token.put(x);
+      } else if (x == quote) {
+        if (is_quoted and not is_dquote) {
+          is_quoted = false;
+        } else if (not is_quoted) {
+          is_quoted = true;
+          is_dquote = false;
+        } else {
+          token.put(x);
+        }
+      } else if (x == dquote) {
+        if (is_quoted and is_dquote) {
+          is_quoted = false;
+        } else if (not is_quoted) {
+          is_quoted = true;
+          is_dquote = true;
+        } else {
+          token.put(x);
+        }
+      } else if (is_quoted) {
+        token.put(x);
+      } else if (x == escape) {
+        do_escape = 2; // escape this character and next one
+      } else if (x == space) {
+        cmd.arguments.push_back(token.str());
+        token.str(std::string{});
+      } else {
+        token.put(x);
+      }
+    }
+
+    --do_escape;
+  }
+
+  if (not token.str().empty()) {
+    if (state == State::COMMAND) {
+      cmd.command = token.str();
+    } else if (state == State::ARGUMENT) {
+      cmd.arguments.push_back(token.str());
+    }
+  }
+
+  return cmd;
 }
 
 size_t CommandParser::commandsCount() const {
@@ -29,171 +113,6 @@ CommandParser::Command CommandParser::getCommand() {
 
 ParserConfig CommandParser::getConfig() const {
   return m_config;
-}
-
-void CommandParser::lexer(const std::string& message) {
-  using helpers::isIn;
-
-  std::stringstream token;
-  const char space = 0x20;
-  const char cr = 0xd;
-  const char lf = 0xa;
-  const char quote = '\'';
-  const char dquote = '\"';
-  const char escape = '\\';
-
-  bool is_dquote{false};
-  bool is_quoted{false};
-  int do_escape{0};
-
-  for (size_t index = 0; index < message.size(); ++index) {
-    const char x = message[index];
-
-    if (m_state == State::START) {
-      if (x == m_config.prefix) {
-        m_state = State::PREFIX;
-        DEBUG("Lexer transforming state to PREFIX");
-      } else {
-        unexpectedCharacter(x, std::string{1, m_config.prefix});
-      }
-    } else if (m_state == State::PREFIX) {
-      if (isCommandCharacter(x)) {
-        m_state = State::COMMAND;
-        DEBUG("Lexer transforming state to COMMAND");
-        token.put(x);
-      } else {
-        unexpectedCharacter(x, "a-zA-Z0-9-");
-      }
-    } else if (m_state == State::COMMAND) {
-      if (isCommandCharacter(x)) {
-        token.put(x);
-      } else if (x == space) {
-        m_state = State::ARGUMENT;
-        DEBUG("Lexer transforming state to ARGUMENT");
-        putToken(TokenType::COMMAND, token);
-      } else if (x == cr) {
-        DEBUG("Ignoring CR character");
-      } else if (x == lf) {
-        m_state = State::START;
-        DEBUG("Lexer transforming state to START");
-        putToken(TokenType::COMMAND, token);
-        DEBUG("Adding END token");
-        putToken(TokenType::END);
-      } else {
-        unexpectedCharacter(x, "a-zA-Z0-9-");
-      }
-    } else if (m_state == State::ARGUMENT) {
-      if (do_escape <= 0) {
-        if (x == escape) {
-          do_escape = 2;
-          DEBUG("Escaping next character");
-        } else if (x == dquote or x == quote) {
-          if (not is_quoted)
-            is_dquote = (x == dquote);
-
-          if ((is_dquote and x == dquote) or
-              (not is_dquote and x == quote)) {
-            if (is_quoted) {
-              DEBUG("Exiting quoted area");
-            } else {
-              DEBUG("Entering quoted area");
-            }
-
-            is_quoted = !is_quoted;
-          } else {
-            token.put(x);
-          }
-        } else if (x == space and not is_quoted) {
-          DEBUG("Adding token ARGUMENT: ", token.str());
-          putToken(TokenType::ARGUMENT, token);
-        } else if (x == cr) {
-          DEBUG("Ignoring CR character");
-        } else if (x == lf) {
-          m_state = State::START;
-          DEBUG("Lexer transforming state to START");
-          DEBUG("Adding token ARGUMENT: ", token.str());
-          putToken(TokenType::ARGUMENT, token);
-          DEBUG("Adding END token");
-          putToken(TokenType::END);
-        } else {
-          token.put(x);
-        }
-      } else {
-        if (x != '\0') {
-          token.put(x);
-        } else {
-          unexpectedCharacter('X', "any other");
-        }
-      }
-    } else if (m_state == State::UNEXPECTED_CHARACTER) {
-      if (x == cr) {
-        DEBUG("Ignoring CR character");
-      } else if (x == lf) {
-        DEBUG("Adding IGNORE token");
-        putToken(TokenType::IGNORE);
-        m_state = State::START; 
-        DEBUG("Lexer transforming state to START");
-      }
-    }
-
-    --do_escape;
-  }
-
-  parser();
-}
-
-void CommandParser::parser() {
-  DEBUG("Running parser, tokens to process: ", m_tokens.size());
-
-  while (not m_tokens.empty()) {
-    Token token = m_tokens.front();
-    TokenType type = token.type;
-    m_tokens.pop();
-
-    if (token.type == TokenType::IGNORE) {
-      DEBUG("IGNORE token, cleaning current command");
-      m_command = Command{};
-      m_last_token = TokenType::END;
-      continue;
-    }
-
-    if (m_last_token == TokenType::END) {
-      if (type == TokenType::COMMAND) {
-        m_command.command = token.value;
-        DEBUG("Setting command value to: ", token.value);
-      } else {
-        LOG(ERROR, "Unexpected token! Expected COMMAND");
-        // unexpected token
-      }
-    } else if (m_last_token == TokenType::COMMAND or
-               m_last_token == TokenType::ARGUMENT) {
-      if (type == TokenType::ARGUMENT) {
-        m_command.arguments.push_back(token.value);
-      } else if (type == TokenType::END) {
-        LOG(INFO, "Adding new command to queue. Command: ",
-            m_command.command, ", len(arguments): ", m_command.arguments.size());
-
-        if (m_config.parseOneCommand) {
-          if (not m_tokens.empty()) {
-            LOG(WARNING, "Finishing; parseOneCommand option is turned one, but some tokens left.");
-            size_t token_num = m_tokens.size();
-            while (not m_tokens.empty())
-              m_tokens.pop();
-
-            LOG(WARNING, "Removed ", token_num, " unprocessed tokens!");
-          }
-        }
-
-        m_commands.push(m_command);
-        m_command = Command{};
-      } else {
-        LOG(ERROR, "Unexpected token! Expected: ARGUMENT, END");
-        // unexpected token
-      }
-    }
-
-    m_last_token = type;
-  }
 }
 
 bool CommandParser::isCommandCharacter(char x) {
