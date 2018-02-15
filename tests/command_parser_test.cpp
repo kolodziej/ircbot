@@ -22,7 +22,8 @@ TEST(CommandParserTest, CorrectCommands) {
     "/2Com 'arg1' arg2'arg3 arg4'",
     "/x",
     "/x",
-    "/x arg\\ with\\ spaces' !'"
+    "/x arg\\ with\\ spaces' !'",
+    "/x \"\\\"arg1\\\" arg2\""
   };
 
   CommandParser parser{config};
@@ -65,6 +66,11 @@ TEST(CommandParserTest, CorrectCommands) {
   command = parser.parse(str_commands[6]);
   EXPECT_EQ(command.command, "x");
   EXPECT_EQ(command.arguments[0], "arg with spaces !");
+
+  // /x "\"arg1\" arg2"
+  command = parser.parse(str_commands[7]);
+  EXPECT_EQ(command.command, "x");
+  EXPECT_EQ(command.arguments[0], "\"arg1\" arg2");
 }
 
 TEST(CommandParserTest, IncorrectCommands) {

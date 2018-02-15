@@ -53,33 +53,44 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
     } else if (state == State::ARGUMENT) {
       if (do_escape > 0) {
         token.put(x);
+        DEBUG("Appending escaped character: ", x);
+      } else if (x == escape) {
+        do_escape = 2; // escape this character and next one
+        DEBUG("Setting escape");
       } else if (x == quote) {
         if (is_quoted and not is_dquote) {
           is_quoted = false;
+          DEBUG("Leaving quoted argument");
         } else if (not is_quoted) {
           is_quoted = true;
           is_dquote = false;
+          DEBUG("Entering quoted argument");
         } else {
           token.put(x);
+          DEBUG("Appending quote in quoted area");
         }
       } else if (x == dquote) {
         if (is_quoted and is_dquote) {
           is_quoted = false;
+          DEBUG("Leaving double quoted area");
         } else if (not is_quoted) {
           is_quoted = true;
           is_dquote = true;
+          DEBUG("Entering double quoted area");
         } else {
           token.put(x);
+          DEBUG("Appending double quote in double quoted area");
         }
       } else if (is_quoted) {
         token.put(x);
-      } else if (x == escape) {
-        do_escape = 2; // escape this character and next one
+        DEBUG("Appending character in quoted area: ", x);
       } else if (x == space) {
         cmd.arguments.push_back(token.str());
+        DEBUG("Creating new argument: ", token.str());
         token.str(std::string{});
       } else {
         token.put(x);
+        DEBUG("Appending character: ", x);
       }
     }
 

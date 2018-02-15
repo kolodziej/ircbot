@@ -8,15 +8,15 @@ CommandPlugin::CommandPlugin(Client& client,
 }
 
 void CommandPlugin::onMessage(IRCCommand cmd) {
-  m_parser.parse(cmd.params.back());
+  CommandParser::Command parser_cmd = m_parser.parse(cmd.params.back());
 
-  CommandParser::Command parser_cmd = m_parser.getCommand();
   parser_cmd.additional_arguments = {
     cmd.servername,
     cmd.user,
     cmd.nick,
     cmd.host
   };
+
   parser_cmd.additional_arguments.insert(
       parser_cmd.additional_arguments.end(),
       cmd.params.begin(),
