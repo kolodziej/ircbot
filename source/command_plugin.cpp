@@ -1,9 +1,8 @@
 #include "ircbot/command_plugin.hpp"
 
 CommandPlugin::CommandPlugin(Client& client,
-                             std::string name,
                              char prefix) :
-    Plugin{client, name},
+    SoPlugin{client},
     m_parser{ParserConfig{prefix, true}} {
 }
 
@@ -56,6 +55,6 @@ void CommandPlugin::callCommand(const CommandParser::Command& command) {
   if (m_functions.count(command.command)) {
     m_functions[command.command](command);
   } else {
-    LOG(ERROR, "Function for such command doesn't exist: ", command.command);
+    LOG(INFO, "Function for such command doesn't exist: ", command.command);
   }
 }

@@ -1,5 +1,9 @@
 #include "simple_commands.hpp"
 
+std::string SimpleCommands::getName() const {
+  return "SimpleCommands";
+}
+
 void SimpleCommands::helpCommand(const CommandParser::Command& cmd) {
   IRCCommand msg{
     "PRIVMSG",

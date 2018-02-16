@@ -4,7 +4,11 @@
 #include <stdexcept>
 
 Join::Join(Client& client) :
-    Plugin{client, "Join"} {
+    SoPlugin{client} {
+}
+
+std::string Join::getName() const {
+  return "Join";
 }
 
 void Join::onInit() {

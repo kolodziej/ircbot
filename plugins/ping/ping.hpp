@@ -1,12 +1,13 @@
 #ifndef _PING_PLUGIN_HPP
 #define _PING_PLUGIN_HPP
 
-#include "ircbot/plugin.hpp"
+#include "ircbot/so_plugin.hpp"
 
-class Ping : public Plugin {
+class Ping : public SoPlugin {
  public:
   Ping(Client& client);
 
+  std::string getName() const override;
   void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 find_package(Threads REQUIRED)
-find_package(Boost 1.53 REQUIRED COMPONENTS system program_options)
+find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem)
 
 include(GNUInstallDirs)
 
@@ -44,7 +44,7 @@ set(SOURCES
     source/file_log_output.cpp
     source/command_parser.cpp
     source/command_plugin.cpp
-    source/so_plugin_handler.cpp
+    source/so_plugin.cpp
 )
 
 set(HEADERS
@@ -67,7 +67,7 @@ set(HEADERS
     include/ircbot/parser_config.hpp
     include/ircbot/command_parser.hpp
     include/ircbot/command_plugin.hpp
-    include/ircbot/so_plugin_handler.hpp
+    include/ircbot/so_plugin.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})

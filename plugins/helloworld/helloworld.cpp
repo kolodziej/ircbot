@@ -3,8 +3,12 @@
 #include <stdexcept>
 
 HelloWorld::HelloWorld(Client& client) :
-    Plugin{client, "HelloWorld"}
+    SoPlugin{client}
 {}
+
+std::string HelloWorld::getName() const {
+  return "HelloWorld";
+}
 
 void HelloWorld::onMessage(IRCCommand cmd) {
   DEBUG("HelloWorld plugin got incoming message!");

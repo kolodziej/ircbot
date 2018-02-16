@@ -1,12 +1,13 @@
 #ifndef _CLIPBOARD_PLUGIN_HPP
 #define _CLIPBOARD_PLUGIN_HPP
 
-#include "ircbot/plugin.hpp"
+#include "ircbot/so_plugin.hpp"
 
-class Clipboard : public Plugin {
+class Clipboard : public SoPlugin {
  public:
   Clipboard(Client& client);
 
+  std::string getName() const override;
   void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;
   void onNewConfiguration() override;

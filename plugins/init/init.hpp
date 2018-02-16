@@ -1,15 +1,16 @@
 #ifndef _INIT_PLUGIN_HPP
 #define _INIT_PLUGIN_HPP
 
-#include "ircbot/plugin.hpp"
+#include "ircbot/so_plugin.hpp"
 
 #include <vector>
 #include <string>
 
-class Init : public Plugin {
+class Init : public SoPlugin {
  public:
   Init(Client& client);
 
+  std::string getName() const override;
   void onInit() override;
   void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;

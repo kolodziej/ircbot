@@ -13,10 +13,10 @@
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/config.hpp"
-#include "ircbot/so_plugin_handler.hpp"
 #include "ircbot/logger.hpp"
 
 class Plugin;
+class SoPlugin;
 
 namespace asio = boost::asio;
 
@@ -40,7 +40,7 @@ class Client {
   void addPlugin(std::unique_ptr<Plugin>&& plugin);
   void removePlugin(const std::string& name);
   std::vector<std::string> listPlugins() const;
-  SoPluginHandler loadSoPlugin(const std::string& fname);
+  std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname);
 
   void startPlugins();
   void stopPlugins();

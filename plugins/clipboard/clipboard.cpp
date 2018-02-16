@@ -5,9 +5,13 @@
 #include "ircbot/helpers.hpp"
 
 Clipboard::Clipboard(Client& client) :
-    Plugin{client, "Clipboard"},
+    SoPlugin{client},
     m_size{10},
     m_message_size{512} {
+}
+
+std::string Clipboard::getName() const {
+  return "Clipboard";
 }
 
 void Clipboard::onMessage(IRCCommand cmd) {

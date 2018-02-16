@@ -4,9 +4,8 @@
 
 #include "ircbot/helpers.hpp"
 
-Plugin::Plugin(Client& client, std::string name) :
+Plugin::Plugin(Client& client) :
     m_client{client},
-    m_name{name},
     m_running{true}
 {}
 
@@ -17,12 +16,8 @@ Plugin::~Plugin() {
     m_thread.join();
 }
 
-std::string Plugin::name() const {
-  return m_name;
-}
-
 void Plugin::stop() {
-  LOG(INFO, "Stopping plugin: ", name());
+  LOG(INFO, "Stopping plugin: ", getName());
   m_running = false;
 }
 
@@ -94,9 +89,9 @@ void Plugin::spawn() {
     try {
       run();
     } catch (std::exception& exc) {
-      LOG(ERROR, "Plugin ", name(), " caused an exception: ", exc.what());
+      LOG(ERROR, "Plugin ", getName(), " caused an exception: ", exc.what());
     }
   };
   m_thread = std::thread(plugin_call);
-  helpers::setThreadName(m_thread, name());
+  helpers::setThreadName(m_thread, getName());
 }

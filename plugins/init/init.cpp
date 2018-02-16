@@ -3,9 +3,13 @@
 #include <stdexcept>
 
 Init::Init(Client& client) :
-    Plugin{client, "Init"},
+    SoPlugin{client},
     m_stage{0},
     m_alt_nicks_index{0} {
+}
+
+std::string Init::getName() const {
+  return "Init";
 }
 
 void Init::onInit() {

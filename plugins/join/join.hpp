@@ -1,15 +1,16 @@
 #ifndef _JOIN_PLUGIN_HPP
 #define _JOIN_PLUGIN_HPP
 
-#include "ircbot/plugin.hpp"
+#include "ircbot/so_plugin.hpp"
 
 #include <unordered_set>
 #include <string>
 
-class Join : public Plugin {
+class Join : public SoPlugin {
  public:
   Join(Client& client);
 
+  std::string getName() const override;
   void onInit() override;
   void onMessage(IRCCommand cmd) override;
   bool filter(const IRCCommand& cmd) override;

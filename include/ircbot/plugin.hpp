@@ -13,17 +13,12 @@
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
-#define IRCBOT_PLUGIN(PluginName) \
-    extern "C" std::unique_ptr<Plugin> getPlugin(Client* client) { \
-      return std::make_unique<PluginName>(*client); \
-    }
-
 class Plugin {
  public:
-  Plugin(Client& client, std::string name);
+  Plugin(Client& client);
   ~Plugin();
 
-  std::string name() const;
+  virtual std::string getName() const = 0;
   void stop();
 
   void receive(IRCCommand cmd);
@@ -49,7 +44,6 @@ class Plugin {
 
  private:
   Client& m_client;
-  std::string m_name;
   Config m_cfg;
 
   std::atomic<bool> m_running;

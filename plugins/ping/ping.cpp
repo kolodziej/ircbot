@@ -3,8 +3,12 @@
 #include "ircbot/logger.hpp"
 
 Ping::Ping(Client& client) :
-    Plugin{client, "Ping"}
+    SoPlugin{client}
 {}
+
+std::string Ping::getName() const {
+  return "Ping";
+}
 
 void Ping::onMessage(IRCCommand cmd) {
   IRCCommand response{

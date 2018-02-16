@@ -6,9 +6,11 @@
 class SimpleCommands : public CommandPlugin {
  public:
   SimpleCommands(Client& client) :
-      CommandPlugin{client, "SimpleCommands", '!'} {
+      CommandPlugin{client, '!'} {
     addCommand("help", [this] (const CommandParser::Command& cmd) { helpCommand(cmd); });
   }
+
+  std::string getName() const override;
 
  private:
   void helpCommand(const CommandParser::Command& cmd);

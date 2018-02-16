@@ -6,9 +6,12 @@
 #include <utility>
 #include <stdexcept>
 
+#include <boost/filesystem.hpp>
+
 #include <dlfcn.h>
 
 #include "ircbot/plugin.hpp"
+#include "ircbot/so_plugin.hpp"
 #include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service, Config cfg) :
@@ -60,37 +63,37 @@ void Client::connect(std::string host, uint16_t port) {
 }
 
 void Client::initializePlugins() {
-  for (auto plugin : m_cfg.tree().get_child("plugins")) {
-    LOG(INFO, "Processing plugin: ", plugin.first);
-    auto name_pred = [pn = plugin.first] (const std::unique_ptr<Plugin>& p) {
-      return p->name() == pn;
-    };
+  for (auto p : m_cfg.tree().get_child("plugins")) {
+    const auto& pluginConfig = p.second;
+    std::string path = pluginConfig.get("path", std::string());
+    if (path.empty()) {
+      LOG(WARNING, "Some plugin has no path field in configuration! Omitting.");
+      continue;
+    }
 
-    std::string soPath =
-      plugin.second.get("soPath", std::string());
+    LOG(INFO, "Processing plugin: ", path);
 
-    auto it = std::find_if(m_plugins.begin(), m_plugins.end(), name_pred);
-    if (it != m_plugins.end()) {
-      if (soPath.empty()) {
-        std::unique_ptr<Plugin>& it_plugin = *it;
-        it_plugin->setConfig(Config(plugin.second));
+    namespace fs = boost::filesystem;
+    std::string ext = fs::path(path).extension().string();
+    if (ext.empty()) {
+      LOG(WARNING, "No extension in plugin's path: ", path, ". Omitting.");
+      continue;
+    }
+
+    if (ext == "so") {
+      LOG(INFO, "Loading plugin from shared library: ", path);
+      auto plugin = loadSoPlugin(path);
+
+      if (plugin == nullptr) {
+        LOG(ERROR, "Could not load plugin from file: ", path);
       } else {
-        LOG(WARNING, "Cannot load plugin ", plugin.first, ". Such plugin exists!");
+        LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
+        addPlugin(std::move(plugin));
       }
-
+    } else if (ext == "builtin") {
+      LOG(WARNING, "Support for builtin plugins is in development! Omitting.");
     } else {
-      if (soPath.empty()) {
-        LOG(WARNING, "Empty soPath for ", plugin.first, " plugin. Omitting!");
-        continue;
-      }
-
-      LOG(INFO, "Loading SO plugin from: ", soPath);
-      auto pluginHandler = loadSoPlugin(soPath);
-      if (pluginHandler.isValid()) {
-        auto soPlugin = pluginHandler.getPlugin(this);
-        soPlugin->setConfig(Config(plugin.second));
-        addPlugin(std::move(soPlugin));
-      }
+      LOG(WARNING, "Unsupported plugin type: ", ext, ". Omitting!");
     }
   }
 }
@@ -110,7 +113,7 @@ void Client::startAsyncReceive() {
       LOG(INFO, "Passing command to plugins: ", cmd.toString());
       for (auto& plugin : m_plugins) {
         if (plugin->filter(cmd)) {
-          DEBUG("Plugin ", plugin->name(),
+          DEBUG("Plugin ", plugin->getName(),
                 " filtering passed for command: ", cmd.toString(true));
           plugin->receive(cmd);
         }
@@ -176,12 +179,12 @@ void Client::signal(int signum) {
 }
 
 void Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
-  LOG(INFO, "Adding plugin ", plugin->name());
+  LOG(INFO, "Adding plugin ", plugin->getName());
   m_plugins.push_back(std::move(plugin));
 }
 
 void Client::removePlugin(const std::string& name) {
-  auto pred = [&name](const auto& plugin) { return plugin->name() == name; };
+  auto pred = [&name](const auto& plugin) { return plugin->getName() == name; };
   auto remove_it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
 
   if (remove_it == m_plugins.end()) {
@@ -194,44 +197,44 @@ void Client::removePlugin(const std::string& name) {
 std::vector<std::string> Client::listPlugins() const {
   std::vector<std::string> names;
   for (const auto& plugin : m_plugins) {
-    names.push_back(plugin->name());
+    names.push_back(plugin->getName());
   }
 
   return names;
 }
 
-SoPluginHandler Client::loadSoPlugin(const std::string& fname) {
-  SoPluginHandler handler;
-
-  void* plugin = dlopen(fname.data(), RTLD_NOW);
-  if (plugin == nullptr) {
+std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname) {
+  void* pluginLibrary = dlopen(fname.data(), RTLD_NOW);
+  if (pluginLibrary == nullptr) {
     LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
-    return handler;
+    return nullptr;
   }
 
-  void* getPluginFunc = dlsym(plugin, "getPlugin");
-  SoPluginHandler::GetPluginFunc func =
-      reinterpret_cast<std::unique_ptr<Plugin> (*)(Client*)>(getPluginFunc);
+  void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
+  std::function<std::unique_ptr<SoPlugin>(Client*)> func =
+      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(Client*)>(getPluginFunc);
 
   if (func == nullptr) {
     LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
-    return handler;
+    return nullptr;
   }
 
-  handler = SoPluginHandler{func, plugin};
-  return handler;
+  std::unique_ptr<SoPlugin> plugin = func(this);
+  plugin->setDlLibrary(pluginLibrary);
+
+  return plugin;
 }
 
 void Client::startPlugins() {
   for (auto& plugin : m_plugins) {
-    LOG(INFO, "Starting plugin ", plugin->name());
+    LOG(INFO, "Starting plugin ", plugin->getName());
     plugin->spawn();
   }
 }
 
 void Client::stopPlugins() {
   for (auto& plugin : m_plugins) {
-    LOG(INFO, "Stopping plugin ", plugin->name());
+    LOG(INFO, "Stopping plugin ", plugin->getName());
     plugin->stop();
   }
 }
@@ -243,7 +246,7 @@ void Client::restartPlugin(const std::string& name) {
 void Client::reloadPlugin(const std::string& name) {
   LOG(INFO, "Trying to reload plugin: ", name);
   auto pred = [name] (const std::unique_ptr<Plugin>& plugin) {
-    return (plugin->name() == name);
+    return (plugin->getName() == name);
   };
   auto it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
   if (it == m_plugins.end()) {

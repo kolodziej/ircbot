@@ -15,9 +15,9 @@
             "file": "-stdout"
         }
     ],
-    "plugins": {
-        "Init": {
-          "soPath": "./plugins/init/init.so",
+    "plugins": [
+        {
+          "path": "./plugins/init/init.so",
           "config": {
             "nick": "KolK_IRCBot",
             "user": "KolK_IRCBot",
@@ -27,27 +27,27 @@
             "wallops": false
           }
         },
-        "Ping": {
-            "soPath": "./plugins/ping/ping.so"
+        {
+            "path": "./plugins/ping/ping.so"
         },
-        "Join": {
-            "soPath": "./plugins/join/join.so",
+        {
+            "path": "./plugins/join/join.so",
             "config": {
                 "channels": [
                     "#KolK"
                 ]
             }
         },
-        "Clipboard": {
-            "soPath": "./plugins/clipboard/clipboard.so",
+        {
+            "path": "./plugins/clipboard/clipboard.so",
             "config": {
                 "size": 5,
                 "message_size": 20
             }
         },
-        "SimpleCommands": {
-            "soPath": "./plugins/simple_commands/simple_commands.so",
+        {
+            "path": "./plugins/simple_commands/simple_commands.so",
             "config": {}
         }
-    }
+    ]
 }
