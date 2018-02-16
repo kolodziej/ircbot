@@ -23,6 +23,10 @@ file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 
+
+option(BUILD_TESTS "Build tests" ON)
+option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
+
 set(SOURCES
     source/log_output.cpp
     source/log_level.cpp
@@ -70,10 +74,13 @@ add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
 target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
     ${BUILTIN_PLUGINS})
 
-add_subdirectory(plugins)
+if(${BUILD_PLUGINS})
+    add_subdirectory(plugins)
+endif()
+
 add_subdirectory(program)
 
-if(${TESTS})
+if(${BUILD_TESTS})
     enable_testing()
     add_subdirectory(gtest)
     add_subdirectory(tests)
