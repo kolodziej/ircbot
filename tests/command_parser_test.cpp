@@ -87,6 +87,4 @@ TEST(CommandParserTest, IncorrectCommands) {
   for (const auto& cmd : str_commands) {
     parser.parse(cmd);
   }
-
-  EXPECT_EQ(parser.commandsCount(), 0u);
 }

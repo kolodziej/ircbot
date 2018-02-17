@@ -21,7 +21,6 @@ class CommandParser {
     PREFIX,
     COMMAND,
     ARGUMENT,
-    UNEXPECTED_CHARACTER,
   };
 
   struct Token {
@@ -38,31 +37,13 @@ class CommandParser {
   CommandParser(ParserConfig config);
 
   Command parse(const std::string& command);
-
-  size_t commandsCount() const;
-  bool commandsEmpty() const;
-  Command getCommand();
   ParserConfig getConfig() const;
 
  private:
-  void lexer(const std::string& command);
-  void parser();
-
   bool isCommandCharacter(char x);
 
-  void putToken(TokenType type);
-  void putToken(TokenType type, std::stringstream& token);
-  void unexpectedCharacter(char x, const std::string& expected);
-
   ParserConfig m_config;
-
   State m_state;
-  TokenType m_last_token;
-
-  std::queue<Token> m_tokens;
-
-  Command m_command;
-  std::queue<Command> m_commands;
 };
 
 #endif
