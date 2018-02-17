@@ -4,9 +4,10 @@
 
 #include "ircbot/helpers.hpp"
 
-Plugin::Plugin(Client& client, const std::string& id) :
-    m_client{client},
-    m_id{id},
+Plugin::Plugin(PluginConfig config) :
+    m_client{config.client},
+    m_id{config.id},
+    m_cfg{config.config},
     m_command_parser{nullptr},
     m_running{true}
 {}
@@ -70,7 +71,7 @@ IRCCommand Plugin::getCommand() {
 }
 
 void Plugin::send(const IRCCommand& cmd) {
-  m_client.send(cmd);
+  m_client->send(cmd);
 }
 
 pt::ptree& Plugin::cfg() {

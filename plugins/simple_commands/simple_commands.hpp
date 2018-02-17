@@ -5,8 +5,8 @@
 
 class SimpleCommands : public SoPlugin {
  public:
-  SimpleCommands(Client& client, const std::string& id) :
-      SoPlugin{client, id} {
+  SimpleCommands(PluginConfig config) :
+      SoPlugin{config} {
     installCommandParser(
       std::make_shared<CommandParser>(ParserConfig{'!', true})
     );

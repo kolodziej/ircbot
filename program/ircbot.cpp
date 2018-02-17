@@ -23,10 +23,11 @@ namespace opt = boost::program_options;
 
 namespace signal_handling {
 
-static Client* client;
+static Client* client = nullptr;
 
 void signal_handler(int signal) {
-  client->signal(signal);
+  if (client != nullptr)
+    client->signal(signal);
 }
 
 }
@@ -72,7 +73,7 @@ int main(int argc, char **argv) {
     }
 
     asio::io_service io;
-    Config config(config_fname);
+    Config config{config_fname};
 
     bool stdout_logging = false;
     // add logger outputs
@@ -115,24 +116,30 @@ int main(int argc, char **argv) {
       }
     }
 
-    Client client(io, config);
-    signal_handling::client = &client;
+    std::shared_ptr<Client> client = std::make_shared<Client>(io, config);
+    signal_handling::client = client.get();
+
+    client->connect();
+    client->initializePlugins();
 
     signal(SIGINT, signal_handling::signal_handler);
     signal(SIGTERM, signal_handling::signal_handler);
 
-    client.startPlugins();
+    client->startPlugins();
 
     std::thread io_thread([&io] { io.run(); });
-    client.run();
+    client->run();
 
     LOG(INFO, "Waiting for io_thread");
     io_thread.join();
 
+  } catch (std::runtime_error& exc) {
+    std::cerr << "Runtime error: " << exc.what() << '\n';
+    return 2;
   } catch (std::exception& exc) {
     std::cerr << "Terminating application due to unhandled exception!\n";
     std::cerr << "Unhandled exception: " << exc.what() << ". Terminating.\n";
-    return 2;
+    return 3;
   }
 
   return 0;

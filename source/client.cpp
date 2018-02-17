@@ -19,30 +19,18 @@ Client::Client(asio::io_service& io_service, Config cfg) :
     m_socket{io_service},
     m_cfg{cfg},
     m_running{false}
-{
-  try {
-    std::string server = m_cfg.tree().get<std::string>("server");
-    uint16_t port = m_cfg.tree().get<uint16_t>("port");
+{}
 
-    connect(server, port);
-
-    initializePlugins();
-
-  } catch (pt::ptree_bad_path& exc) {
-    LOG(ERROR, "Could not find path in configuration!");
-    LOG(ERROR, exc.what());
-    throw std::runtime_error{"Client initialization failed!"};
-  } catch (pt::ptree_bad_data& exc) {
-    LOG(ERROR, "Bad data format in Client's configuration!");
-    LOG(ERROR, exc.what());
-    throw std::runtime_error{"Client initialization failed!"};
-  }
-}
-
-void Client::connect(std::string host, uint16_t port) {
+void Client::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
-
   boost::system::error_code ec;
+
+  std::string host = m_cfg.tree().get("server", std::string{});
+  uint16_t port = m_cfg.tree().get("port", 0u);
+
+  if (port == 0u or host.empty()) {
+    throw std::runtime_error{"Incorrect host or port!"};
+  }
 
   LOG(INFO, "Trying to resolve ", host, ':', port);
   auto endp = resolver.resolve({host, std::to_string(port)}, ec);
@@ -83,7 +71,12 @@ void Client::initializePlugins() {
 
     if (ext == ".so") {
       LOG(INFO, "Loading plugin from shared library: ", path);
-      auto plugin = loadSoPlugin(path, pluginId);
+      PluginConfig cfg{
+        shared_from_this(),
+        pluginId,
+        pluginConfig
+      };
+      auto plugin = loadSoPlugin(path, cfg);
 
       if (plugin == nullptr) {
         LOG(ERROR, "Could not load plugin from file: ", path);
@@ -205,7 +198,7 @@ std::vector<std::string> Client::listPlugins() const {
 }
 
 std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
-                                               const std::string& id) {
+                                               PluginConfig config) {
   void* pluginLibrary = dlopen(fname.data(), RTLD_NOW);
   if (pluginLibrary == nullptr) {
     LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
@@ -213,8 +206,8 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
   }
 
   void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
-  std::function<std::unique_ptr<SoPlugin>(Client*, const char* id)> func =
-      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(Client*, const char* id)>
+  std::function<std::unique_ptr<SoPlugin>(PluginConfig)> func =
+      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(PluginConfig)>
       (getPluginFunc);
 
   if (func == nullptr) {
@@ -222,7 +215,7 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
     return nullptr;
   }
 
-  std::unique_ptr<SoPlugin> plugin = func(this, id.data());
+  std::unique_ptr<SoPlugin> plugin = func(config);
   plugin->setDlLibrary(pluginLibrary);
 
   return plugin;

@@ -8,7 +8,7 @@
 
 class Join : public SoPlugin {
  public:
-  Join(Client& client, const std::string& id);
+  Join(PluginConfig config);
 
   std::string getName() const override;
   void onInit() override;

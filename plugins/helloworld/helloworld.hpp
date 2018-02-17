@@ -8,7 +8,7 @@
 
 class HelloWorld : public SoPlugin {
  public:
-  HelloWorld(Client& client, const std::string& id);
+  HelloWorld(PluginConfig config);
 
   std::string getName() const override;
   void onMessage(IRCCommand cmd) override;

@@ -3,6 +3,7 @@
 
 #include <boost/asio.hpp>
 #include <string>
+#include <memory>
 #include <condition_variable>
 #include <thread>
 #include <mutex>
@@ -13,6 +14,7 @@
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/config.hpp"
+#include "ircbot/plugin_config.hpp"
 #include "ircbot/logger.hpp"
 
 class Plugin;
@@ -20,11 +22,11 @@ class SoPlugin;
 
 namespace asio = boost::asio;
 
-class Client {
+class Client : public std::enable_shared_from_this<Client> {
  public:
   Client(asio::io_service& io_service, Config cfg);
 
-  void connect(std::string host, uint16_t port);
+  void connect();
   void initializePlugins();
   void disconnect();
 
@@ -41,7 +43,7 @@ class Client {
   void removePlugin(const std::string& name);
   std::vector<std::string> listPlugins() const;
   std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
-                                         const std::string& id);
+                                         PluginConfig config);
 
   void startPlugins();
   void stopPlugins();

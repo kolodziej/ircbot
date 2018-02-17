@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-HelloWorld::HelloWorld(Client& client, const std::string& id) :
-    SoPlugin{client, id}
+HelloWorld::HelloWorld(PluginConfig config) :
+    SoPlugin{config}
 {}
 
 std::string HelloWorld::getName() const {

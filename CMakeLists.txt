@@ -14,8 +14,9 @@ include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 link_directories("${CMAKE_CURRENT_BINARY_DIR}/gtest/")
 link_directories("${CMAKE_BINARY_DIR}/plugins/")
 
-set(CMAKE_CXX_FLAGS "-std=c++14 -Wall -pedantic -Wextra -O2")
-set(CMAKE_CXX_FLAGS_DEBUG "-DLOG_DEBUG -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -Wextra")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DLOG_DEBUG -ggdb -O0")
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
 include(${CMAKE_SOURCE_DIR}/cmake/version.conf)
 
@@ -68,6 +69,7 @@ set(HEADERS
     include/ircbot/command_parser.hpp
     include/ircbot/so_plugin.hpp
     include/ircbot/unexpected_character.hpp
+    include/ircbot/plugin_config.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})

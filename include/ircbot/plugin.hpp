@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "ircbot/client.hpp"
+#include "ircbot/plugin_config.hpp"
 #include "ircbot/irc_command.hpp"
 #include "ircbot/command_parser.hpp"
 #include "ircbot/config.hpp"
@@ -19,7 +20,7 @@ class Plugin {
   using CmdFunction = std::function<void(const CommandParser::Command&)>;
 
  public:
-  Plugin(Client& client, const std::string& id);
+  Plugin(PluginConfig config);
   ~Plugin();
 
   std::string getId() const;
@@ -57,7 +58,7 @@ class Plugin {
   void callFunction(const CommandParser::Command& command);
 
  private:
-  Client& m_client;
+  std::shared_ptr<Client> m_client;
   const std::string m_id;
   Config m_cfg;
 

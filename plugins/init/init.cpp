@@ -2,8 +2,8 @@
 
 #include <stdexcept>
 
-Init::Init(Client& client, const std::string& id) :
-    SoPlugin{client, id},
+Init::Init(PluginConfig config) :
+    SoPlugin{config},
     m_stage{0},
     m_alt_nicks_index{0} {
 }

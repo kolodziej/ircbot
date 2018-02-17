@@ -5,7 +5,7 @@
 
 class Ping : public SoPlugin {
  public:
-  Ping(Client& client, const std::string& id);
+  Ping(PluginConfig config);
 
   std::string getName() const override;
   void onMessage(IRCCommand cmd) override;
