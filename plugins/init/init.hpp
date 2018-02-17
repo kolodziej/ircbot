@@ -8,7 +8,7 @@
 
 class Init : public SoPlugin {
  public:
-  Init(Client& client);
+  Init(Client& client, const std::string& id);
 
   std::string getName() const override;
   void onInit() override;

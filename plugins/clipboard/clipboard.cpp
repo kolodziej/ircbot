@@ -4,8 +4,8 @@
 
 #include "ircbot/helpers.hpp"
 
-Clipboard::Clipboard(Client& client) :
-    SoPlugin{client},
+Clipboard::Clipboard(Client& client, const std::string& id) :
+    SoPlugin{client, id},
     m_size{10},
     m_message_size{512} {
 }

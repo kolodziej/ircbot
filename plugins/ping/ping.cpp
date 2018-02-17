@@ -2,8 +2,8 @@
 
 #include "ircbot/logger.hpp"
 
-Ping::Ping(Client& client) :
-    SoPlugin{client}
+Ping::Ping(Client& client, const std::string& id) :
+    SoPlugin{client, id}
 {}
 
 std::string Ping::getName() const {

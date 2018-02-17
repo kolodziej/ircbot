@@ -3,8 +3,8 @@
 #include <string>
 #include <stdexcept>
 
-Join::Join(Client& client) :
-    SoPlugin{client} {
+Join::Join(Client& client, const std::string& id) :
+    SoPlugin{client, id} {
 }
 
 std::string Join::getName() const {

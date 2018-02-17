@@ -5,8 +5,8 @@
 
 class SimpleCommands : public CommandPlugin {
  public:
-  SimpleCommands(Client& client) :
-      CommandPlugin{client, '!'} {
+  SimpleCommands(Client& client, const std::string& id) :
+      CommandPlugin{client, id, '!'} {
     addCommand("help", [this] (const CommandParser::Command& cmd) { helpCommand(cmd); });
   }
 

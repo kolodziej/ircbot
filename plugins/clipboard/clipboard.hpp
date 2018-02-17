@@ -5,7 +5,7 @@
 
 class Clipboard : public SoPlugin {
  public:
-  Clipboard(Client& client);
+  Clipboard(Client& client, const std::string& id);
 
   std::string getName() const override;
   void onMessage(IRCCommand cmd) override;
