@@ -1,4 +1,4 @@
 [submodule "gtest"]
 	path = gtest
-	url = kacper@kolk.net.pl:git/gtest.git
+	url = https://git.kolodziej.it/KolK/gtest.git
 	branch = good-old-gtest

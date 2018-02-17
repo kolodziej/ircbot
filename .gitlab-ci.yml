@@ -3,6 +3,9 @@ stages:
   - Test
   - Package
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 build:ubuntu-16.04:
   image: registry:5000/ircbot-ubuntu:dev
   stage: Build
