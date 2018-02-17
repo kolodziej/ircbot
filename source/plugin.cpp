@@ -2,6 +2,7 @@
 
 #include <chrono>
 
+#include "ircbot/unexpected_character.hpp"
 #include "ircbot/helpers.hpp"
 
 Plugin::Plugin(PluginConfig config) :
@@ -47,13 +48,42 @@ void Plugin::run() {
     if (m_incoming_cv.wait_for(lock, 500ms,
                                [this] { return commandsCount(); })) {
       IRCCommand cmd = getCommand();    
-      onMessage(cmd);
+      if (not m_command_parser) {
+        onMessage(cmd);
+      } else if (isCommand(cmd)) {
+        try {
+          CommandParser::Command parsed_cmd =
+             m_command_parser->parse(cmd.params.back());
+
+          parsed_cmd.additional_arguments = {
+            cmd.servername,
+            cmd.user,
+            cmd.nick,
+            cmd.host
+          };
+          parsed_cmd.additional_arguments.insert(
+            parsed_cmd.additional_arguments.end(),
+            cmd.params.begin(),
+            cmd.params.end()
+          );
+
+          onCommand(parsed_cmd);
+        } catch (UnexpectedCharacter& unexp) {
+          LOG(WARNING, "Could not parse user command: ",
+              cmd.params.back(), ". ", unexp.what());
+        } catch (std::exception& exc) {
+          LOG(ERROR, "Error during command parsing: ", exc.what());
+        }
+      } else {
+        LOG(WARNING, "Could not run neither onMessage nor onCommand for"
+            " message: ", cmd.toString());
+      }
     }
   }
 }
 
 void Plugin::onCommand(CommandParser::Command cmd) {
-
+  callFunction(cmd);
 }
 
 bool Plugin::isRunning() const {
@@ -119,6 +149,17 @@ bool Plugin::hasCommandParser() const {
 void Plugin::deinstallCommandParser() {
   LOG(INFO, "Removing command parser from plugin ", getId());
   m_command_parser = nullptr;
+}
+
+bool Plugin::isCommand(IRCCommand cmd) const {
+  if (not m_command_parser)
+    return false;
+
+  if (cmd.params.size() < 1)
+    return false;
+
+  char prefix = cmd.params.back()[0];
+  return prefix == m_command_parser->getConfig().prefix;
 }
 
 void Plugin::addFunction(const std::string& cmd, CmdFunction f) {

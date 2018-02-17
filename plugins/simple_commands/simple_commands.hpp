@@ -10,10 +10,14 @@ class SimpleCommands : public SoPlugin {
     installCommandParser(
       std::make_shared<CommandParser>(ParserConfig{'!', true})
     );
+    addFunction("help", [this] (const CommandParser::Command& cmd) {
+      helpCommand(cmd);
+    });
   }
 
   std::string getName() const override;
   void onMessage(IRCCommand cmd);
+  bool filter(const IRCCommand& cmd);
 
  private:
   void helpCommand(const CommandParser::Command& cmd);

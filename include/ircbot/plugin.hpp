@@ -45,6 +45,7 @@ class Plugin {
   void installCommandParser(std::shared_ptr<CommandParser> parser);
   bool hasCommandParser() const;
   void deinstallCommandParser();
+  bool isCommand(IRCCommand cmd) const;
 
  protected:
   bool isRunning() const;
