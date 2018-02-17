@@ -37,7 +37,7 @@ TEST(IRCParserTest, CorrectSimpleMessages) {
   ASSERT_EQ(messages[0].user, "~KolK2");
   ASSERT_EQ(messages[0].host, "example.com");
   ASSERT_EQ(messages[0].command, "PRIVMSG");
-  ASSERT_EQ(messages[0].params.size(), 2);
+  ASSERT_EQ(messages[0].params.size(), 2u);
   ASSERT_EQ(messages[0].params[0], "#cmake");
   ASSERT_EQ(messages[0].params[1], "testing message");
 
@@ -46,7 +46,7 @@ TEST(IRCParserTest, CorrectSimpleMessages) {
   ASSERT_TRUE(messages[1].user.empty());
   ASSERT_TRUE(messages[1].host.empty());
   ASSERT_EQ(messages[1].command, "PRIVMSG");
-  ASSERT_EQ(messages[1].params.size(), 2);
+  ASSERT_EQ(messages[1].params.size(), 2u);
   ASSERT_EQ(messages[1].params[0], "#agaran");
   ASSERT_EQ(messages[1].params[1], "dzień dobry");
 
@@ -55,7 +55,7 @@ TEST(IRCParserTest, CorrectSimpleMessages) {
   ASSERT_TRUE(messages[2].user.empty());
   ASSERT_TRUE(messages[2].host.empty());
   ASSERT_EQ(messages[2].command, "PRIVMSG");
-  ASSERT_EQ(messages[2].params.size(), 3);
+  ASSERT_EQ(messages[2].params.size(), 3u);
   ASSERT_EQ(messages[2].params[0], "#cmake");
   ASSERT_EQ(messages[2].params[1], "parameter");
   ASSERT_EQ(messages[2].params[2], "testing message");
@@ -65,7 +65,7 @@ TEST(IRCParserTest, CorrectSimpleMessages) {
   ASSERT_TRUE(messages[3].user.empty());
   ASSERT_TRUE(messages[3].host.empty());
   ASSERT_EQ(messages[3].command, "123");
-  ASSERT_EQ(messages[3].params.size(), 2);
+  ASSERT_EQ(messages[3].params.size(), 2u);
   ASSERT_EQ(messages[3].params[0], "param1");
   ASSERT_EQ(messages[3].params[1], "param2");
 }
@@ -76,7 +76,7 @@ TEST(IRCParserTest, NoCR) {
 
   IRCParser parser;
   parser.parse(str_cmd);
-  ASSERT_EQ(parser.messagesCount(), 1);
+  ASSERT_EQ(parser.messagesCount(), 1u);
 
   auto msg = parser.getMessage();
 
@@ -85,7 +85,7 @@ TEST(IRCParserTest, NoCR) {
   ASSERT_EQ(msg.user, "~TestUser");
   ASSERT_EQ(msg.host, "example.com");
   ASSERT_EQ(msg.command, "PRIVMSG");
-  ASSERT_EQ(msg.params.size(), 4);
+  ASSERT_EQ(msg.params.size(), 4u);
   ASSERT_EQ(msg.params[0], "#cmake");
   ASSERT_EQ(msg.params[1], "testing");
   ASSERT_EQ(msg.params[2], "message");
