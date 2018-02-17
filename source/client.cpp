@@ -261,7 +261,3 @@ void Client::reloadPlugin(const std::string& name) {
   // load
   // start
 }
-
-void Client::reconfigurePlugin(Plugin& plugin) {
-  
-}

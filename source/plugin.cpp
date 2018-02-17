@@ -7,6 +7,7 @@
 Plugin::Plugin(Client& client, const std::string& id) :
     m_client{client},
     m_id{id},
+    m_command_parser{nullptr},
     m_running{true}
 {}
 
@@ -48,6 +49,10 @@ void Plugin::run() {
       onMessage(cmd);
     }
   }
+}
+
+void Plugin::onCommand(CommandParser::Command cmd) {
+
 }
 
 bool Plugin::isRunning() const {
@@ -99,4 +104,41 @@ void Plugin::spawn() {
   };
   m_thread = std::thread(plugin_call);
   helpers::setThreadName(m_thread, getName());
+}
+
+void Plugin::installCommandParser(std::shared_ptr<CommandParser> parser) {
+  LOG(INFO, "Installing new command parser in plugin ", getId());
+  m_command_parser = parser;
+}
+
+bool Plugin::hasCommandParser() const {
+  return m_command_parser != nullptr;
+}
+
+void Plugin::deinstallCommandParser() {
+  LOG(INFO, "Removing command parser from plugin ", getId());
+  m_command_parser = nullptr;
+}
+
+void Plugin::addFunction(const std::string& cmd, CmdFunction f) {
+  if (m_functions.count(cmd)) {
+    LOG(WARNING, "Overwriting function for command: ", cmd);
+  }
+
+  m_functions[cmd] = f;
+}
+
+void Plugin::removeFunction(const std::string& cmd) {
+  size_t removed = m_functions.erase(cmd);
+  if (removed == 0) {
+    LOG(WARNING, "Such function (", cmd, ") doesn't exist.");
+  }
+}
+
+void Plugin::callFunction(const CommandParser::Command& command) {
+  if (m_functions.count(command.command)) {
+    m_functions[command.command](command);
+  } else {
+    LOG(INFO, "Function for such command doesn't exist: ", command.command);
+  }
 }

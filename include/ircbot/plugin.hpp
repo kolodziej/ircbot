@@ -7,13 +7,17 @@
 #include <mutex>
 #include <thread>
 #include <condition_variable>
+#include <unordered_map>
 
 #include "ircbot/client.hpp"
 #include "ircbot/irc_command.hpp"
+#include "ircbot/command_parser.hpp"
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
 class Plugin {
+  using CmdFunction = std::function<void(const CommandParser::Command&)>;
+
  public:
   Plugin(Client& client, const std::string& id);
   ~Plugin();
@@ -27,6 +31,7 @@ class Plugin {
   virtual void onInit() {}
   virtual void run();
   virtual void onMessage(IRCCommand) = 0;
+  virtual void onCommand(CommandParser::Command cmd);
   virtual void onNewConfiguration() {}
   virtual bool filter(const IRCCommand& cmd);
   virtual void onShutdown() {}
@@ -36,6 +41,10 @@ class Plugin {
   const Config& getConfig() const;
   void spawn();
 
+  void installCommandParser(std::shared_ptr<CommandParser> parser);
+  bool hasCommandParser() const;
+  void deinstallCommandParser();
+
  protected:
   bool isRunning() const;
   size_t commandsCount() const;
@@ -43,10 +52,17 @@ class Plugin {
   void send(const IRCCommand& cmd);
   pt::ptree& cfg();
 
+  void addFunction(const std::string& cmd, CmdFunction);
+  void removeFunction(const std::string& cmd);
+  void callFunction(const CommandParser::Command& command);
+
  private:
   Client& m_client;
   const std::string m_id;
   Config m_cfg;
+
+  std::shared_ptr<CommandParser> m_command_parser;
+  std::unordered_map<std::string, CmdFunction> m_functions;
 
   std::atomic<bool> m_running;
 

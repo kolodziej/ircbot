@@ -48,8 +48,6 @@ class Client {
   void restartPlugin(const std::string& name);
   void reloadPlugin(const std::string& name);
 
-  void reconfigurePlugin(Plugin& plugin);
-
  private:
   asio::io_service& m_io_service;
   asio::ip::tcp::socket m_socket;

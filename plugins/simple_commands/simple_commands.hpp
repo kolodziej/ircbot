@@ -1,16 +1,19 @@
 #ifndef _SIMPLE_COMMANDS_PLUGIN_HPP
 #define _SIMPLE_COMMANDS_PLUGIN_HPP
 
-#include "ircbot/command_plugin.hpp"
+#include "ircbot/so_plugin.hpp"
 
-class SimpleCommands : public CommandPlugin {
+class SimpleCommands : public SoPlugin {
  public:
   SimpleCommands(Client& client, const std::string& id) :
-      CommandPlugin{client, id, '!'} {
-    addCommand("help", [this] (const CommandParser::Command& cmd) { helpCommand(cmd); });
+      SoPlugin{client, id} {
+    installCommandParser(
+      std::make_shared<CommandParser>(ParserConfig{'!', true})
+    );
   }
 
   std::string getName() const override;
+  void onMessage(IRCCommand cmd);
 
  private:
   void helpCommand(const CommandParser::Command& cmd);

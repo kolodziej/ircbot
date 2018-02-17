@@ -49,5 +49,5 @@
             "path": "./plugins/simple_commands/simple_commands.so",
             "config": {}
         }
-    ]
+    }
 }

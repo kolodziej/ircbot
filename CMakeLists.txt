@@ -43,7 +43,6 @@ set(SOURCES
     source/cerr_log_output.cpp
     source/file_log_output.cpp
     source/command_parser.cpp
-    source/command_plugin.cpp
     source/so_plugin.cpp
     source/unexpected_character.cpp
 )
@@ -67,7 +66,6 @@ set(HEADERS
     include/ircbot/file_log_output.hpp
     include/ircbot/parser_config.hpp
     include/ircbot/command_parser.hpp
-    include/ircbot/command_plugin.hpp
     include/ircbot/so_plugin.hpp
     include/ircbot/unexpected_character.hpp
 )
