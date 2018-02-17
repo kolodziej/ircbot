@@ -1,5 +1,4 @@
 set(PROGRAMS
-    client
     ircbot
 )
 
