@@ -8,6 +8,7 @@
 #include "ircbot/logger.hpp"
 #include "ircbot/command_parser.hpp"
 #include "ircbot/cerr_log_output.hpp"
+#include "ircbot/unexpected_character.hpp"
 
 TEST(CommandParserTest, CorrectCommands) {
   Logger& logger = Logger::getInstance();
@@ -84,7 +85,8 @@ TEST(CommandParserTest, IncorrectCommands) {
   };
 
   CommandParser parser{config};
-  for (const auto& cmd : str_commands) {
-    parser.parse(cmd);
-  }
+  EXPECT_THROW(parser.parse(str_commands[0]), UnexpectedCharacter);
+  EXPECT_THROW(parser.parse(str_commands[1]), UnexpectedCharacter);
+  EXPECT_THROW(parser.parse(str_commands[2]), UnexpectedCharacter);
+  EXPECT_THROW(parser.parse(str_commands[3]), UnexpectedCharacter);
 }
