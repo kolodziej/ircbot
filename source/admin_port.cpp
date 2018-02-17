@@ -3,6 +3,8 @@
 #include "ircbot/client.hpp"
 #include "ircbot/logger.hpp"
 
+#include <unistd.h>
+
 AdminPort::AdminPort(std::shared_ptr<Client> client, const std::string& socket_path) :
     m_client{client},
     m_endpoint{socket_path},
@@ -10,6 +12,10 @@ AdminPort::AdminPort(std::shared_ptr<Client> client, const std::string& socket_p
     m_socket{client->getIoService()},
     m_command_parser{ParserConfig{'\0', true}} {
   LOG(INFO, "Started admin port at: ", socket_path);
+}
+
+AdminPort::~AdminPort() {
+  ::unlink(m_endpoint.path().data());
 }
 
 void AdminPort::acceptConnections() {

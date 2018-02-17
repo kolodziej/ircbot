@@ -16,6 +16,8 @@ class Client;
 class AdminPort {
  public:
   AdminPort(std::shared_ptr<Client> client, const std::string& socket_path);
+  ~AdminPort();
+
   void acceptConnections();
   void stop();
 
