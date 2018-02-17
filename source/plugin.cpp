@@ -4,8 +4,9 @@
 
 #include "ircbot/helpers.hpp"
 
-Plugin::Plugin(Client& client) :
+Plugin::Plugin(Client& client, const std::string& id) :
     m_client{client},
+    m_id{id},
     m_running{true}
 {}
 
@@ -14,6 +15,10 @@ Plugin::~Plugin() {
 
   if (m_thread.joinable())
     m_thread.join();
+}
+
+std::string Plugin::getId() const {
+  return m_id;
 }
 
 void Plugin::stop() {

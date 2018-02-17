@@ -40,12 +40,15 @@ class Client {
   void addPlugin(std::unique_ptr<Plugin>&& plugin);
   void removePlugin(const std::string& name);
   std::vector<std::string> listPlugins() const;
-  std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname);
+  std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
+                                         const std::string& id);
 
   void startPlugins();
   void stopPlugins();
   void restartPlugin(const std::string& name);
   void reloadPlugin(const std::string& name);
+
+  void reconfigurePlugin(Plugin& plugin);
 
  private:
   asio::io_service& m_io_service;

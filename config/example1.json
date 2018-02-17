@@ -15,8 +15,8 @@
             "file": "-stdout"
         }
     ],
-    "plugins": [
-        {
+    "plugins": {
+        "init": {
           "path": "./plugins/init/init.so",
           "config": {
             "nick": "KolK_IRCBot",
@@ -27,10 +27,10 @@
             "wallops": false
           }
         },
-        {
+        "ping": {
             "path": "./plugins/ping/ping.so"
         },
-        {
+        "join": {
             "path": "./plugins/join/join.so",
             "config": {
                 "channels": [
@@ -38,14 +38,14 @@
                 ]
             }
         },
-        {
+        "clipboard": {
             "path": "./plugins/clipboard/clipboard.so",
             "config": {
                 "size": 5,
                 "message_size": 20
             }
         },
-        {
+        "simple": {
             "path": "./plugins/simple_commands/simple_commands.so",
             "config": {}
         }

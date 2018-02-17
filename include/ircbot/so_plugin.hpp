@@ -4,13 +4,13 @@
 #include "ircbot/plugin.hpp"
 
 #define IRCBOT_PLUGIN(PluginName) \
-    extern "C" std::unique_ptr<SoPlugin> getPlugin(Client* client) { \
-      return std::make_unique<PluginName>(*client); \
+    extern "C" std::unique_ptr<SoPlugin> getPlugin(Client* client, const char* id) { \
+      return std::make_unique<PluginName>(*client, id); \
     }
 
 class SoPlugin : public Plugin {
  public:
-  SoPlugin(Client& client);
+  SoPlugin(Client& client, const std::string& id);
 
   void setDlLibrary(void*);
   void* getDlLibrary() const;

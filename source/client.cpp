@@ -64,6 +64,7 @@ void Client::connect(std::string host, uint16_t port) {
 
 void Client::initializePlugins() {
   for (auto p : m_cfg.tree().get_child("plugins")) {
+    const auto& pluginId = p.first;
     const auto& pluginConfig = p.second;
     std::string path = pluginConfig.get("path", std::string());
     if (path.empty()) {
@@ -80,9 +81,9 @@ void Client::initializePlugins() {
       continue;
     }
 
-    if (ext == "so") {
+    if (ext == ".so") {
       LOG(INFO, "Loading plugin from shared library: ", path);
-      auto plugin = loadSoPlugin(path);
+      auto plugin = loadSoPlugin(path, pluginId);
 
       if (plugin == nullptr) {
         LOG(ERROR, "Could not load plugin from file: ", path);
@@ -90,7 +91,7 @@ void Client::initializePlugins() {
         LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
         addPlugin(std::move(plugin));
       }
-    } else if (ext == "builtin") {
+    } else if (ext == ".builtin") {
       LOG(WARNING, "Support for builtin plugins is in development! Omitting.");
     } else {
       LOG(WARNING, "Unsupported plugin type: ", ext, ". Omitting!");
@@ -203,7 +204,8 @@ std::vector<std::string> Client::listPlugins() const {
   return names;
 }
 
-std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname) {
+std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
+                                               const std::string& id) {
   void* pluginLibrary = dlopen(fname.data(), RTLD_NOW);
   if (pluginLibrary == nullptr) {
     LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
@@ -211,15 +213,16 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname) {
   }
 
   void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
-  std::function<std::unique_ptr<SoPlugin>(Client*)> func =
-      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(Client*)>(getPluginFunc);
+  std::function<std::unique_ptr<SoPlugin>(Client*, const char* id)> func =
+      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(Client*, const char* id)>
+      (getPluginFunc);
 
   if (func == nullptr) {
     LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
     return nullptr;
   }
 
-  std::unique_ptr<SoPlugin> plugin = func(this);
+  std::unique_ptr<SoPlugin> plugin = func(this, id.data());
   plugin->setDlLibrary(pluginLibrary);
 
   return plugin;
@@ -257,4 +260,8 @@ void Client::reloadPlugin(const std::string& name) {
   // unload
   // load
   // start
+}
+
+void Client::reconfigurePlugin(Plugin& plugin) {
+  
 }

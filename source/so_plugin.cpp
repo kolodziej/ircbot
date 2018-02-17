@@ -1,7 +1,7 @@
 #include "ircbot/so_plugin.hpp"
 
-SoPlugin::SoPlugin(Client& client) :
-    Plugin{client} {
+SoPlugin::SoPlugin(Client& client, const std::string& id) :
+    Plugin{client, id} {
 }
 
 void SoPlugin::setDlLibrary(void* library) {

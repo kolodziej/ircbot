@@ -1,8 +1,9 @@
 #include "ircbot/command_plugin.hpp"
 
 CommandPlugin::CommandPlugin(Client& client,
+                             const std::string& id,
                              char prefix) :
-    SoPlugin{client},
+    SoPlugin{client, id},
     m_parser{ParserConfig{prefix, true}} {
 }
 

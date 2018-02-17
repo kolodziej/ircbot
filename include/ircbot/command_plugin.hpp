@@ -14,7 +14,7 @@
 class CommandPlugin : public SoPlugin {
  public:
   using CmdFunction = std::function<void(const CommandParser::Command&)>;
-  CommandPlugin(Client& client, char prefix);
+  CommandPlugin(Client& client, const std::string& id, char prefix);
 
   virtual void onMessage(IRCCommand cmd) override;
   virtual bool filter(const IRCCommand& cmd) override;

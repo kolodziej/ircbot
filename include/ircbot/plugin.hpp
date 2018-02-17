@@ -15,9 +15,10 @@
 
 class Plugin {
  public:
-  Plugin(Client& client);
+  Plugin(Client& client, const std::string& id);
   ~Plugin();
 
+  std::string getId() const;
   virtual std::string getName() const = 0;
   void stop();
 
@@ -44,6 +45,7 @@ class Plugin {
 
  private:
   Client& m_client;
+  const std::string m_id;
   Config m_cfg;
 
   std::atomic<bool> m_running;
