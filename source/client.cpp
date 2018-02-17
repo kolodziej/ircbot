@@ -101,21 +101,21 @@ void Client::startAsyncReceive() {
       return;
     }
     m_parser.parse(std::string(m_buffer.data(), bytes));
-    LOG(INFO, "Parsed commands: ", m_parser.commandsCount());
-    while (m_parser.commandsCount() > 0) {
-      auto cmd = m_parser.getCommand();
-      LOG(INFO, "Passing command to plugins: ", cmd.toString());
+    LOG(INFO, "Parsed commands: ", m_parser.messagesCount());
+    while (m_parser.messagesCount() > 0) {
+      auto msg = m_parser.getMessage();
+      LOG(INFO, "Passing message to plugins: ", msg.toString());
       for (auto& plugin : m_plugins) {
-        if (not plugin->preFilter(cmd)) {
+        if (not plugin->preFilter(msg)) {
           DEBUG("Plugin ", plugin->getName(), " pre-filtering not passed",
-                " for command: ", cmd.toString(true));
+                " for message: ", msg.toString(true));
           continue;
         }
 
-        if (plugin->filter(cmd)) {
+        if (plugin->filter(msg)) {
           DEBUG("Plugin ", plugin->getName(),
-                " filtering passed for command: ", cmd.toString(true));
-          plugin->receive(cmd);
+                " filtering passed for message: ", msg.toString(true));
+          plugin->receive(msg);
         }
       }
     }
@@ -141,7 +141,7 @@ void Client::disconnect() {
   m_socket.close();
 }
 
-void Client::send(IRCCommand cmd) {
+void Client::send(IRCMessage cmd) {
   send(static_cast<std::string>(cmd));
 }
 

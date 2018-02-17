@@ -14,7 +14,7 @@ std::string Clipboard::getName() const {
   return "Clipboard";
 }
 
-void Clipboard::onMessage(IRCCommand cmd) {
+void Clipboard::onMessage(IRCMessage cmd) {
   using helpers::startsWith;
 
   auto name = cmd.params[0];
@@ -32,7 +32,7 @@ void Clipboard::onMessage(IRCCommand cmd) {
       std::string content = data.substr(6);
       LOG(DEBUG, "Saving data to ", name, " clipboard: ", content);
       if (content.size() > m_message_size) {
-        IRCCommand msg{
+        IRCMessage msg{
           "PRIVMSG",
           { name,
             std::string{"Your message is too big. Limit is "} +
@@ -46,7 +46,7 @@ void Clipboard::onMessage(IRCCommand cmd) {
         if (clipboard.size() < m_size) {
           clipboard.push_back(data.substr(6));
         } else {
-          IRCCommand msg{
+          IRCMessage msg{
             "PRIVMSG",
             { name, "You have no free slots in clipboard! Remove something!" }
           };
@@ -54,7 +54,7 @@ void Clipboard::onMessage(IRCCommand cmd) {
         }
       }
     } else if (startsWith(data, "!clip-ls")) {
-      IRCCommand msg{
+      IRCMessage msg{
         "PRIVMSG",
         { name, "This is your clipboard:" }
       };
@@ -68,7 +68,7 @@ void Clipboard::onMessage(IRCCommand cmd) {
         send(msg);
       }
     } else if (startsWith(data, "!clip-help")) {
-      IRCCommand msg{
+      IRCMessage msg{
         "PRIVMSG",
         { name, "Commands: !clip - save to clipboard,"
         "!clip-help - this message, "
@@ -84,7 +84,7 @@ void Clipboard::onMessage(IRCCommand cmd) {
       if (index < clipboard.size()) {
         clipboard.erase(clipboard.begin() + index);
       } else {
-        IRCCommand msg{
+        IRCMessage msg{
           "PRIVMSG",
           { name, "Index is too large!" }
         };
@@ -95,7 +95,7 @@ void Clipboard::onMessage(IRCCommand cmd) {
   }
 }
 
-bool Clipboard::filter(const IRCCommand& cmd) {
+bool Clipboard::filter(const IRCMessage& cmd) {
   return cmd.command == "PRIVMSG";
 }
 

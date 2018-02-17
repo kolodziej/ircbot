@@ -12,7 +12,7 @@
 #include <map>
 
 #include "ircbot/irc_parser.hpp"
-#include "ircbot/irc_command.hpp"
+#include "ircbot/irc_message.hpp"
 #include "ircbot/config.hpp"
 #include "ircbot/plugin_config.hpp"
 #include "ircbot/logger.hpp"
@@ -33,7 +33,7 @@ class Client : public std::enable_shared_from_this<Client> {
   void startAsyncReceive();
   void stopAsyncReceive();
 
-  void send(IRCCommand cmd);
+  void send(IRCMessage cmd);
   void send(std::string msg);
 
   void run();

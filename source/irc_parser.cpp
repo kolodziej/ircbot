@@ -12,18 +12,18 @@ void IRCParser::parse(const std::string& message) {
   lexer(message);
 }
 
-size_t IRCParser::commandsCount() const {
-  return m_commands.size();
+size_t IRCParser::messagesCount() const {
+  return m_messages.size();
 }
 
-bool IRCParser::commandsEmpty() const {
-  return m_commands.empty();
+bool IRCParser::messagesEmpty() const {
+  return m_messages.empty();
 }
 
-IRCCommand IRCParser::getCommand() {
-  IRCCommand cmd = m_commands.front();
-  m_commands.pop();
-  return cmd;
+IRCMessage IRCParser::getMessage() {
+  IRCMessage msg = m_messages.front();
+  m_messages.pop();
+  return msg;
 }
 
 void IRCParser::lexer(const std::string& message) {
@@ -189,67 +189,67 @@ void IRCParser::parser() {
 
     if (m_last_token == TokenType::LF) {
       if (type == TokenType::SERVERNAME) {
-        m_command.servername = token.value;
+        m_message.servername = token.value;
         DEBUG("Parser is setting SERVERNAME");
       } else if (type == TokenType::NICK) {
-        m_command.nick = token.value;
+        m_message.nick = token.value;
         DEBUG("Parser is setting NICK");
       } else if (type == TokenType::COMMAND) {
-        m_command.command = token.value;
+        m_message.command = token.value;
         DEBUG("Parser is setting COMMAND");
       } else {
         // report error!
       }
     } else if (m_last_token == TokenType::SERVERNAME) {
       if (type == TokenType::COMMAND) {
-        m_command.command = token.value;
+        m_message.command = token.value;
       } else {
         // report error!
       }
     } else if (m_last_token == TokenType::NICK) {
       if (type == TokenType::USER) {
-        m_command.user = token.value;
+        m_message.user = token.value;
         DEBUG("Parser is setting USER");
       } else if (type == TokenType::HOST) {
-        m_command.host = token.value;
+        m_message.host = token.value;
         DEBUG("Parser is setting HOST");
       } else if (type == TokenType::COMMAND) {
-        m_command.command = token.value;
+        m_message.command = token.value;
         DEBUG("Parser is setting COMMAND");
       } else {
         // report error!
       }
     } else if (m_last_token == TokenType::USER) {
       if (type == TokenType::HOST) {
-        m_command.host = token.value;
+        m_message.host = token.value;
       } else if (type == TokenType::COMMAND) {
-        m_command.command = token.value;
+        m_message.command = token.value;
       } else {
         // report error!
       }
     } else if (m_last_token == TokenType::HOST) {
       if (type == TokenType::COMMAND) {
-        m_command.command = token.value;
+        m_message.command = token.value;
       } else {
         // report error!
       }
     } else if (m_last_token == TokenType::COMMAND or
                m_last_token == TokenType::PARAM) {
       if (type == TokenType::PARAM) {
-        m_command.params.push_back(token.value);
+        m_message.params.push_back(token.value);
         DEBUG("Parser is adding new PARAM");
       } else if (type == TokenType::LF) {
-        m_commands.push(m_command);
+        m_messages.push(m_message);
         DEBUG("Next command parsed");
-        m_command = IRCCommand{};
+        m_message = IRCMessage{};
       } else if (type != TokenType::CR) {
         // report error!
       }
     } else if (m_last_token == TokenType::CR) {
       if (type == TokenType::LF) {
-        m_commands.push(m_command);
+        m_messages.push(m_message);
         DEBUG("Next command parsed");
-        m_command = IRCCommand{};
+        m_message = IRCMessage{};
       }
     }
 

@@ -7,10 +7,10 @@
 
 #include "ircbot/logger.hpp"
 #include "ircbot/irc_parser.hpp"
-#include "ircbot/irc_command.hpp"
+#include "ircbot/irc_message.hpp"
 
 TEST(IRCParserTest, CorrectSimpleMessages) {
-  std::vector<std::string> str_commands{
+  std::vector<std::string> str_messages{
     ":KolK1!~KolK2@example.com PRIVMSG #cmake :testing message\r\n",
     "PRIVMSG #agaran :dzień dobry\r\n",
     ":TestServer PRIVMSG #cmake parameter :testing message\r\n",
@@ -19,55 +19,55 @@ TEST(IRCParserTest, CorrectSimpleMessages) {
 
   IRCParser parser;
 
-  for (const auto& cmd : str_commands) {
-    parser.parse(cmd);
+  for (const auto& msg : str_messages) {
+    parser.parse(msg);
   }
 
-  ASSERT_EQ(str_commands.size(), parser.commandsCount());
+  ASSERT_EQ(str_messages.size(), parser.messagesCount());
 
-  std::vector<IRCCommand> commands;
-  while (not parser.commandsEmpty()) {
-    commands.push_back(parser.getCommand());
+  std::vector<IRCMessage> messages;
+  while (not parser.messagesEmpty()) {
+    messages.push_back(parser.getMessage());
   }
 
-  ASSERT_EQ(commands.size(), str_commands.size());
+  ASSERT_EQ(messages.size(), str_messages.size());
 
-  ASSERT_TRUE(commands[0].servername.empty());
-  ASSERT_EQ(commands[0].nick, "KolK1");
-  ASSERT_EQ(commands[0].user, "~KolK2");
-  ASSERT_EQ(commands[0].host, "example.com");
-  ASSERT_EQ(commands[0].command, "PRIVMSG");
-  ASSERT_EQ(commands[0].params.size(), 2);
-  ASSERT_EQ(commands[0].params[0], "#cmake");
-  ASSERT_EQ(commands[0].params[1], "testing message");
+  ASSERT_TRUE(messages[0].servername.empty());
+  ASSERT_EQ(messages[0].nick, "KolK1");
+  ASSERT_EQ(messages[0].user, "~KolK2");
+  ASSERT_EQ(messages[0].host, "example.com");
+  ASSERT_EQ(messages[0].command, "PRIVMSG");
+  ASSERT_EQ(messages[0].params.size(), 2);
+  ASSERT_EQ(messages[0].params[0], "#cmake");
+  ASSERT_EQ(messages[0].params[1], "testing message");
 
-  ASSERT_TRUE(commands[1].servername.empty());
-  ASSERT_TRUE(commands[1].nick.empty());
-  ASSERT_TRUE(commands[1].user.empty());
-  ASSERT_TRUE(commands[1].host.empty());
-  ASSERT_EQ(commands[1].command, "PRIVMSG");
-  ASSERT_EQ(commands[1].params.size(), 2);
-  ASSERT_EQ(commands[1].params[0], "#agaran");
-  ASSERT_EQ(commands[1].params[1], "dzień dobry");
+  ASSERT_TRUE(messages[1].servername.empty());
+  ASSERT_TRUE(messages[1].nick.empty());
+  ASSERT_TRUE(messages[1].user.empty());
+  ASSERT_TRUE(messages[1].host.empty());
+  ASSERT_EQ(messages[1].command, "PRIVMSG");
+  ASSERT_EQ(messages[1].params.size(), 2);
+  ASSERT_EQ(messages[1].params[0], "#agaran");
+  ASSERT_EQ(messages[1].params[1], "dzień dobry");
 
-  ASSERT_EQ(commands[2].servername, "TestServer");
-  ASSERT_TRUE(commands[2].nick.empty());
-  ASSERT_TRUE(commands[2].user.empty());
-  ASSERT_TRUE(commands[2].host.empty());
-  ASSERT_EQ(commands[2].command, "PRIVMSG");
-  ASSERT_EQ(commands[2].params.size(), 3);
-  ASSERT_EQ(commands[2].params[0], "#cmake");
-  ASSERT_EQ(commands[2].params[1], "parameter");
-  ASSERT_EQ(commands[2].params[2], "testing message");
+  ASSERT_EQ(messages[2].servername, "TestServer");
+  ASSERT_TRUE(messages[2].nick.empty());
+  ASSERT_TRUE(messages[2].user.empty());
+  ASSERT_TRUE(messages[2].host.empty());
+  ASSERT_EQ(messages[2].command, "PRIVMSG");
+  ASSERT_EQ(messages[2].params.size(), 3);
+  ASSERT_EQ(messages[2].params[0], "#cmake");
+  ASSERT_EQ(messages[2].params[1], "parameter");
+  ASSERT_EQ(messages[2].params[2], "testing message");
 
-  ASSERT_EQ(commands[3].servername, "TestServer");
-  ASSERT_TRUE(commands[3].nick.empty());
-  ASSERT_TRUE(commands[3].user.empty());
-  ASSERT_TRUE(commands[3].host.empty());
-  ASSERT_EQ(commands[3].command, "123");
-  ASSERT_EQ(commands[3].params.size(), 2);
-  ASSERT_EQ(commands[3].params[0], "param1");
-  ASSERT_EQ(commands[3].params[1], "param2");
+  ASSERT_EQ(messages[3].servername, "TestServer");
+  ASSERT_TRUE(messages[3].nick.empty());
+  ASSERT_TRUE(messages[3].user.empty());
+  ASSERT_TRUE(messages[3].host.empty());
+  ASSERT_EQ(messages[3].command, "123");
+  ASSERT_EQ(messages[3].params.size(), 2);
+  ASSERT_EQ(messages[3].params[0], "param1");
+  ASSERT_EQ(messages[3].params[1], "param2");
 }
 
 TEST(IRCParserTest, NoCR) {
@@ -76,18 +76,18 @@ TEST(IRCParserTest, NoCR) {
 
   IRCParser parser;
   parser.parse(str_cmd);
-  ASSERT_EQ(parser.commandsCount(), 1);
+  ASSERT_EQ(parser.messagesCount(), 1);
 
-  auto cmd = parser.getCommand();
+  auto msg = parser.getMessage();
 
-  ASSERT_TRUE(cmd.servername.empty());
-  ASSERT_EQ(cmd.nick, "User");
-  ASSERT_EQ(cmd.user, "~TestUser");
-  ASSERT_EQ(cmd.host, "example.com");
-  ASSERT_EQ(cmd.command, "PRIVMSG");
-  ASSERT_EQ(cmd.params.size(), 4);
-  ASSERT_EQ(cmd.params[0], "#cmake");
-  ASSERT_EQ(cmd.params[1], "testing");
-  ASSERT_EQ(cmd.params[2], "message");
-  ASSERT_EQ(cmd.params[3], "long message");
+  ASSERT_TRUE(msg.servername.empty());
+  ASSERT_EQ(msg.nick, "User");
+  ASSERT_EQ(msg.user, "~TestUser");
+  ASSERT_EQ(msg.host, "example.com");
+  ASSERT_EQ(msg.command, "PRIVMSG");
+  ASSERT_EQ(msg.params.size(), 4);
+  ASSERT_EQ(msg.params[0], "#cmake");
+  ASSERT_EQ(msg.params[1], "testing");
+  ASSERT_EQ(msg.params[2], "message");
+  ASSERT_EQ(msg.params[3], "long message");
 }

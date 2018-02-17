@@ -29,7 +29,7 @@ void Plugin::stop() {
   m_running = false;
 }
 
-void Plugin::receive(IRCCommand cmd) {
+void Plugin::receive(IRCMessage cmd) {
   std::unique_lock<std::mutex> lock{m_incoming_mtx};
   m_incoming.push_back(cmd); 
   DEBUG("New message added to plugin's incoming queue");
@@ -47,7 +47,7 @@ void Plugin::run() {
     std::unique_lock<std::mutex> lock{m_incoming_mtx};
     if (m_incoming_cv.wait_for(lock, 500ms,
                                [this] { return commandsCount(); })) {
-      IRCCommand cmd = getCommand();    
+      IRCMessage cmd = getCommand();    
       if (not m_command_parser) {
         onMessage(cmd);
       } else if (isCommand(cmd)) {
@@ -94,13 +94,13 @@ size_t Plugin::commandsCount() const {
   return m_incoming.size();
 }
 
-IRCCommand Plugin::getCommand() {
+IRCMessage Plugin::getCommand() {
   auto cmd = m_incoming.front();
   m_incoming.pop_front();
   return cmd;
 }
 
-void Plugin::send(const IRCCommand& cmd) {
+void Plugin::send(const IRCMessage& cmd) {
   m_client->send(cmd);
 }
 
@@ -108,11 +108,11 @@ pt::ptree& Plugin::cfg() {
   return m_cfg.tree();
 }
 
-bool Plugin::filter(const IRCCommand& cmd) {
+bool Plugin::filter(const IRCMessage& cmd) {
   return true;
 }
 
-bool Plugin::preFilter(const IRCCommand& cmd) {
+bool Plugin::preFilter(const IRCMessage& cmd) {
   if (m_command_parser != nullptr) {
     if (not isCommand(cmd)) {
       return false;
@@ -161,7 +161,7 @@ void Plugin::deinstallCommandParser() {
   m_command_parser = nullptr;
 }
 
-bool Plugin::isCommand(IRCCommand cmd) const {
+bool Plugin::isCommand(IRCMessage cmd) const {
   if (not m_command_parser)
     return false;
 

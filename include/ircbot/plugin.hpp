@@ -11,7 +11,7 @@
 
 #include "ircbot/client.hpp"
 #include "ircbot/plugin_config.hpp"
-#include "ircbot/irc_command.hpp"
+#include "ircbot/irc_message.hpp"
 #include "ircbot/command_parser.hpp"
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
@@ -27,21 +27,21 @@ class Plugin {
   virtual std::string getName() const = 0;
   void stop();
 
-  void receive(IRCCommand cmd);
+  void receive(IRCMessage cmd);
 
   virtual void onInit() {}
   virtual void run();
-  virtual void onMessage(IRCCommand) {}
+  virtual void onMessage(IRCMessage) {}
   virtual void onNewConfiguration() {}
-  virtual bool filter(const IRCCommand& cmd);
+  virtual bool filter(const IRCMessage& cmd);
   virtual void onShutdown() {}
 
-  bool preFilter(const IRCCommand& cmd);
+  bool preFilter(const IRCMessage& cmd);
 
   void installCommandParser(std::shared_ptr<CommandParser> parser);
   bool hasCommandParser() const;
   void deinstallCommandParser();
-  bool isCommand(IRCCommand cmd) const;
+  bool isCommand(IRCMessage cmd) const;
   void onCommand(CommandParser::Command cmd);
 
   void setConfig(Config cfg);
@@ -52,8 +52,8 @@ class Plugin {
  protected:
   bool isRunning() const;
   size_t commandsCount() const;
-  IRCCommand getCommand();
-  void send(const IRCCommand& cmd);
+  IRCMessage getCommand();
+  void send(const IRCMessage& msg);
   pt::ptree& cfg();
 
   void addFunction(const std::string& cmd, CmdFunction);
@@ -70,7 +70,7 @@ class Plugin {
 
   std::atomic<bool> m_running;
 
-  std::deque<IRCCommand> m_incoming;
+  std::deque<IRCMessage> m_incoming;
   std::mutex m_incoming_mtx;
   std::condition_variable m_incoming_cv;
 

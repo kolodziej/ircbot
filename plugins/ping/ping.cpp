@@ -10,14 +10,14 @@ std::string Ping::getName() const {
   return "Ping";
 }
 
-void Ping::onMessage(IRCCommand cmd) {
-  IRCCommand response{
+void Ping::onMessage(IRCMessage cmd) {
+  IRCMessage response{
     "PONG",
     { cmd.params.back() }
   };
   send(response);
 }
 
-bool Ping::filter(const IRCCommand& cmd) {
+bool Ping::filter(const IRCMessage& cmd) {
   return (cmd.command == "PING");
 }

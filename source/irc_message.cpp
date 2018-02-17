@@ -1,19 +1,19 @@
-#include "ircbot/irc_command.hpp"
+#include "ircbot/irc_message.hpp"
 
 #include <sstream>
 
 
-IRCCommand::IRCCommand(const std::string& command,
+IRCMessage::IRCMessage(const std::string& command,
                        std::initializer_list<std::string> params) :
     command{command},
     params{params} {
 }
 
-IRCCommand::operator std::string() const {
+IRCMessage::operator std::string() const {
   return toString();
 }
 
-std::string IRCCommand::toString(bool stripCRLF) const {
+std::string IRCMessage::toString(bool stripCRLF) const {
   std::stringstream stream;
 
   if (servername.empty() and not nick.empty()) {

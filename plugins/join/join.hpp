@@ -12,8 +12,8 @@ class Join : public SoPlugin {
 
   std::string getName() const override;
   void onInit() override;
-  void onMessage(IRCCommand cmd) override;
-  bool filter(const IRCCommand& cmd) override;
+  void onMessage(IRCMessage cmd) override;
+  bool filter(const IRCMessage& cmd) override;
   void onNewConfiguration() override;
  
  private:

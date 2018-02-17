@@ -5,7 +5,7 @@ std::string SimpleCommands::getName() const {
 }
 
 void SimpleCommands::helpCommand(const CommandParser::Command& cmd) {
-  IRCCommand msg{
+  IRCMessage msg{
     "PRIVMSG",
     { "KolK", "help invoked!" }
   };

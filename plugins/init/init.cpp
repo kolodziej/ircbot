@@ -22,7 +22,7 @@ void Init::onInit() {
               cfg().get<std::string>("config.real_name"));
 }
 
-void Init::onMessage(IRCCommand cmd) {
+void Init::onMessage(IRCMessage cmd) {
   if (cmd.command == "433") {
     LOG(ERROR, "Chosen nick is in use!");
     LOG(INFO, "Trying alternative nicks...");
@@ -33,7 +33,7 @@ void Init::onMessage(IRCCommand cmd) {
   }
 }
 
-bool Init::filter(const IRCCommand& cmd) {
+bool Init::filter(const IRCMessage& cmd) {
   return (cmd.command == "431" or // 431 == ERR_NONICKNAMEGIVEN
           cmd.command == "433" or // 433 == ERR_NICKNAMEINUSE
           cmd.command == "437" or // 437 == ERR_UNAVAILRESOURCE
@@ -43,7 +43,7 @@ bool Init::filter(const IRCCommand& cmd) {
 }
 
 void Init::sendNickMsg(const std::string& nick) {
-  IRCCommand nickMsg{
+  IRCMessage nickMsg{
     "NICK",
     { nick }
   };
@@ -53,7 +53,7 @@ void Init::sendNickMsg(const std::string& nick) {
 
 void Init::sendUserMsg(const std::string& user,
                        const std::string& realname) {
-  IRCCommand userMsg{
+  IRCMessage userMsg{
     "USER",
     { user,
       "0", "*", 

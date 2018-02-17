@@ -18,7 +18,7 @@ void Join::onInit() {
       LOG(INFO, "Trying to join ", channel);
       m_channels.insert(channel);
 
-      IRCCommand msg{
+      IRCMessage msg{
         "JOIN",
         { channel }
       };
@@ -27,7 +27,7 @@ void Join::onInit() {
   }
 }
 
-void Join::onMessage(IRCCommand cmd) {
+void Join::onMessage(IRCMessage cmd) {
   int responseCode = std::stoi(cmd.command);
   switch (responseCode) {
     case 332:
@@ -40,7 +40,7 @@ void Join::onMessage(IRCCommand cmd) {
   }
 }
 
-bool Join::filter(const IRCCommand& cmd) {
+bool Join::filter(const IRCMessage& cmd) {
   return (cmd.command == "461" or // 461 == ERR_NEEDMOREPARAMS
           cmd.command == "473" or // 473 == ERR_INVITEONLYCHAN
           cmd.command == "474" or // 474 == ERR_BANNEDFROMCHAN

@@ -8,8 +8,8 @@ class Ping : public SoPlugin {
   Ping(PluginConfig config);
 
   std::string getName() const override;
-  void onMessage(IRCCommand cmd) override;
-  bool filter(const IRCCommand& cmd) override;
+  void onMessage(IRCMessage cmd) override;
+  bool filter(const IRCMessage& cmd) override;
 
  private:
   bool m_ping;

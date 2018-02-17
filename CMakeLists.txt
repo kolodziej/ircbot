@@ -33,7 +33,7 @@ set(SOURCES
     source/log_level.cpp
     source/logger.cpp
     source/irc_parser.cpp
-    source/irc_command.cpp
+    source/irc_message.cpp
     source/client.cpp
     source/plugin.cpp
     source/helpers.cpp
@@ -55,7 +55,7 @@ set(HEADERS
     include/ircbot/logger.hpp
     include/ircbot/logger_macros.hpp
     include/ircbot/irc_parser.hpp
-    include/ircbot/irc_command.hpp
+    include/ircbot/irc_message.hpp
     include/ircbot/client.hpp
     include/ircbot/plugin.hpp
     include/ircbot/helpers.hpp

@@ -1,14 +1,14 @@
-#ifndef _IRC_COMMAND_HPP
-#define _IRC_COMMAND_HPP
+#ifndef _IRC_MESSAGE_HPP
+#define _IRC_MESSAGE_HPP
 
 #include <string>
 #include <vector>
 #include <ostream>
 #include <initializer_list>
 
-struct IRCCommand {
-  IRCCommand() = default;
-  IRCCommand(const std::string& command,
+struct IRCMessage {
+  IRCMessage() = default;
+  IRCMessage(const std::string& command,
              std::initializer_list<std::string> params);
 
   std::string servername;

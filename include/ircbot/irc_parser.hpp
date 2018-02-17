@@ -4,7 +4,7 @@
 #include <queue>
 #include <sstream>
 
-#include "irc_command.hpp"
+#include "irc_message.hpp"
 
 class IRCParser {
  public:
@@ -45,9 +45,9 @@ class IRCParser {
 
   void parse(const std::string& command);
 
-  size_t commandsCount() const;
-  bool commandsEmpty() const;
-  IRCCommand getCommand();
+  size_t messagesCount() const;
+  bool messagesEmpty() const;
+  IRCMessage getMessage();
 
  private:
   void lexer(const std::string& command);
@@ -61,8 +61,8 @@ class IRCParser {
 
   std::queue<Token> m_tokens;
 
-  IRCCommand m_command;
-  std::queue<IRCCommand> m_commands;
+  IRCMessage m_message;
+  std::queue<IRCMessage> m_messages;
 };
 
 #endif
