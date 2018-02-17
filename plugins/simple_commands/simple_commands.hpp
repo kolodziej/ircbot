@@ -16,8 +16,6 @@ class SimpleCommands : public SoPlugin {
   }
 
   std::string getName() const override;
-  void onMessage(IRCCommand cmd);
-  bool filter(const IRCCommand& cmd);
 
  private:
   void helpCommand(const CommandParser::Command& cmd);

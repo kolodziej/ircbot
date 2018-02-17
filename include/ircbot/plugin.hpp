@@ -31,21 +31,23 @@ class Plugin {
 
   virtual void onInit() {}
   virtual void run();
-  virtual void onMessage(IRCCommand) = 0;
-  virtual void onCommand(CommandParser::Command cmd);
+  virtual void onMessage(IRCCommand) {}
   virtual void onNewConfiguration() {}
   virtual bool filter(const IRCCommand& cmd);
   virtual void onShutdown() {}
 
-  void setConfig(Config cfg);
-  Config& getConfig();
-  const Config& getConfig() const;
-  void spawn();
+  bool preFilter(const IRCCommand& cmd);
 
   void installCommandParser(std::shared_ptr<CommandParser> parser);
   bool hasCommandParser() const;
   void deinstallCommandParser();
   bool isCommand(IRCCommand cmd) const;
+  void onCommand(CommandParser::Command cmd);
+
+  void setConfig(Config cfg);
+  Config& getConfig();
+  const Config& getConfig() const;
+  void spawn();
 
  protected:
   bool isRunning() const;

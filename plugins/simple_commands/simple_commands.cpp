@@ -4,14 +4,6 @@ std::string SimpleCommands::getName() const {
   return "SimpleCommands";
 }
 
-void SimpleCommands::onMessage(IRCCommand cmd) {
-
-}
-
-bool SimpleCommands::filter(const IRCCommand& cmd) {
-  return (cmd.command == "PRIVMSG" and isCommand(cmd));
-}
-
 void SimpleCommands::helpCommand(const CommandParser::Command& cmd) {
   IRCCommand msg{
     "PRIVMSG",

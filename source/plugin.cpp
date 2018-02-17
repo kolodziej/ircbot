@@ -112,6 +112,16 @@ bool Plugin::filter(const IRCCommand& cmd) {
   return true;
 }
 
+bool Plugin::preFilter(const IRCCommand& cmd) {
+  if (m_command_parser != nullptr) {
+    if (not isCommand(cmd)) {
+      return false;
+    }
+  } 
+
+  return true;
+}
+
 void Plugin::setConfig(Config cfg) {
   m_cfg = cfg;
   onNewConfiguration();
@@ -159,7 +169,8 @@ bool Plugin::isCommand(IRCCommand cmd) const {
     return false;
 
   char prefix = cmd.params.back()[0];
-  return prefix == m_command_parser->getConfig().prefix;
+  return (cmd.command == "PRIVMSG" and
+          prefix == m_command_parser->getConfig().prefix);
 }
 
 void Plugin::addFunction(const std::string& cmd, CmdFunction f) {

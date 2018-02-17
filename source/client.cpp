@@ -106,6 +106,12 @@ void Client::startAsyncReceive() {
       auto cmd = m_parser.getCommand();
       LOG(INFO, "Passing command to plugins: ", cmd.toString());
       for (auto& plugin : m_plugins) {
+        if (not plugin->preFilter(cmd)) {
+          DEBUG("Plugin ", plugin->getName(), " pre-filtering not passed",
+                " for command: ", cmd.toString(true));
+          continue;
+        }
+
         if (plugin->filter(cmd)) {
           DEBUG("Plugin ", plugin->getName(),
                 " filtering passed for command: ", cmd.toString(true));
