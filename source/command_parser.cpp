@@ -15,6 +15,8 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
   const char dquote = '"';
   const char quote = '\'';
   const char escape = '\\';
+  const char cr = 0xd;
+  const char lf = 0xa;
 
   int do_escape{0};
   bool is_quoted{false};
@@ -26,6 +28,12 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
   Command cmd;
 
   DEBUG("Parser initialized with START state");
+
+  if (m_config.prefix == '\0') {
+    DEBUG("Transforming parser to COMMAND state (without prefix)");
+    state = State::COMMAND;
+  }
+
   for (size_t i = 0; i < command.size(); ++i) {
     char x = command[i];
 
@@ -45,6 +53,8 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
         token.str(std::string{});
         state = State::ARGUMENT;
         DEBUG("Parser transforms to ARGUMENT state");
+      } else if (x == cr or x == lf) {
+        DEBUG("Ignoring CR or LF character");
       } else {
         throw UnexpectedCharacter(std::string{1, x},
                                   "a-zA-Z0-9-");
@@ -83,7 +93,9 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
       } else if (is_quoted) {
         token.put(x);
         DEBUG("Appending character in quoted area: ", x);
-      } else if (x == space) {
+      } else if (x == cr) {
+        DEBUG("Ignoring CR character");
+      } else if (x == space or x == lf) {
         cmd.arguments.push_back(token.str());
         DEBUG("Creating new argument: ", token.str());
         token.str(std::string{});

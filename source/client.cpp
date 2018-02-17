@@ -18,6 +18,7 @@ Client::Client(asio::io_service& io_service, Config cfg) :
     m_io_service{io_service},
     m_socket{io_service},
     m_cfg{cfg},
+    m_admin_port{nullptr},
     m_running{false}
 {}
 
@@ -70,7 +71,7 @@ void Client::initializePlugins() {
     }
 
     if (ext == ".so") {
-      LOG(INFO, "Loading plugin from shared library: ", path);
+      LOG(INFO, "Loading plugin from shared library: ", path, " with ID: '", pluginId, "'.");
       PluginConfig cfg{
         shared_from_this(),
         pluginId,
@@ -135,6 +136,29 @@ void Client::stopAsyncReceive() {
   }
 }
 
+void Client::startAdminPort(const std::string& socket_path) {
+  if (m_admin_port != nullptr) {
+    LOG(ERROR, "Cannot start another admin port!");
+    return;
+  }
+
+  m_admin_port = std::make_unique<AdminPort>(
+    shared_from_this(),
+    socket_path
+  );
+
+  m_admin_port->acceptConnections();
+}
+
+void Client::stopAdminPort() {
+  if (m_admin_port != nullptr) {
+    m_admin_port->stop();
+    m_admin_port = nullptr;
+  } else {
+    LOG(INFO, "There is no active admin port!");
+  }
+}
+
 void Client::disconnect() {
   m_running = false;
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
@@ -164,16 +188,22 @@ void Client::run() {
   m_running = true;
 }
 
+void Client::stop() {
+  LOG(INFO, "Stopping Client...");
+  stopAsyncReceive();
+  disconnect();
+  for (auto& plugin : m_plugins) {
+    plugin->stop();
+  }
+  stopAdminPort();
+}
+
 void Client::signal(int signum) {
   switch (signum) {
     case SIGTERM:
     case SIGINT:
       LOG(INFO, "Received signal: ", signum)
-      stopAsyncReceive();
-      disconnect();
-      for (auto& plugin : m_plugins) {
-        plugin->stop();
-      }
+      stop();
       break;
   }
 }
@@ -241,8 +271,20 @@ void Client::stopPlugins() {
   }
 }
 
-void Client::restartPlugin(const std::string& name) {
-  LOG(INFO, "Trying to restart plugin: ", name);
+void Client::restartPlugin(const std::string& pluginId) {
+  LOG(INFO, "Trying to restart plugin: ", pluginId);
+  auto pred = [pluginId] (const std::unique_ptr<Plugin>& plugin) {
+    DEBUG("Checking plugin's ID: '", plugin->getId(), "'.");
+    return plugin->getId() == pluginId;
+  };
+  auto it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
+  if (it == m_plugins.end()) {
+    LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
+    return;
+  }
+
+  (*it)->stop();
+  (*it)->spawn();
 }
 
 void Client::reloadPlugin(const std::string& name) {
@@ -259,4 +301,8 @@ void Client::reloadPlugin(const std::string& name) {
   // unload
   // load
   // start
+}
+
+asio::io_service& Client::getIoService() {
+  return m_io_service;
 }

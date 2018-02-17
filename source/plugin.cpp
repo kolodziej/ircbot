@@ -10,8 +10,9 @@ Plugin::Plugin(PluginConfig config) :
     m_id{config.id},
     m_cfg{config.config},
     m_command_parser{nullptr},
-    m_running{true}
-{}
+    m_running{true} {
+  LOG(INFO, "Initialized plugin with ID: '", getId(), "'.");
+}
 
 Plugin::~Plugin() {
   onShutdown();
@@ -27,6 +28,7 @@ std::string Plugin::getId() const {
 void Plugin::stop() {
   LOG(INFO, "Stopping plugin: ", getName());
   m_running = false;
+  m_thread.join();
 }
 
 void Plugin::receive(IRCMessage cmd) {
@@ -143,6 +145,7 @@ void Plugin::spawn() {
       LOG(ERROR, "Plugin ", getName(), " caused an exception: ", exc.what());
     }
   };
+  m_running = true;
   m_thread = std::thread(plugin_call);
   helpers::setThreadName(m_thread, getName());
 }

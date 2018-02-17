@@ -33,7 +33,7 @@ void signal_handler(int signal) {
 }
 
 int main(int argc, char **argv) {
-  std::string config_fname;
+  std::string config_fname, admin_port_socket;
   bool daemon;
   
   opt::options_description cmd_opts("IRCBot client");
@@ -46,6 +46,9 @@ int main(int argc, char **argv) {
     ("config,c",
      opt::value<std::string>(&config_fname)->required(),
      "configuration file")
+    ("admin-port,a",
+     opt::value<std::string>(&admin_port_socket),
+     "path to socket for admin port")
   ;
 
   opt::variables_map var_map;
@@ -120,6 +123,12 @@ int main(int argc, char **argv) {
     signal_handling::client = client.get();
 
     client->connect();
+
+    if (not admin_port_socket.empty()) {
+      LOG(INFO, "Trying to initialize admin port at: ", admin_port_socket);
+      client->startAdminPort(admin_port_socket);
+    }
+
     client->initializePlugins();
 
     signal(SIGINT, signal_handling::signal_handler);

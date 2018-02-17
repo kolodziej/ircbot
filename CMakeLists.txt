@@ -46,6 +46,7 @@ set(SOURCES
     source/command_parser.cpp
     source/so_plugin.cpp
     source/unexpected_character.cpp
+    source/admin_port.cpp
 )
 
 set(HEADERS
@@ -70,6 +71,7 @@ set(HEADERS
     include/ircbot/so_plugin.hpp
     include/ircbot/unexpected_character.hpp
     include/ircbot/plugin_config.hpp
+    include/ircbot/admin_port.hpp
 )
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
