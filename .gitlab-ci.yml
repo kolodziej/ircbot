@@ -1,4 +1,4 @@
-image: registry:5000/ircbot-ubuntu:dev
+image: registry:5000/ircbot-ubuntu:v0.2.0
 
 stages:
   - Build
@@ -9,7 +9,7 @@ stages:
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
-build:ubuntu-16.04:
+build:
   stage: Build
   tags:
     - s3
@@ -28,7 +28,7 @@ build:ubuntu-16.04:
       - ubuntu1604-ircbot-binary.tar.xz
       - ubuntu1604-build.tar.xz
 
-test:ubuntu-16.04:
+test:
   stage: Test
   tags:
     - s3
