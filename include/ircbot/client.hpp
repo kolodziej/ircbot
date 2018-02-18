@@ -25,6 +25,8 @@ namespace asio = boost::asio;
 
 /** \class Client
  *
+ * \brief Maintains a connection to server and manages plugins.
+ *
  * Client is a representation of connection to IRC server. It routes received
  * messages to plugins which are managed also by this class and takes outgoing
  * messages from plugins and delivers them back to server.
@@ -35,34 +37,67 @@ class Client : public std::enable_shared_from_this<Client> {
   using PluginVectorIter = PluginVector::iterator;
 
  public:
-  /* Default constructor
+  /** Default constructor
    *
    * \param io_service reference to boost::asio::io_service object
    * \param cfg configuration of bot
    */
   Client(asio::io_service& io_service, Config cfg);
 
-  /* Connects to server given in configuration */
+  /** Connects to server given in configuration */
   void connect();
-  /* Initializes all plugins from configuration */
+  /** Initializes all plugins from configuration */
   void initializePlugins();
-  /* Gently disconnects from server */
+  /** Gently disconnects from server */
   void disconnect();
 
+  /** Initializes receiving messages asynchronously */
   void startAsyncReceive();
+  /** Cancels receiving messages */
   void stopAsyncReceive();
 
+  /** Initializes admin port using unix socket
+   *
+   * \param socket_path path to unix socket file on which administration port
+   * will be available
+   */
   void startAdminPort(const std::string& socket_path);
+  /** Deinitializes admin port */
   void stopAdminPort();
 
+  /** Send IRC message
+   *
+   * \param cmd instance of IRCMessage containing all message details
+   */
   void send(IRCMessage cmd);
+  /** Send IRC message
+   *
+   * \param msg string containing message
+   */
   void send(std::string msg);
 
+  /** Start client */ 
   void run();
+  /** Stop client */
   void stop();
+  /** Signal handler */
   void signal(int);
 
+  /** Load plugin marked in configuration with given id 
+   *
+   * \param pluginId plugin identification string
+   */
   PluginVectorIter loadPlugin(const std::string& pluginId);
+
+  /** Load plugin marked in configuration with given id 
+   *
+   * \param pluginId plugin identification string
+   * \param config configuration (may be loaded from configuration file or given
+   * by user)
+   *
+   * \return Iterator to vector of plugins (each plugin is represented by
+   * `std::unique_ptr<Plugin>`)
+   */
   PluginVectorIter loadPlugin(const std::string& pluginId, Config config);
   std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
                                          PluginConfig config);
