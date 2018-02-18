@@ -1,13 +1,15 @@
+image: registry:5000/ircbot-ubuntu:dev
+
 stages:
   - Build
   - Test
+  - Documentation
   - Package
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
 build:ubuntu-16.04:
-  image: registry:5000/ircbot-ubuntu:dev
   stage: Build
   tags:
     - s3
@@ -27,13 +29,23 @@ build:ubuntu-16.04:
       - ubuntu1604-build.tar.xz
 
 test:ubuntu-16.04:
-    image: registry:5000/ircbot-ubuntu:dev
-    stage: Test
-    tags:
-      - s3
-    script:
-      - tar xf ubuntu1604-build.tar.xz
-      - ls -la .
-      - ls -la build
-      - cd build
-      - ctest
+  stage: Test
+  tags:
+    - s3
+  script:
+    - tar xf ubuntu1604-build.tar.xz
+    - ls -la .
+    - ls -la build
+    - cd build
+    - ctest
+
+docs:
+  stage: Documentation
+  tags:
+    - s3
+  script:
+    - doxygen Doxyfile
+    - tar cJf docs.tar.xz docs
+  artifacts:
+    paths:
+      - docs.tar.xz
