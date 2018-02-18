@@ -32,8 +32,6 @@ class Client : public std::enable_shared_from_this<Client> {
 
   void connect();
   void initializePlugins();
-  PluginVectorIter loadPlugin(const std::string& pluginId);
-  PluginVectorIter loadPlugin(const std::string& pluginId, Config config);
   void disconnect();
 
   void startAsyncReceive();
@@ -49,12 +47,14 @@ class Client : public std::enable_shared_from_this<Client> {
   void stop();
   void signal(int);
 
+  PluginVectorIter loadPlugin(const std::string& pluginId);
+  PluginVectorIter loadPlugin(const std::string& pluginId, Config config);
+  std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
+                                         PluginConfig config);
   PluginVectorIter findPlugin(const std::string& pluginId);
   PluginVectorIter addPlugin(std::unique_ptr<Plugin>&& plugin);
   void removePlugin(PluginVectorIter it);
   std::vector<std::string> listPlugins() const;
-  std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
-                                         PluginConfig config);
 
   void startPlugins();
   void stopPlugins();
