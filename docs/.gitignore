@@ -1,1 +1,5 @@
-docs-venv
+html
+latex
+man
+xml
+docbook
