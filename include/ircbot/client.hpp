@@ -23,15 +23,30 @@ class SoPlugin;
 
 namespace asio = boost::asio;
 
+/** \class Client
+ *
+ * Client is a representation of connection to IRC server. It routes received
+ * messages to plugins which are managed also by this class and takes outgoing
+ * messages from plugins and delivers them back to server.
+ */
+
 class Client : public std::enable_shared_from_this<Client> {
   using PluginVector = std::vector<std::unique_ptr<Plugin>>;
   using PluginVectorIter = PluginVector::iterator;
 
  public:
+  /* Default constructor
+   *
+   * \param io_service reference to boost::asio::io_service object
+   * \param cfg configuration of bot
+   */
   Client(asio::io_service& io_service, Config cfg);
 
+  /* Connects to server given in configuration */
   void connect();
+  /* Initializes all plugins from configuration */
   void initializePlugins();
+  /* Gently disconnects from server */
   void disconnect();
 
   void startAsyncReceive();
