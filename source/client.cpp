@@ -55,41 +55,54 @@ void Client::initializePlugins() {
   for (auto p : m_cfg.tree().get_child("plugins")) {
     const auto& pluginId = p.first;
     const auto& pluginConfig = p.second;
-    std::string path = pluginConfig.get("path", std::string());
-    if (path.empty()) {
-      LOG(WARNING, "Some plugin has no path field in configuration! Omitting.");
-      continue;
-    }
 
-    LOG(INFO, "Processing plugin: ", path);
+    loadPlugin(pluginId, pluginConfig);
+  }
+}
 
-    namespace fs = boost::filesystem;
-    std::string ext = fs::path(path).extension().string();
-    if (ext.empty()) {
-      LOG(WARNING, "No extension in plugin's path: ", path, ". Omitting.");
-      continue;
-    }
+Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId) {
+  auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + pluginId);
+  return loadPlugin(pluginId, cfg);
+}
 
-    if (ext == ".so") {
-      LOG(INFO, "Loading plugin from shared library: ", path, " with ID: '", pluginId, "'.");
-      PluginConfig cfg{
-        shared_from_this(),
-        pluginId,
-        pluginConfig
-      };
-      auto plugin = loadSoPlugin(path, cfg);
+Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
+                                            Config config) {
+  std::string path = config.tree().get("path", std::string());
+  if (path.empty()) {
+    LOG(WARNING, "Some plugin has no path field in configuration! Omitting.");
+    return m_plugins.end();
+  }
 
-      if (plugin == nullptr) {
-        LOG(ERROR, "Could not load plugin from file: ", path);
-      } else {
-        LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
-        addPlugin(std::move(plugin));
-      }
-    } else if (ext == ".builtin") {
-      LOG(WARNING, "Support for builtin plugins is in development! Omitting.");
+  LOG(INFO, "Processing plugin: ", path);
+
+  namespace fs = boost::filesystem;
+  std::string ext = fs::path(path).extension().string();
+  if (ext.empty()) {
+    LOG(WARNING, "No extension in plugin's path: ", path, ". Omitting.");
+    return m_plugins.end();
+  }
+
+  if (ext == ".so") {
+    LOG(INFO, "Loading plugin from shared library: ", path,
+        " with ID: '", pluginId, "'.");
+
+    PluginConfig cfg{
+      shared_from_this(),
+      pluginId,
+      config
+    };
+    auto plugin = loadSoPlugin(path, cfg);
+
+    if (plugin == nullptr) {
+      LOG(ERROR, "Could not load plugin from file: ", path);
     } else {
-      LOG(WARNING, "Unsupported plugin type: ", ext, ". Omitting!");
+      LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
+      return addPlugin(std::move(plugin));
     }
+  } else if (ext == ".builtin") {
+    LOG(WARNING, "Support for builtin plugins is in development! Omitting.");
+  } else {
+    LOG(WARNING, "Unsupported plugin type: ", ext, ". Omitting!");
   }
 }
 
@@ -208,20 +221,23 @@ void Client::signal(int signum) {
   }
 }
 
-void Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
-  LOG(INFO, "Adding plugin ", plugin->getName());
-  m_plugins.push_back(std::move(plugin));
+Client::PluginVectorIter Client::findPlugin(const std::string& pluginId) {
+  auto pred = [pluginId] (const std::unique_ptr<Plugin>& plugin) {
+    return plugin->getId() == pluginId;
+  };
+  return std::find_if(m_plugins.begin(), m_plugins.end(), pred);
 }
 
-void Client::removePlugin(const std::string& name) {
-  auto pred = [&name](const auto& plugin) { return plugin->getName() == name; };
-  auto remove_it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
+Client::PluginVectorIter Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
+  LOG(INFO, "Adding plugin ", plugin->getName());
+  return m_plugins.insert(m_plugins.end(), std::move(plugin));
+}
 
-  if (remove_it == m_plugins.end()) {
-    throw std::runtime_error{"Could not find such plugin!"};
+void Client::removePlugin(PluginVectorIter it) {
+  if (it == m_plugins.end()) {
+    throw std::runtime_error{"There is no such plugin!"};
   }
-
-  m_plugins.erase(remove_it);
+  m_plugins.erase(it);
 }
 
 std::vector<std::string> Client::listPlugins() const {
@@ -252,7 +268,7 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
   }
 
   std::unique_ptr<SoPlugin> plugin = func(config);
-  plugin->setDlLibrary(pluginLibrary);
+  m_dl_plugins[plugin->getId()] = pluginLibrary;
 
   return plugin;
 }
@@ -272,12 +288,7 @@ void Client::stopPlugins() {
 }
 
 void Client::restartPlugin(const std::string& pluginId) {
-  LOG(INFO, "Trying to restart plugin: ", pluginId);
-  auto pred = [pluginId] (const std::unique_ptr<Plugin>& plugin) {
-    DEBUG("Checking plugin's ID: '", plugin->getId(), "'.");
-    return plugin->getId() == pluginId;
-  };
-  auto it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
+  auto it = findPlugin(pluginId);
   if (it == m_plugins.end()) {
     LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
     return;
@@ -287,20 +298,23 @@ void Client::restartPlugin(const std::string& pluginId) {
   (*it)->spawn();
 }
 
-void Client::reloadPlugin(const std::string& name) {
-  LOG(INFO, "Trying to reload plugin: ", name);
-  auto pred = [name] (const std::unique_ptr<Plugin>& plugin) {
-    return (plugin->getName() == name);
-  };
-  auto it = std::find_if(m_plugins.begin(), m_plugins.end(), pred);
+void Client::reloadPlugin(const std::string& pluginId) {
+  auto it = findPlugin(pluginId);
   if (it == m_plugins.end()) {
-    LOG(ERROR, "Could not find plugin: ", name);
+    LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
     return;
   }
 
-  // unload
-  // load
-  // start
+  LOG(INFO, "Reloading plugin ", pluginId);
+  (*it)->stop();
+  void * so_lib = m_dl_plugins[pluginId];
+  removePlugin(it); 
+  if (dlclose(so_lib) != 0) {
+    LOG(ERROR, "Could not unload so library!");
+  }
+
+  auto plugin = loadPlugin(pluginId);
+  (*plugin)->spawn();
 }
 
 asio::io_service& Client::getIoService() {

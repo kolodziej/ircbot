@@ -1,13 +1,16 @@
 #include "ircbot/so_plugin.hpp"
 
+#include <dlfcn.h>
+
 SoPlugin::SoPlugin(PluginConfig config) :
-    Plugin{config} {
+    Plugin{config},
+    m_so_library{nullptr} {
 }
 
-void SoPlugin::setDlLibrary(void* library) {
-  m_dl_library = library;
+void SoPlugin::setSoLibrary(void* library) {
+  m_so_library = library;
 }
 
-void* SoPlugin::getDlLibrary() const {
-  return m_dl_library;
+void* SoPlugin::getSoLibrary() const {
+  return m_so_library;
 }

@@ -33,8 +33,6 @@ class AdminPort {
     void startReceiving();
   };
 
-  void restartPlugin(const std::string& pluginId);
-
   std::shared_ptr<Client> m_client;
   asio::local::stream_protocol::endpoint m_endpoint;
   asio::local::stream_protocol::acceptor m_acceptor;

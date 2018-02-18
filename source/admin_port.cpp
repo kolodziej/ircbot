@@ -63,8 +63,17 @@ void AdminPort::processCommand(const std::string& command) {
       LOG(ERROR, "You have to give at least one plugin id!");
     }
     for (const auto& plugin : cmd.arguments) {
-      restartPlugin(plugin);
+      m_client->restartPlugin(plugin);
     }
+  } else if (cmd.command == "reloadPlugin") {
+    if (cmd.arguments.size() < 1) {
+      LOG(ERROR, "You have to give at least one plugin id!");
+    }
+    for (const auto& plugin : cmd.arguments) {
+      m_client->reloadPlugin(plugin);
+    }
+  } else if (cmd.command == "shutdown") {
+    m_client->stop();
   }
 }
 
@@ -90,8 +99,4 @@ void AdminPort::AdminPortClient::startReceiving() {
   socket.async_receive(
     mutable_buffers_1(buffer.data(), buffer.size()), handler
   );
-}
-
-void AdminPort::restartPlugin(const std::string& pluginId) {
-  m_client->restartPlugin(pluginId);
 }

@@ -24,11 +24,16 @@ class SoPlugin;
 namespace asio = boost::asio;
 
 class Client : public std::enable_shared_from_this<Client> {
+  using PluginVector = std::vector<std::unique_ptr<Plugin>>;
+  using PluginVectorIter = PluginVector::iterator;
+
  public:
   Client(asio::io_service& io_service, Config cfg);
 
   void connect();
   void initializePlugins();
+  PluginVectorIter loadPlugin(const std::string& pluginId);
+  PluginVectorIter loadPlugin(const std::string& pluginId, Config config);
   void disconnect();
 
   void startAsyncReceive();
@@ -44,8 +49,9 @@ class Client : public std::enable_shared_from_this<Client> {
   void stop();
   void signal(int);
 
-  void addPlugin(std::unique_ptr<Plugin>&& plugin);
-  void removePlugin(const std::string& name);
+  PluginVectorIter findPlugin(const std::string& pluginId);
+  PluginVectorIter addPlugin(std::unique_ptr<Plugin>&& plugin);
+  void removePlugin(PluginVectorIter it);
   std::vector<std::string> listPlugins() const;
   std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
                                          PluginConfig config);
@@ -69,7 +75,7 @@ class Client : public std::enable_shared_from_this<Client> {
   std::unique_ptr<AdminPort> m_admin_port;
 
   std::atomic_bool m_running;
-  std::vector<std::unique_ptr<Plugin>> m_plugins;
+  PluginVector m_plugins;
   std::map<std::string, void*> m_dl_plugins;
   std::mutex m_plugins_mtx;
 };

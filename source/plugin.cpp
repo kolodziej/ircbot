@@ -26,7 +26,7 @@ std::string Plugin::getId() const {
 }
 
 void Plugin::stop() {
-  LOG(INFO, "Stopping plugin: ", getName());
+  LOG(INFO, "Stopping plugin: ", getId());
   m_running = false;
   m_thread.join();
 }

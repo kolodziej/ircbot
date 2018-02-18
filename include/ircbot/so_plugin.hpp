@@ -12,11 +12,11 @@ class SoPlugin : public Plugin {
  public:
   SoPlugin(PluginConfig config);
 
-  void setDlLibrary(void*);
-  void* getDlLibrary() const;
+  void setSoLibrary(void*);
+  void* getSoLibrary() const;
 
  private:
-  void* m_dl_library;
+  void* m_so_library;
 };
 
 #endif
