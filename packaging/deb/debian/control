@@ -1,0 +1,13 @@
+Source: ircbot
+Maintainer: Kacper Kołodziej <kacper@kolodziej.it>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9)
+
+Package: ircbot
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Extendable IRC bot written in C++
+  ircbot is an extendable IRC bot written in C++. It has modular architecture.
+  You can add functionalities in runtime.

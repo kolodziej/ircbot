@@ -8,7 +8,6 @@ stages:
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
-  SOURCE_FILES: ""
 
 source:
   stage: Source
@@ -40,12 +39,31 @@ build:
       - ubuntu1604-build.tar.xz
 
 test:
-    stage: Test
-    tags:
-      - s3
-    script:
-      - tar xf ubuntu1604-build.tar.xz
-      - ls -la .
-      - ls -la build
-      - cd build
-      - ctest
+  stage: Test
+  tags:
+    - s3
+  script:
+    - tar xf ubuntu1604-build.tar.xz
+    - ls -la .
+    - ls -la build
+    - cd build
+    - ctest
+
+deb:
+  stage: Package
+  tags:
+    - s3
+  script:
+    - cp ircbot-source.tar.gz packaging/deb/ircbot-0.2.0.orig.tar.gz
+    - cd packaging/deb
+    - mkdir ircbot-0.2.0
+    - cd ircbot-0.2.0
+    - tar xf ../ircbot-0.2.0.orig.tar.gz
+    - cp -r ../debian .
+    - debuild -uc -us
+  artifacts:
+    paths:
+      - "*.dsc"
+      - "*.debian.tar.xz"
+      - "*.orig.tar.gz"
+      - "*.deb"
