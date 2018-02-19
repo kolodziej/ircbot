@@ -54,11 +54,11 @@ deb:
   tags:
     - s3
   script:
-    - cp ircbot-source.tar.gz packaging/deb/ircbot-0.2.0.orig.tar.gz
+    - cp ircbot-source.tar.gz packaging/deb/ircbot_0.2.0.orig.tar.gz
     - cd packaging/deb
     - mkdir ircbot-0.2.0
     - cd ircbot-0.2.0
-    - tar xf ../ircbot-0.2.0.orig.tar.gz
+    - tar xf ../ircbot_0.2.0.orig.tar.gz
     - cp -r ../debian .
     - debuild -uc -us
   artifacts:
