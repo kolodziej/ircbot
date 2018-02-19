@@ -63,7 +63,7 @@ deb:
     - debuild -uc -us
   artifacts:
     paths:
-      - "*.dsc"
-      - "*.debian.tar.xz"
-      - "*.orig.tar.gz"
-      - "*.deb"
+      - "packaging/deb/*.dsc"
+      - "packaging/deb/*.debian.tar.xz"
+      - "packaging/deb/*.orig.tar.gz"
+      - "packaging/deb/*.deb"
