@@ -1,13 +1,26 @@
+image: registry:5000/ircbot-ubuntu:v0.2.0
+
 stages:
+  - Source
   - Build
   - Test
   - Package
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  SOURCE_FILES: ""
 
-build:ubuntu-16.04:
-  image: registry:5000/ircbot-ubuntu:dev
+source:
+  stage: Source
+  tags:
+    - s3
+  script:
+    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests
+  artifacts:
+    paths:
+      - ircbot-source.tar.gz
+
+build:
   stage: Build
   tags:
     - s3
@@ -26,8 +39,7 @@ build:ubuntu-16.04:
       - ubuntu1604-ircbot-binary.tar.xz
       - ubuntu1604-build.tar.xz
 
-test:ubuntu-16.04:
-    image: registry:5000/ircbot-ubuntu:dev
+test:
     stage: Test
     tags:
       - s3
