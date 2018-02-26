@@ -41,7 +41,7 @@ test:
 docs:
   stage: Build
   tags:
-    - s3
+    - s2
   script:
     - mkdir build
     - cd build
