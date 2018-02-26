@@ -6,3 +6,4 @@ INPUT = source include plugins program
 RECURSIVE = YES
 GENERATE_XML = YES
 SOURCE_BROWSER = YES
+EXTRACT_PRIVATE = YES
