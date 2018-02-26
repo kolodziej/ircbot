@@ -1,4 +1,4 @@
-image: registry:5000/ircbot-ubuntu:v0.2.0
+image: kolk/ircbot:26022018
 
 stages:
   - Build
