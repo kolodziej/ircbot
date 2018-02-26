@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.0.0)
 
 find_package(Threads REQUIRED)
 find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem)
+find_package(Doxygen)
 
 include(GNUInstallDirs)
 
@@ -88,6 +89,10 @@ if(${BUILD_TESTS})
     enable_testing()
     add_subdirectory(gtest)
     add_subdirectory(tests)
+endif()
+
+if(DOXYGEN_FOUND)
+    add_subdirectory(docs)
 endif()
 
 install(TARGETS ircbot
