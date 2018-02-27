@@ -32,6 +32,8 @@ endif()
 
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+configure_file("${CMAKE_SOURCE_DIR}/cmake/version-info.in"
+               "${CMAKE_BINARY_DIR}/version-info")
 
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)

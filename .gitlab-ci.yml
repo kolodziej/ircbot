@@ -14,7 +14,7 @@ source:
   tags:
     - s3
   script:
-    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests
+    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs
   artifacts:
     paths:
       - ircbot-source.tar.gz
@@ -33,10 +33,12 @@ build:
     - tar cJf ../ubuntu1604-ircbot-binary.tar.xz ./install_root/*
     - cd ..
     - tar cJf ubuntu1604-build.tar.xz ./build
+    - cp build/version-info .
   artifacts:
     paths:
       - ubuntu1604-ircbot-binary.tar.xz
       - ubuntu1604-build.tar.xz
+      - version-info
 
 docs:
   stage: Build
@@ -68,19 +70,23 @@ deb:
   tags:
     - s3
   script:
-    - cp ircbot-source.tar.gz packaging/deb/ircbot_0.2.0.orig.tar.gz
+    - export IRCBOT_VERSION=$(cat version-info)
+    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
     - cd packaging/deb
-    - mkdir ircbot-0.2.0
-    - cd ircbot-0.2.0
-    - tar xf ../ircbot_0.2.0.orig.tar.gz
+    - mkdir ircbot-${IRCBOT_VERSION}
+    - ls -la
+    - cd ircbot-${IRCBOT_VERSION}
+    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
     - cp -r ../debian .
+    - ls -la
     - debuild -uc -us
+    - ls -la
+    - ls -la ..
+    - cd ../../..
+    - cp packaging/deb/*.deb .
   artifacts:
     paths:
-      - "packaging/deb/*.dsc"
-      - "packaging/deb/*.debian.tar.xz"
-      - "packaging/deb/*.orig.tar.gz"
-      - "packaging/deb/*.deb"
+      - "*.deb"
 
 rpm:
   image: kolk/ircbot-rpm:27022018
