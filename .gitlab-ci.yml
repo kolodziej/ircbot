@@ -81,3 +81,20 @@ deb:
       - "packaging/deb/*.debian.tar.xz"
       - "packaging/deb/*.orig.tar.gz"
       - "packaging/deb/*.deb"
+
+rpm:
+  image: kolk/ircbot-rpm:27022018
+  stage: Package
+  tags:
+    - s3
+  script:
+    - mkdir -p rpmbuild/BUILD
+    - cd rpmbuild/BUILD
+    - tar xf ../../ircbot-source.tar.gz
+    - cd ../..
+    - rpmbuild --define "_topdir $(realpath ./rpmbuild)" -ba packaging/rpm/ircbot.spec
+    - cp ./rpmbuild/SRPMS/*.rpm .
+    - cp ./rpmbuild/RPMS/**/*.rpm .
+  artifacts:
+    paths:
+      - "*.rpm"
