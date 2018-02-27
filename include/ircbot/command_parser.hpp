@@ -21,18 +21,18 @@ class CommandParser {
  public:
   /** Possible token types */
   enum class TokenType {
-    COMMAND, /** command */
-    ARGUMENT, /** single argument */
-    END, /** end of command */
-    IGNORE /** indicates that whole command should be ignored */
+    COMMAND, /**< command */
+    ARGUMENT, /**< single argument */
+    END, /**< end of command */
+    IGNORE /**< indicates that whole command should be ignored */
   };
 
   /** All possible states during parsing phase */
   enum class State {
-    START = 0, /** initial state */
-    PREFIX, /** prefix character */
-    COMMAND, /** command part */
-    ARGUMENT, /** arguments */
+    START = 0, /**< initial state */
+    PREFIX, /**< prefix character */
+    COMMAND, /**< command part */
+    ARGUMENT, /**< arguments */
   };
 
   /** \class Token
