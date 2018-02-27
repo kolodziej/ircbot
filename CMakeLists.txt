@@ -19,9 +19,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DLOG_DEBUG -ggdb -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
-include(${CMAKE_SOURCE_DIR}/cmake/version.conf)
+include(${CMAKE_SOURCE_DIR}/cmake/version.cmake)
 
-file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+# file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 
