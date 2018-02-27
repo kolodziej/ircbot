@@ -1,9 +1,8 @@
-image: registry:5000/ircbot-ubuntu:v0.2.0
+image: kolk/ircbot:26022018
 
 stages:
   - Build
   - Test
-  - Documentation
   - Package
 
 variables:
@@ -40,12 +39,15 @@ test:
     - ctest
 
 docs:
-  stage: Documentation
+  stage: Build
   tags:
     - s3
   script:
-    - doxygen Doxyfile
-    - tar cJf docs.tar.xz docs
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make docs
+    - tar cJf ../docs.tar.xz docs
   artifacts:
     paths:
       - docs.tar.xz
