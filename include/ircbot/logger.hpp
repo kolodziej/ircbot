@@ -21,6 +21,7 @@
 
 class Logger {
  public:
+  /** std::unique_ptr to LogOutput */
   using LogOutputPtr = std::unique_ptr<LogOutput>;
   
   /** Add output to logger instance
@@ -56,8 +57,8 @@ class Logger {
   /** mutex providing synchronization for access to output streams */
   std::mutex m_mtx;
 
-  /* Temporary string stream for collecting whole log message before printing it
-   * to output
+  /** Temporary string stream for collecting whole log message before printing
+   * it to output
    */
   std::stringstream m_stream;
 
