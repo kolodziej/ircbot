@@ -2,18 +2,9 @@
 
 IRCBot is extendable IRC bot.
 
-## Roadmap
+Currently released version is v0.1.1.
 
-Features for alpha release:
+Check plans for [v0.2.0][1] and [v0.3.0][2] releases.
 
-### v0.1 alpha
- * Handling POSIX signals
- * Application supporting configuration files
-
-### v0.2 alpha
- * Add Lua plugins support
- * Network module for Lua plugins
- * Add monitor terminal available via TCP
-
-### v0.3 alpha
- * Add CLI appliacation for monitor terminal
+[1]: https://git.kolodziej.it/KolK/ircbot/issues?scope=all&state=all&milestone_title=v0.2.0
+[2]: https://git.kolodziej.it/KolK/ircbot/issues?scope=all&state=all&milestone_title=v0.3.0
