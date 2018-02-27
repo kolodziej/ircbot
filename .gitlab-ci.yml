@@ -1,4 +1,4 @@
-image: registry:5000/ircbot-ubuntu:v0.2.0
+image: kolk/ircbot:26022018
 
 stages:
   - Source
@@ -37,6 +37,20 @@ build:
     paths:
       - ubuntu1604-ircbot-binary.tar.xz
       - ubuntu1604-build.tar.xz
+
+docs:
+  stage: Build
+  tags:
+    - s3
+  script:
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make docs
+    - tar cJf ../docs.tar.xz docs
+  artifacts:
+    paths:
+      - docs.tar.xz
 
 test:
   stage: Test
