@@ -19,12 +19,19 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -Wall -pedantic -Wextra")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -DLOG_DEBUG -ggdb -O0")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O2")
 
+option(RESET_VERSION_INFO
+    "Reset version information in version_configuration.hpp"
+    OFF
+)
+
 include(${CMAKE_SOURCE_DIR}/cmake/version.cmake)
 
-# file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+if (RESET_VERSION_INFO)
+    file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+endif()
+
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
-
 
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
