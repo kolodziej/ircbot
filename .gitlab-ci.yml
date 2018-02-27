@@ -69,12 +69,18 @@ deb:
       - "packaging/deb/*.deb"
 
 rpm:
-  image: registry:5000/ircbot-fedora:dev
+  image: kolk/ircbot-rpm:27022018
   stage: Package
   tags:
     - s3
   script:
-    - tar xf fedora-ircbot-binary.tar.xz
-    - cd packaging/rpm
-    - mkdir rpmbuild
-    - rpmbuild -ba --define "_topdir ./rpmbuild" ircbot.spec
+    - mkdir -p rpmbuild/BUILD
+    - cd rpmbuild/BUILD
+    - tar xf ../../ircbot-source.tar.gz
+    - cd ../..
+    - rpmbuild --define "_topdir $(realpath ./rpmbuild)" -ba packaging/rpm/ircbot.spec
+    - cp ./rpmbuild/SRPMS/*.rpm .
+    - cp ./rpmbuild/RPMS/**/*.rpm .
+  artifacts:
+    paths:
+      - "*.rpm"
