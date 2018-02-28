@@ -72,17 +72,14 @@ deb:
     - s3
   script:
     - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
     - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
     - cd packaging/deb
     - mkdir ircbot-${IRCBOT_VERSION}
-    - ls -la
     - cd ircbot-${IRCBOT_VERSION}
     - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
     - cp -r ../debian .
-    - ls -la
     - debuild -uc -us
-    - ls -la
-    - ls -la ..
     - cd ../../..
     - cp packaging/deb/*.deb .
   artifacts:
@@ -113,6 +110,7 @@ deploy:ubuntu:
     - s3
   script:
     - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
     - apt update
     - apt install -y ./ircbot_${IRCBOT_VERSION}*.deb
     - ircbot -v
@@ -124,5 +122,6 @@ deploy:fedora:
     - s3
   script:
     - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
     - yum install -y ./ircbot-${IRCBOT_VERSION}*.x86_64.rpm
     - ircbot -v

@@ -1,8 +1,8 @@
 # Version configuration
 
 set(VERSION_MAJOR "0")
-set(VERSION_MINOR "1")
-set(VERSION_PATCH "1")
+set(VERSION_MINOR "2")
+set(VERSION_PATCH "0")
 
 execute_process(
   COMMAND git rev-parse --abbrev-ref HEAD
