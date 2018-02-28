@@ -57,7 +57,7 @@ deb:ubuntu-arm:
     - cp -r ../debian .
     - debuild -uc -us
     - cd ../../..
-    - mkdir packages/debian/
+    - mkdir -p packages/ubuntu/
     - cp packaging/deb/*.deb packages/ubuntu/
   artifacts:
     paths:
