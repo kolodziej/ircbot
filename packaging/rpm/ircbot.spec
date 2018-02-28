@@ -15,7 +15,7 @@ Extendable IRC bot written in C++
 cmake -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=/usr \
       -DCMAKE_BUILD_TYPE=Debug \
       -DBUILD_TESTS=OFF
-make
+make -j $(nproc)
 
 %install
 make DESTDIR=$RPM_BUILD_ROOT install
