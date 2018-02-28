@@ -5,6 +5,7 @@ stages:
   - Build
   - Test
   - Package
+  - Deploy
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
@@ -104,3 +105,14 @@ rpm:
   artifacts:
     paths:
       - "*.rpm"
+
+deploy:ubuntu:
+  image: ubuntu:16.04
+  stage: Deploy
+  tags:
+    - s3
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - apt update
+    - apt install -y ./ircbot_${IRCBOT_VERSION}*.deb
+    - ircbot -v
