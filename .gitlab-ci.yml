@@ -41,35 +41,11 @@ build:
       - ubuntu1604-build.tar.xz
       - version-info
 
-docs:
-  stage: Build
-  tags:
-    - s3
-  script:
-    - mkdir build
-    - cd build
-    - cmake ..
-    - make docs
-    - tar cJf ../docs.tar.xz docs
-  artifacts:
-    paths:
-      - docs.tar.xz
-
-test:
-  stage: Test
-  tags:
-    - s3
-  script:
-    - tar xf ubuntu1604-build.tar.xz
-    - ls -la .
-    - ls -la build
-    - cd build
-    - ctest
-
-deb:
+deb:ubuntu-arm:
+  image: arm32v7/ubuntu:16.04
   stage: Package
   tags:
-    - s3
+    - ircbot-arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -86,42 +62,14 @@ deb:
     paths:
       - "*.deb"
 
-rpm:
-  image: kolk/ircbot-rpm:27022018
-  stage: Package
-  tags:
-    - s3
-  script:
-    - mkdir -p rpmbuild/BUILD
-    - cd rpmbuild/BUILD
-    - tar xf ../../ircbot-source.tar.gz
-    - cd ../..
-    - rpmbuild --define "_topdir $(realpath ./rpmbuild)" -ba packaging/rpm/ircbot.spec
-    - cp ./rpmbuild/SRPMS/*.rpm .
-    - cp ./rpmbuild/RPMS/**/*.rpm .
-  artifacts:
-    paths:
-      - "*.rpm"
-
-deploy:ubuntu:
-  image: ubuntu:16.04
+deploy:ubuntu-arm:
+  image: arm32v7/ubuntu:16.04
   stage: Deploy
   tags:
-    - s3
+    - ircbot-arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
     - apt update
     - apt install -y ./ircbot_${IRCBOT_VERSION}*.deb
-    - ircbot -v
-
-deploy:fedora:
-  image: fedora:27
-  stage: Deploy
-  tags:
-    - s3
-  script:
-    - export IRCBOT_VERSION=$(cat version-info)
-    - echo ${IRCBOT_VERSION}
-    - yum install -y ./ircbot-${IRCBOT_VERSION}*.x86_64.rpm
     - ircbot -v
