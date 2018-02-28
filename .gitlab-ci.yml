@@ -13,7 +13,8 @@ variables:
 source:
   stage: Source
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs
   artifacts:
@@ -23,7 +24,8 @@ source:
 build:
   stage: Build
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - mkdir build
     - cd build
@@ -44,7 +46,8 @@ build:
 docs:
   stage: Build
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - mkdir build
     - cd build
@@ -58,7 +61,8 @@ docs:
 test:
   stage: Test
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - tar xf ubuntu1604-build.tar.xz
     - ls -la .
@@ -69,7 +73,8 @@ test:
 deb:
   stage: Package
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -82,47 +87,126 @@ deb:
     - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
     - debuild -uc -us
     - cd ../../..
-    - cp packaging/deb/*.deb .
+    - mkdir -p packages/ubuntu
+    - cp packaging/deb/*.deb packages/ubuntu
   artifacts:
     paths:
-      - "*.deb"
+      - "packages/ubuntu/*.deb"
 
 rpm:
   image: kolk/ircbot-rpm:27022018
   stage: Package
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - mkdir -p rpmbuild/BUILD
     - cd rpmbuild/BUILD
     - tar xf ../../ircbot-source.tar.gz
     - cd ../..
     - rpmbuild --define "_topdir $(realpath ./rpmbuild)" -ba packaging/rpm/ircbot.spec
-    - cp ./rpmbuild/SRPMS/*.rpm .
-    - cp ./rpmbuild/RPMS/**/*.rpm .
+    - mkdir -p packages/fedora
+    - cp ./rpmbuild/SRPMS/*.rpm packages/fedora
+    - cp ./rpmbuild/RPMS/**/*.rpm packages/fedora
   artifacts:
     paths:
-      - "*.rpm"
+      - "packages/fedora/*.rpm"
+
+deb:ubuntu-arm:
+  image: kolk/ircbot-arm32v7:28022018
+  stage: Package
+  tags:
+    - ircbot
+    - arm
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
+    - cd packaging/deb
+    - mkdir ircbot-${IRCBOT_VERSION}
+    - cd ircbot-${IRCBOT_VERSION}
+    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
+    - cp -r ../debian .
+    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
+    - debuild -uc -us
+    - cd ../../..
+    - mkdir -p packages/ubuntu/
+    - cp packaging/deb/*.deb packages/ubuntu/
+  artifacts:
+    paths:
+      - "packages/ubuntu/*.deb"
+
+deb:debian-arm:
+  image: kolk/ircbot-deb9-arm32v7:28022018
+  stage: Package
+  tags:
+    - ircbot
+    - arm
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
+    - cd packaging/deb
+    - mkdir ircbot-${IRCBOT_VERSION}
+    - cd ircbot-${IRCBOT_VERSION}
+    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
+    - cp -r ../debian .
+    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
+    - debuild -uc -us
+    - cd ../../..
+    - mkdir -p packages/debian/
+    - cp packaging/deb/*.deb packages/debian/
+  artifacts:
+    paths:
+      - "packages/debian/*.deb"
 
 deploy:ubuntu:
   image: ubuntu:16.04
   stage: Deploy
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
     - apt update
-    - apt install -y ./ircbot_${IRCBOT_VERSION}*.deb
+    - apt install -y ./packages/ubuntu/ircbot_${IRCBOT_VERSION}*amd64.deb
     - ircbot -v
 
 deploy:fedora:
   image: fedora:27
   stage: Deploy
   tags:
-    - s3
+    - ircbot
+    - x86_64
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - yum install -y ./ircbot-${IRCBOT_VERSION}*.x86_64.rpm
+    - yum install -y ./packages/fedora/ircbot-${IRCBOT_VERSION}*.x86_64.rpm
+    - ircbot -v
+
+deploy:ubuntu-arm:
+  image: arm32v7/ubuntu:16.04
+  stage: Deploy
+  tags:
+    - ircbot
+    - arm
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - apt update
+    - apt install -y ./packages/ubuntu/ircbot_${IRCBOT_VERSION}*armhf.deb
+    - ircbot -v
+
+deploy:debian-arm:
+  image: arm32v7/debian:9.3
+  stage: Deploy
+  tags:
+    - ircbot
+    - arm
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - apt update
+    - apt install -y ./packages/debian/ircbot_${IRCBOT_VERSION}*armhf.deb
     - ircbot -v
