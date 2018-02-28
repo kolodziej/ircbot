@@ -79,6 +79,7 @@ deb:
     - cd ircbot-${IRCBOT_VERSION}
     - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
     - cp -r ../debian .
+    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
     - debuild -uc -us
     - cd ../../..
     - cp packaging/deb/*.deb .
