@@ -42,7 +42,7 @@ build:
       - version-info
 
 deb:ubuntu-arm:
-  image: arm32v7/ubuntu:16.04
+  image: kolk/ircbot-arm32v7:28022018
   stage: Package
   tags:
     - ircbot-arm
