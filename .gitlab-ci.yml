@@ -116,3 +116,13 @@ deploy:ubuntu:
     - apt update
     - apt install -y ./ircbot_${IRCBOT_VERSION}*.deb
     - ircbot -v
+
+deploy:fedora:
+  image: fedora:27
+  stage: Deploy
+  tags:
+    - s3
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - yum install -y ./ircbot-${IRCBOT_VERSION}*.x86_64.rpm
+    - ircbot -v
