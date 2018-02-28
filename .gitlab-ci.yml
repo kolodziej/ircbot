@@ -71,5 +71,5 @@ deploy:ubuntu-arm:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
     - apt update
-    - apt install -y ./ircbot_${IRCBOT_VERSION}*.deb
+    - apt install -y ./ircbot_${IRCBOT_VERSION}*armhf.deb
     - ircbot -v
