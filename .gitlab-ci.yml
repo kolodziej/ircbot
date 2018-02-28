@@ -45,7 +45,8 @@ deb:ubuntu-arm:
   image: kolk/ircbot-arm32v7:28022018
   stage: Package
   tags:
-    - ircbot-arm
+    - ircbot
+    - arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -68,7 +69,8 @@ deb:debian-arm:
   image: kolk/ircbot-deb9-arm32v7:28022018
   stage: Package
   tags:
-    - ircbot-arm
+    - ircbot
+    - arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -91,7 +93,8 @@ deploy:ubuntu-arm:
   image: arm32v7/ubuntu:16.04
   stage: Deploy
   tags:
-    - ircbot-arm
+    - ircbot
+    - arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -103,7 +106,8 @@ deploy:debian-arm:
   image: arm32v7/debian:9.3
   stage: Deploy
   tags:
-    - ircbot-arm
+    - ircbot
+    - arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
