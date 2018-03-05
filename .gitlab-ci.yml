@@ -70,7 +70,7 @@ test:
     - cd build
     - ctest
 
-deb:
+deb:ubuntu:
   stage: Package
   tags:
     - ircbot
@@ -92,6 +92,30 @@ deb:
   artifacts:
     paths:
       - "packages/ubuntu/*.deb"
+
+deb:debian:
+  image: kolk/ircbot-deb9:05032018
+  stage: Package
+  tags:
+    - ircbot
+    - x86_64
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
+    - cd packaging/deb
+    - mkdir ircbot-${IRCBOT_VERSION}
+    - cd ircbot-${IRCBOT_VERSION}
+    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
+    - cp -r ../debian .
+    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
+    - debuild -uc -us
+    - cd ../../..
+    - mkdir -p packages/debian
+    - cp packaging/deb/*.deb packages/debian
+  artifacts:
+    paths:
+      - "packages/debian/*.deb"
 
 rpm:
   image: kolk/ircbot-rpm:27022018
@@ -171,6 +195,19 @@ deploy:ubuntu:
     - echo ${IRCBOT_VERSION}
     - apt update
     - apt install -y ./packages/ubuntu/ircbot_${IRCBOT_VERSION}*amd64.deb
+    - ircbot -v
+
+deploy:debian:
+  image: debian:9.3
+  stage: Deploy
+  tags:
+    - ircbot
+    - x86_64
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - apt update
+    - apt install -y ./packages/debian/ircbot_${IRCBOT_VERSION}*amd64.deb
     - ircbot -v
 
 deploy:fedora:
