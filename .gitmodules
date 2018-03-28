@@ -2,3 +2,6 @@
 	path = gtest
 	url = https://git.kolodziej.it/KolK/gtest.git
 	branch = good-old-gtest
+[submodule "sol2"]
+	path = sol2
+	url = https://github.com/ThePhD/sol2
