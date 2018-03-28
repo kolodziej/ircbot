@@ -6,7 +6,8 @@ foreach(PROGRAM ${PROGRAMS})
     add_executable(program-${PROGRAM} ${PROGRAM}.cpp)
     set_target_properties(program-${PROGRAM}
       PROPERTIES OUTPUT_NAME ${PROGRAM})
-    target_link_libraries(program-${PROGRAM} ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} ircbot dl)
+    target_link_libraries(program-${PROGRAM} ${Boost_LIBRARIES}
+        ${CMAKE_THREAD_LIBS_INIT} ${LUA_LIBRARIES} ircbot dl)
 endforeach()
 
 install(TARGETS program-ircbot

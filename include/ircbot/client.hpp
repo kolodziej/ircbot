@@ -20,6 +20,7 @@
 
 class Plugin;
 class SoPlugin;
+class LuaPlugin;
 
 namespace asio = boost::asio;
 
@@ -109,6 +110,16 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
                                          PluginConfig config);
+
+  /** Load plugin from lua file
+   *
+   * \param fname lua file
+   * \param config plugin configuration
+   *
+   * \return unique pointer to LuaPlugin object
+   */
+  std::unique_ptr<LuaPlugin> loadLuaPlugin(const std::string& fname,
+                                           PluginConfig config);
 
   /** Find plugin by id
    *

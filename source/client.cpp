@@ -12,6 +12,7 @@
 
 #include "ircbot/plugin.hpp"
 #include "ircbot/so_plugin.hpp"
+#include "ircbot/lua_plugin.hpp"
 #include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service, Config cfg) :
@@ -95,6 +96,22 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
 
     if (plugin == nullptr) {
       LOG(ERROR, "Could not load plugin from file: ", path);
+    } else {
+      LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
+      return addPlugin(std::move(plugin));
+    }
+  } else if (ext == ".lua") {
+    LOG(INFO, "Loading Lua Plugin from file: ", path, " with ID: '", pluginId, "'.");
+
+    PluginConfig cfg{
+      shared_from_this(),
+      pluginId,
+      config
+    };
+    auto plugin = loadLuaPlugin(path, cfg);
+
+    if (plugin == nullptr) {
+      LOG(ERROR, "Could not load Lua Plugin from file: ", path);
     } else {
       LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
       return addPlugin(std::move(plugin));
@@ -271,6 +288,11 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
   m_dl_plugins[plugin->getId()] = pluginLibrary;
 
   return plugin;
+}
+
+std::unique_ptr<LuaPlugin> Client::loadLuaPlugin(const std::string& fname,
+                                                 PluginConfig config) {
+  return std::make_unique<LuaPlugin>(config);
 }
 
 void Client::startPlugins() {
