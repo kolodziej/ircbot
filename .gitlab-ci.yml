@@ -40,6 +40,26 @@ fedora-x86-image:
     - cd docker/fedora
     - docker build -t kolk/ircbot-fedora:$IMAGE_ID .
 
+debian-arm-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - arm
+  script:
+    - cd docker/debian-arm
+    - docker build -t kolk/ircbot-arm-debian:$IMAGE_ID .
+
+ubuntu-arm-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - arm
+  script:
+    - cd docker/ubuntu-arm
+    - docker build -t kolk/ircbot-arm-ubuntu:$IMAGE_ID .
+
 # source:
 #   stage: Source
 #   tags:
