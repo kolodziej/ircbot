@@ -18,7 +18,27 @@ ubuntu-x86-image:
     - x86_64
   script:
     - cd docker/ubuntu
-    - docker build -t kolk/ircbot:$IMAGE_ID .
+    - docker build -t kolk/ircbot-ubuntu:$IMAGE_ID .
+
+debian-x86-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - x86_64
+  script:
+    - cd docker/debian
+    - docker build -t kolk/ircbot-debian:$IMAGE_ID .
+
+fedora-x86-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - x86_64
+  script:
+    - cd docker/fedora
+    - docker build -t kolk/ircbot-fedora:$IMAGE_ID .
 
 # source:
 #   stage: Source
