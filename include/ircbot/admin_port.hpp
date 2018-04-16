@@ -52,8 +52,9 @@ class AdminPort {
   /** Process given command
    *
    * \param command command received from administration socket
+   * \return returns response that should be sent to ctl
    */
-  void processCommand(const std::string& command);
+  std::string processCommand(const std::string& command);
 
  private:
   /** \class AdminPortClient

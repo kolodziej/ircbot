@@ -52,7 +52,7 @@ void AdminPort::addClient() {
   m_clients.back().startReceiving();
 }
 
-void AdminPort::processCommand(const std::string& command) {
+std::string AdminPort::processCommand(const std::string& command) {
   LOG(INFO, "Processing command in AdminPort: ", command);
 
   CommandParser::Command cmd = m_command_parser.parse(command);
@@ -65,6 +65,7 @@ void AdminPort::processCommand(const std::string& command) {
     for (const auto& plugin : cmd.arguments) {
       m_client->restartPlugin(plugin);
     }
+    return "Plugins restarted!";
   } else if (cmd.command == "reloadPlugin") {
     if (cmd.arguments.size() < 1) {
       LOG(ERROR, "You have to give at least one plugin id!");
@@ -72,9 +73,15 @@ void AdminPort::processCommand(const std::string& command) {
     for (const auto& plugin : cmd.arguments) {
       m_client->reloadPlugin(plugin);
     }
+    return "Plugins reloaded!";
   } else if (cmd.command == "shutdown") {
     m_client->stop();
+    return "Shutting down!";
+  } else {
+    return "Unknown command!";
   }
+
+  return std::string();
 }
 
 void AdminPort::AdminPortClient::startReceiving() {
@@ -91,7 +98,8 @@ void AdminPort::AdminPortClient::startReceiving() {
     }
 
     std::string msg{buffer.data(), bytes};
-    adminPort->processCommand(msg);
+    std::string resp = adminPort->processCommand(msg);
+    socket.send(asio::buffer(resp.data(), resp.size()));
     startReceiving();
   };
 

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <thread>
+#include <array>
 
 #include <cstdlib>
 #include <cstdio>
@@ -66,6 +67,7 @@ int main(int argc, char** argv) {
 
   bool quit = false;
   const char* prompt = "ircbotctl> ";
+  std::array<char, 4096> read_buf;
   while (not quit) {
     char* line = readline(prompt);
     size_t size = strlen(line);
@@ -76,6 +78,20 @@ int main(int argc, char** argv) {
         quit = true;
       } else {
         socket.send(asio::buffer(line, size));
+        
+        if (strcmp(line, "shutdown") == 0) {
+          std::cout << "Command sent! Quitting...\n";
+          quit = true;
+          break;
+        }
+
+        size_t read = socket.read_some(
+          asio::buffer(read_buf.data(), read_buf.size())
+        );
+
+        if (read > 0) {
+          std::cout << std::string(read_buf.data(), read) << '\n';
+        }
       }
     }
   }
