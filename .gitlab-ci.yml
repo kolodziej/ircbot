@@ -26,6 +26,7 @@ build:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - mkdir build
     - cd build
@@ -48,6 +49,7 @@ docs:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - mkdir build
     - cd build
@@ -63,6 +65,7 @@ test:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - tar xf ubuntu1604-build.tar.xz
     - ls -la .
@@ -75,6 +78,7 @@ deb:ubuntu:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -99,6 +103,7 @@ deb:debian:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -123,6 +128,7 @@ rpm:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - mkdir -p rpmbuild/BUILD
     - cd rpmbuild/BUILD
@@ -142,6 +148,7 @@ deb:ubuntu-arm:
   tags:
     - ircbot
     - arm
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -166,6 +173,7 @@ deb:debian-arm:
   tags:
     - ircbot
     - arm
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -190,6 +198,7 @@ deploy:ubuntu:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -203,6 +212,7 @@ deploy:debian:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -216,6 +226,7 @@ deploy:fedora:
   tags:
     - ircbot
     - x86_64
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -228,6 +239,7 @@ deploy:ubuntu-arm:
   tags:
     - ircbot
     - arm
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -241,6 +253,7 @@ deploy:debian-arm:
   tags:
     - ircbot
     - arm
+    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
