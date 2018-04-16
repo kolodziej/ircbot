@@ -1,6 +1,5 @@
-image: kolk/ircbot:26022018
-
 stages:
+  - "Docker images"
   - Source
   - Build
   - Test
@@ -9,6 +8,62 @@ stages:
 
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
+  IMAGE_ID: $GITLAB_USER_LOGIN-$CI_COMMIT_REF_NAME
+
+ubuntu-x86-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - x86_64
+  script:
+    - cd docker/ubuntu
+    - docker build -t docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID .
+    - docker push docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
+
+debian-x86-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - x86_64
+  script:
+    - cd docker/debian
+    - docker build -t docker.kolk.cc/ircbot-debian:$IMAGE_ID .
+    - docker push docker.kolk.cc/ircbot-debian:$IMAGE_ID
+
+fedora-x86-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - x86_64
+  script:
+    - cd docker/fedora
+    - docker build -t docker.kolk.cc/ircbot-fedora:$IMAGE_ID .
+    - docker push docker.kolk.cc/ircbot-fedora:$IMAGE_ID
+
+debian-arm-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - arm
+  script:
+    - cd docker/debian-arm
+    - docker build -t docker.kolk.cc/ircbot-arm-debian:$IMAGE_ID .
+    - docker push docker.kolk.cc/ircbot-arm-debian:$IMAGE_ID
+
+ubuntu-arm-image:
+  stage: "Docker images"
+  tags:
+    - docker-host
+    - ircbot
+    - arm
+  script:
+    - cd docker/ubuntu-arm
+    - docker build -t docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID .
+    - docker push docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID
 
 source:
   stage: Source
@@ -22,8 +77,10 @@ source:
       - ircbot-source.tar.gz
 
 build:
+  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Build
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -45,8 +102,10 @@ build:
       - version-info
 
 docs:
+  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Build
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -61,8 +120,10 @@ docs:
       - docs.tar.xz
 
 test:
+  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Test
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -74,8 +135,10 @@ test:
     - ctest
 
 deb:ubuntu:
+  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Package
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -98,9 +161,10 @@ deb:ubuntu:
       - "packages/ubuntu/*.deb"
 
 deb:debian:
-  image: kolk/ircbot-deb9:05032018
+  image: docker.kolk.cc/ircbot-debian:$IMAGE_ID
   stage: Package
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -123,9 +187,10 @@ deb:debian:
       - "packages/debian/*.deb"
 
 rpm:
-  image: kolk/ircbot-rpm:27022018
+  image: docker.kolk.cc/ircbot-fedora:$IMAGE_ID
   stage: Package
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -143,9 +208,10 @@ rpm:
       - "packages/fedora/*.rpm"
 
 deb:ubuntu-arm:
-  image: kolk/ircbot-arm32v7:28022018
+  image: docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID
   stage: Package
   tags:
+    - docker
     - ircbot
     - arm
     - docker
@@ -168,9 +234,10 @@ deb:ubuntu-arm:
       - "packages/ubuntu/*.deb"
 
 deb:debian-arm:
-  image: kolk/ircbot-deb9-arm32v7:28022018
+  image: docker.kolk.cc/ircbot-arm-debian:$IMAGE_ID
   stage: Package
   tags:
+    - docker
     - ircbot
     - arm
     - docker
@@ -196,6 +263,7 @@ deploy:ubuntu:
   image: ubuntu:16.04
   stage: Deploy
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -210,6 +278,7 @@ deploy:debian:
   image: debian:9.3
   stage: Deploy
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -224,6 +293,7 @@ deploy:fedora:
   image: fedora:27
   stage: Deploy
   tags:
+    - docker
     - ircbot
     - x86_64
     - docker
@@ -237,6 +307,7 @@ deploy:ubuntu-arm:
   image: arm32v7/ubuntu:16.04
   stage: Deploy
   tags:
+    - docker
     - ircbot
     - arm
     - docker
@@ -251,6 +322,7 @@ deploy:debian-arm:
   image: arm32v7/debian:9.3
   stage: Deploy
   tags:
+    - docker
     - ircbot
     - arm
     - docker
