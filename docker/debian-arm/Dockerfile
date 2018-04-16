@@ -3,6 +3,5 @@ MAINTAINER Kacper Kołodziej <kacper@kolodziej.it>
 
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y build-essential cmake libboost-all-dev doxygen graphviz
-
-RUN apt-get install -y devscripts debhelper
+    apt-get install -y build-essential cmake libboost-all-dev doxygen graphviz \
+                       devscripts debhelper
