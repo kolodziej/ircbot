@@ -22,6 +22,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 
 %files
 %{_bindir}/ircbot
+%{_bindir}/ircbotctl
 %{_libdir}/ircbot/plugins/init.so
 %{_libdir}/ircbot/plugins/join.so
 %{_libdir}/ircbot/plugins/ping.so
