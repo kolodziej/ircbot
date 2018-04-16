@@ -5,3 +5,5 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y build-essential cmake libboost-all-dev doxygen graphviz \
                        devscripts debhelper
+
+RUN apt-get install -y libreadline-dev
