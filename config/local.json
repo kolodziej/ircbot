@@ -1,6 +1,6 @@
 {
-    "server": "irc.freenode.net",
-    "port": 6667,
+    "server": "localhost",
+    "port": 6660,
     "log": [
         {
             "level": "INFO",
@@ -11,7 +11,7 @@
             "file": "/var/log/ircbot/debug.log"
         },
         {
-            "level": "WARNING",
+            "level": "INFO",
             "file": "-stdout"
         }
     ],
@@ -19,10 +19,10 @@
         "init": {
           "path": "./plugins/init/init.so",
           "config": {
-            "nick": "KolK_IRCBot",
-            "user": "KolK_IRCBot",
-            "alternative_nicks": [ "KolK_IRCBot_1", "KolK_IRCBot_2" ],
-            "real_name": "IRCBot - KolK",
+            "nick": "IRCBot",
+            "user": "IRCBot",
+            "alternative_nicks": [ "IRCBot_1", "IRCBot_2" ],
+            "real_name": "IRCBot",
             "invisible": false,
             "wallops": false
           }
@@ -34,7 +34,7 @@
             "path": "./plugins/join/join.so",
             "config": {
                 "channels": [
-                    "#KolK"
+                    "#IRCBot"
                 ]
             }
         },
