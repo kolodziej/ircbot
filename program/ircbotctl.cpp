@@ -50,8 +50,6 @@ int main(int argc, char** argv) {
     std::cerr << "Problem during parsing arguments!\n";
   }
 
-  std::cout << "Chosen admin port: " << socket_fname << '\n';
-
   asio::io_service io;
 
   asio::local::stream_protocol::endpoint ep(socket_fname);
@@ -59,11 +57,11 @@ int main(int argc, char** argv) {
   boost::system::error_code ec;
   socket.connect(ep, ec);
   if (ec) {
-    std::cerr << "Could not connect to admin port unix socket!\n";
+    std::cerr << "Could not connect to admin port unix socket: " << socket_fname << "\n";
     return 2;
   }
 
-  std::cout << "Probably connected.. :-)\n";
+  std::cout << "Connected to admin port unix socket: " << socket_fname << "\n";
 
   bool quit = false;
   const char* prompt = "ircbotctl> ";
