@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ircbot;
+
+message InitRequest {
+    string name = 1;
+    string token = 2;
+}
+
+message InitResponse {
+    enum InitStatus {
+        OK = 0;
+        NAME_ERROR = 1;
+        TOKEN_ERROR = 2;
+        GENERAL_ERROR = 3;
+    }
+
+    InitStatus status = 1;
+}

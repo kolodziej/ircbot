@@ -1,14 +1,18 @@
 cmake_minimum_required(VERSION 3.0.0)
 
 find_package(Threads REQUIRED)
-find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem)
+find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem python)
 find_package(Doxygen)
+find_package(Protobuf REQUIRED)
+find_package(PythonInterp REQUIRED)
+find_package(PythonLibs REQUIRED)
 
 include(GNUInstallDirs)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Protobuf_INCLUDE_DIR})
 
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 
@@ -38,6 +42,11 @@ configure_file("${CMAKE_SOURCE_DIR}/cmake/version-info.in"
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
 
+set(PROTOBUF_FILES
+    protobuf/init.proto
+    protobuf/message.proto
+)
+
 set(SOURCES
     source/log_output.cpp
     source/log_level.cpp
@@ -57,6 +66,7 @@ set(SOURCES
     source/so_plugin.cpp
     source/unexpected_character.cpp
     source/admin_port.cpp
+    source/tcp_plugin.cpp
 )
 
 set(HEADERS
@@ -82,11 +92,20 @@ set(HEADERS
     include/ircbot/unexpected_character.hpp
     include/ircbot/plugin_config.hpp
     include/ircbot/admin_port.hpp
+    include/ircbot/tcp_plugin.hpp
+    include/ircbot/tcp_plugin_server.hpp
 )
 
-add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
-target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
-    ${BUILTIN_PLUGINS})
+protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
+protobuf_generate_python(PROTO_PY ${PROTOBUF_FILES})
+
+add_library("ircbot" SHARED ${HEADERS} ${SOURCES} ${PROTO_SRC} ${PROTO_HDR})
+target_link_libraries("ircbot"
+    ${Boost_LIBRARIES}
+    ${Protobuf_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${BUILTIN_PLUGINS}
+)
 
 if(${BUILD_PLUGINS})
     add_subdirectory(plugins)
@@ -103,6 +122,8 @@ endif()
 if(DOXYGEN_FOUND)
     add_subdirectory(docs)
 endif()
+
+add_custom_target(PythonProtobuf ALL DEPENDS ${PROTO_PY})
 
 install(TARGETS ircbot
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
