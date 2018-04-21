@@ -18,5 +18,7 @@ void SimpleCommands::helpCommand(const CommandParser::Command& cmd) {
       msg.params = { "KolK", x };
       send(msg);
     }
+    msg.params = { "KolK", cmd.irc_message.toString() };
+    send(msg);
   }
 }

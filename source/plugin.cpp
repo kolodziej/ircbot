@@ -57,18 +57,7 @@ void Plugin::run() {
           CommandParser::Command parsed_cmd =
              m_command_parser->parse(cmd.params.back());
 
-          parsed_cmd.additional_arguments = {
-            cmd.servername,
-            cmd.user,
-            cmd.nick,
-            cmd.host
-          };
-          parsed_cmd.additional_arguments.insert(
-            parsed_cmd.additional_arguments.end(),
-            cmd.params.begin(),
-            cmd.params.end()
-          );
-
+          parsed_cmd.irc_message = cmd;
           onCommand(parsed_cmd);
         } catch (UnexpectedCharacter& unexp) {
           LOG(WARNING, "Could not parse user command: ",

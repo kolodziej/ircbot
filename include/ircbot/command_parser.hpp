@@ -6,6 +6,7 @@
 #include <queue>
 
 #include "ircbot/parser_config.hpp"
+#include "ircbot/irc_message.hpp"
 
 /** \class CommandParser
  *
@@ -54,8 +55,8 @@ class CommandParser {
     std::string command;
     /** parsed arguments */
     std::vector<std::string> arguments;
-    /** additional arguments */
-    std::vector<std::string> additional_arguments;
+    /** parsed irc message */
+    IRCMessage irc_message;
   };
 
   /** Default constructor
