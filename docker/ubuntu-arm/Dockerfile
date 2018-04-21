@@ -5,4 +5,4 @@ RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y build-essential cmake libboost-all-dev doxygen graphviz
 
-RUN apt-get install -y devscripts debhelper
+RUN apt-get install -y devscripts debhelper libprotobuf-dev protobuf-compiler
