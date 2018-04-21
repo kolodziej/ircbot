@@ -1,12 +1,12 @@
-syntax = "proto3";
+syntax = "proto2";
 
 package ircbot;
 
 message Message {
-    string servername = 1;
-    string user = 2;
-    string nick = 3;
-    string host = 4;
-    string command = 5;
+    required string servername = 1;
+    required string user = 2;
+    required string nick = 3;
+    required string host = 4;
+    required string command = 5;
     repeated string params = 6;
 }
