@@ -4,6 +4,9 @@
 
 namespace version {
 
+static const char* git_branch = GIT_BRANCH;
+static const char* git_commit = GIT_COMMIT;
+
 std::string str() {
   std::stringstream stream;
 #ifdef RELEASE_NAME

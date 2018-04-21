@@ -16,9 +16,6 @@ static const uint16_t
   minor = VERSION_MINOR,
   patch = VERSION_PATCH;
 
-static const char* git_branch = GIT_BRANCH;
-static const char* git_commit = GIT_COMMIT;
-
 std::string str();
 
 }

@@ -99,7 +99,7 @@ pt::ptree& Plugin::cfg() {
   return m_cfg.tree();
 }
 
-bool Plugin::filter(const IRCMessage& cmd) {
+bool Plugin::filter(const IRCMessage& /*cmd*/) {
   return true;
 }
 

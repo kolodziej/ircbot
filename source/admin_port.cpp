@@ -46,7 +46,8 @@ void AdminPort::stop() {
 void AdminPort::addClient() {
   AdminPortClient client{
     this,
-    std::move(m_socket)
+    std::move(m_socket),
+    {}
   };
   m_clients.push_back(std::move(client));
   m_clients.back().startReceiving();

@@ -81,7 +81,7 @@ void Clipboard::onMessage(IRCMessage cmd) {
       int index = std::stoi(number);
 
       auto& clipboard = m_clipboard[name];
-      if (index < clipboard.size()) {
+      if (index < static_cast<int>(clipboard.size())) {
         clipboard.erase(clipboard.begin() + index);
       } else {
         IRCMessage msg{

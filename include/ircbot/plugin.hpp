@@ -73,7 +73,7 @@ class Plugin {
    *
    * \param msg incoming message
    */
-  virtual void onMessage(IRCMessage msg) {}
+  virtual void onMessage(IRCMessage /*msg*/) {}
 
   /** Is called each time configuration changes */
   virtual void onNewConfiguration() {}

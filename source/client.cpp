@@ -104,6 +104,8 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
   } else {
     LOG(WARNING, "Unsupported plugin type: ", ext, ". Omitting!");
   }
+
+  return m_plugins.end();
 }
 
 void Client::startAsyncReceive() {
