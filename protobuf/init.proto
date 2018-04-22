@@ -3,17 +3,10 @@ syntax = "proto2";
 package ircbot;
 
 message InitRequest {
-    required string name = 1;
+    required string id = 1;
     required string token = 2;
 }
 
 message InitResponse {
-    enum InitStatus {
-        OK = 0;
-        NAME_ERROR = 1;
-        TOKEN_ERROR = 2;
-        GENERAL_ERROR = 3;
-    }
-
-    required InitStatus status = 1;
+    required bool status = 1;
 }

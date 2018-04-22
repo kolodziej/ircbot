@@ -12,6 +12,7 @@
 
 #include "ircbot/plugin.hpp"
 #include "ircbot/so_plugin.hpp"
+#include "ircbot/tcp_plugin_server.hpp"
 #include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service, Config cfg) :
@@ -19,6 +20,7 @@ Client::Client(asio::io_service& io_service, Config cfg) :
     m_socket{io_service},
     m_cfg{cfg},
     m_admin_port{nullptr},
+    m_tcp_plugin_server{nullptr},
     m_running{false}
 {}
 
@@ -174,6 +176,25 @@ void Client::stopAdminPort() {
   }
 }
 
+void Client::startTcpPluginServer(const std::string& host, uint16_t port) {
+  if (m_tcp_plugin_server != nullptr) {
+    LOG(ERROR, "TcpPluginServer has already been initialized!");
+    return;
+  }
+
+  m_tcp_plugin_server = std::make_unique<TcpPluginServer>(shared_from_this(), host, port);
+  m_tcp_plugin_server->acceptConnections();
+}
+
+void Client::stopTcpPluginServer() {
+  if (m_tcp_plugin_server == nullptr) {
+    LOG(ERROR, "TcpPluginServer hasn't been initialized so cannot be stopped!");
+    return;
+  }
+
+  m_tcp_plugin_server->stop();
+}
+
 void Client::disconnect() {
   m_running = false;
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
@@ -211,6 +232,7 @@ void Client::stop() {
     plugin->stop();
   }
   stopAdminPort();
+  stopTcpPluginServer();
 }
 
 void Client::signal(int signum) {
@@ -249,6 +271,18 @@ std::vector<std::string> Client::listPlugins() const {
   }
 
   return names;
+}
+
+bool Client::authenticatePlugin(const std::string& id,
+                                const std::string& token) {
+  auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + id);
+  const std::string real_token = cfg.get<std::string>("token");
+
+  if (real_token == token) {
+    return true;
+  }
+
+  return false;
 }
 
 std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,

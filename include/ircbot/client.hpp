@@ -20,6 +20,7 @@
 
 class Plugin;
 class SoPlugin;
+class TcpPluginServer;
 
 namespace asio = boost::asio;
 
@@ -46,13 +47,16 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Connects to server given in configuration */
   void connect();
+
   /** Initializes all plugins from configuration */
   void initializePlugins();
+
   /** Gently disconnects from server */
   void disconnect();
 
   /** Initializes receiving messages asynchronously */
   void startAsyncReceive();
+
   /** Cancels receiving messages */
   void stopAsyncReceive();
 
@@ -62,8 +66,19 @@ class Client : public std::enable_shared_from_this<Client> {
    * will be available
    */
   void startAdminPort(const std::string& socket_path);
+
   /** Deinitializes admin port */
   void stopAdminPort();
+
+  /** Initializes tcp plugin server
+   * 
+   * \param host host on which server should listen
+   * \param port tcp port on which server should listen
+   */
+  void startTcpPluginServer(const std::string& host, uint16_t port);
+
+  /** Stops tcp plugin server */
+  void stopTcpPluginServer();
 
   /** Send IRC message
    *
@@ -133,11 +148,18 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   void removePlugin(PluginVectorIter it);
 
-  /* Return list of all plugins' names added to this instance
+  /** Return list of all plugins' names added to this instance
    *
    * \return vector of plugins' names
    */
   std::vector<std::string> listPlugins() const;
+
+  /** Authenticate plugin using token
+   *
+   * \param id plugin id
+   * \param token secret token
+   */
+  bool authenticatePlugin(const std::string& id, const std::string& token);
 
   /** Start all plugins */
   void startPlugins();
@@ -177,7 +199,11 @@ class Client : public std::enable_shared_from_this<Client> {
 
   Config m_cfg;
   
+  /** instance of AdminPort for this Client */
   std::unique_ptr<AdminPort> m_admin_port;
+
+  /** instance of TcpPluginServer for this Client */
+  std::unique_ptr<TcpPluginServer> m_tcp_plugin_server;
 
   /** Indicates if instance is running */
   std::atomic_bool m_running;

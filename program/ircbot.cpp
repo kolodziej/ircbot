@@ -10,6 +10,7 @@
 
 #include "ircbot/client.hpp"
 #include "ircbot/plugin.hpp"
+#include "ircbot/tcp_plugin_server.hpp"
 #include "ircbot/logger.hpp"
 #include "ircbot/version.hpp"
 #include "ircbot/helpers.hpp"
@@ -33,8 +34,9 @@ void signal_handler(int signal) {
 }
 
 int main(int argc, char **argv) {
-  std::string config_fname, admin_port_socket;
+  std::string config_fname, admin_port_socket, tcp_server_host;
   bool daemon;
+  uint16_t tcp_server_port;
   
   opt::options_description cmd_opts("IRCBot client");
   cmd_opts.add_options()
@@ -49,6 +51,12 @@ int main(int argc, char **argv) {
     ("admin-port,a",
      opt::value<std::string>(&admin_port_socket),
      "path to socket for admin port")
+    ("tcp-server-host",
+     opt::value<std::string>(&tcp_server_host)->default_value("127.0.0.1"),
+     "host on which tcp plugin server should listen")
+    ("tcp-server-port",
+     opt::value<uint16_t>(&tcp_server_port)->default_value(5454),
+     "port on which tcp plugin server should listen")
   ;
 
   opt::variables_map var_map;
@@ -135,6 +143,9 @@ int main(int argc, char **argv) {
     signal(SIGTERM, signal_handling::signal_handler);
 
     client->startPlugins();
+
+    // start tcp plugin server
+    client->startTcpPluginServer(tcp_server_host, tcp_server_port);
 
     std::thread io_thread([&io] { io.run(); });
     client->run();

@@ -21,6 +21,10 @@ Plugin::~Plugin() {
     m_thread.join();
 }
 
+std::shared_ptr<Client> Plugin::client() {
+  return m_client;
+}
+
 std::string Plugin::getId() const {
   return m_id;
 }

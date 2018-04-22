@@ -5,6 +5,8 @@
 
 #include <boost/asio.hpp>
 
+#include "ircbot/client.hpp"
+
 namespace asio = boost::asio;
 
 class TcpPluginServer {
@@ -41,9 +43,6 @@ class TcpPluginServer {
 
   /** temporary socket for incoming connections */
   asio::ip::tcp::socket m_socket;
-
-  /** connected plugin clients */
-  std::vector<TcpPluginClient> m_clients;
 };
 
 #endif

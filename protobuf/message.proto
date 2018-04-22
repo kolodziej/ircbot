@@ -1,12 +1,21 @@
 syntax = "proto2";
 
+import "init.proto";
+import "irc_message.proto";
+
 package ircbot;
 
 message Message {
-    required string servername = 1;
-    required string user = 2;
-    required string nick = 3;
-    required string host = 4;
-    required string command = 5;
-    repeated string params = 6;
+    enum MessageType {
+        INIT_REQUEST = 1;
+        INIT_RESPONSE = 2;
+        IRC_MESSAGE = 3;
+    }
+
+    required MessageType type = 1;
+    oneof data {
+        InitRequest init_req = 2;
+        InitResponse init_resp = 3;
+        IrcMessage irc_msg = 4;
+    }
 }

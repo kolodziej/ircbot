@@ -11,6 +11,7 @@ include(GNUInstallDirs)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
+include_directories("${CMAKE_BINARY_DIR}")
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(${Protobuf_INCLUDE_DIR})
 
@@ -43,8 +44,9 @@ option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
 
 set(PROTOBUF_FILES
-    protobuf/init.proto
     protobuf/message.proto
+    protobuf/init.proto
+    protobuf/irc_message.proto
 )
 
 set(SOURCES
@@ -67,6 +69,7 @@ set(SOURCES
     source/unexpected_character.cpp
     source/admin_port.cpp
     source/tcp_plugin.cpp
+    source/tcp_plugin_server.cpp
 )
 
 set(HEADERS

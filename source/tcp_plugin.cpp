@@ -1,5 +1,7 @@
 #include "ircbot/tcp_plugin.hpp"
 
+#include "message.pb.h"
+
 TcpPlugin::TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket) :
     Plugin{config},
     m_socket{std::move(socket)} {
@@ -11,6 +13,7 @@ void TcpPlugin::startReceiving() {
                          std::size_t bytes) {
     if (error == 0) {
       std::string data{m_buffer.data(), bytes};
+      parseMessage(data);
     }
 
     startReceiving();
@@ -23,7 +26,6 @@ void TcpPlugin::startReceiving() {
 }
 
 void TcpPlugin::onInit() {
-
 }
 
 void TcpPlugin::onMessage(IRCMessage /*msg*/) {
@@ -39,5 +41,30 @@ bool TcpPlugin::filter(const IRCMessage& /*msg*/) {
 }
 
 void TcpPlugin::onShutdown() {
+
+}
+
+void TcpPlugin::parseMessage(const std::string& data) {
+  ircbot::Message msg;
+  msg.ParseFromString(data);
+
+  if (msg.type() == ircbot::Message::INIT_REQUEST) {
+    LOG(INFO, "Received Init Request from Tcp plugin");
+
+    const std::string plugin_id = msg.init_req().id();
+    const std::string token = msg.init_req().token();
+
+    LOG(INFO, "Trying to authenticate plugin ", plugin_id, " with token ", token);
+    if (client()->authenticatePlugin(plugin_id, token)) {
+      LOG(INFO, "Plugin ", plugin_id, " authenticated!");
+      sendInitResponse(true);
+    } else {
+      LOG(WARNING, "Could not authenticate plugin ", plugin_id, " with token ", token);
+      sendInitResponse(false);
+    }
+  }
+}
+
+void TcpPlugin::sendInitResponse(bool status) {
 
 }

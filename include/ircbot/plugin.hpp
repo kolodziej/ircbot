@@ -41,6 +41,9 @@ class Plugin {
    */
   ~Plugin();
 
+  /** Get pointer to client */
+  std::shared_ptr<Client> client();
+
   /** Returns plugin id
    *
    * \return Unique string identifier in Client scope

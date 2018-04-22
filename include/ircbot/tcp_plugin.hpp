@@ -34,6 +34,18 @@ class TcpPlugin : public Plugin {
 
   /** buffer for received messages */
   std::array<char, 8192> m_buffer;
+
+  /** parse received message
+   *
+   * \param data received data
+   */
+  void parseMessage(const std::string& data);
+
+  /** Send response on InitRequest
+   *
+   * \param status status of initialization
+   */
+  void sendInitResponse(bool status);
 };
 
 #endif
