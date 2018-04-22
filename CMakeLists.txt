@@ -13,6 +13,7 @@ include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}")
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${PYTHON_INCLUDE_DIR})
 include_directories(${Protobuf_INCLUDE_DIR})
 
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
@@ -106,6 +107,7 @@ add_library("ircbot" SHARED ${HEADERS} ${SOURCES} ${PROTO_SRC} ${PROTO_HDR})
 target_link_libraries("ircbot"
     ${Boost_LIBRARIES}
     ${Protobuf_LIBRARIES}
+    ${PYTHON_LIBRARIES}
     ${CMAKE_THREAD_LIBS_INIT}
     ${BUILTIN_PLUGINS}
 )
