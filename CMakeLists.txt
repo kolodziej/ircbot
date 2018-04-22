@@ -110,6 +110,8 @@ target_link_libraries("ircbot"
     ${BUILTIN_PLUGINS}
 )
 
+add_custom_target(PythonProtobuf ALL DEPENDS ${PROTO_PY})
+
 if(${BUILD_PLUGINS})
     add_subdirectory(plugins)
 endif()
@@ -125,8 +127,6 @@ endif()
 if(DOXYGEN_FOUND)
     add_subdirectory(docs)
 endif()
-
-add_custom_target(PythonProtobuf ALL DEPENDS ${PROTO_PY})
 
 install(TARGETS ircbot
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

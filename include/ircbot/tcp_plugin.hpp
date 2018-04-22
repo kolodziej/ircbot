@@ -19,6 +19,8 @@ class TcpPlugin : public Plugin {
    */
   TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket);
 
+  std::string getName() const;
+
   /** start receiving messages from plugin */
   void startReceiving();
 
@@ -40,12 +42,6 @@ class TcpPlugin : public Plugin {
    * \param data received data
    */
   void parseMessage(const std::string& data);
-
-  /** Send response on InitRequest
-   *
-   * \param status status of initialization
-   */
-  void sendInitResponse(bool status);
 };
 
 #endif

@@ -257,6 +257,10 @@ Client::PluginVectorIter Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
   return m_plugins.insert(m_plugins.end(), std::move(plugin));
 }
 
+Client::PluginVectorIter Client::addTcpPlugin(asio::ip::tcp::socket&& socket) {
+  
+}
+
 void Client::removePlugin(PluginVectorIter it) {
   if (it == m_plugins.end()) {
     throw std::runtime_error{"There is no such plugin!"};
@@ -273,10 +277,12 @@ std::vector<std::string> Client::listPlugins() const {
   return names;
 }
 
-bool Client::authenticatePlugin(const std::string& id,
-                                const std::string& token) {
-  auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + id);
-  const std::string real_token = cfg.get<std::string>("token");
+bool Client::authenticatePlugin(const std::string& token) {
+  const std::string real_token = m_cfg.tree().get("plugin_token", std::string{});
+  if (real_token.empty()) {
+    LOG(ERROR, "Token for TCP plugins has not been set or is empty!");
+    return false;
+  }
 
   if (real_token == token) {
     return true;

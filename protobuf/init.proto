@@ -8,5 +8,11 @@ message InitRequest {
 }
 
 message InitResponse {
-    required bool status = 1;
+    enum Status {
+        OK = 1;
+        ERROR = 2;
+        FORMAT = 3;
+        TIMEOUT = 4;
+    }
+    required Status status = 1;
 }
