@@ -5,6 +5,6 @@ set(TESTS
 
 foreach(TEST ${TESTS})
     add_executable(${TEST} "${TEST}.cpp")
-    target_link_libraries(${TEST} gtest gtest_main ircbot dl)
+    target_link_libraries(${TEST} ${Boost_LIBRARIES} ${Protobuf_LIBRARIES} gtest gtest_main ircbot dl)
     add_test(${TEST} ${TEST})
 endforeach()
