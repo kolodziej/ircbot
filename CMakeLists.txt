@@ -1,11 +1,18 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-find_package(Threads REQUIRED)
-find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem python)
-find_package(Doxygen)
-find_package(Protobuf REQUIRED)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
+
+if(${PYTHON_VERSION_MAJOR} EQUAL 3)
+    set(PYTHON "python3")
+else()
+    set(PYTHON "python")
+endif()
+
+find_package(Threads REQUIRED)
+find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem ${PYTHON})
+find_package(Doxygen)
+find_package(Protobuf REQUIRED)
 
 # Workaround for different versions of CMake
 # Some versions define PROTOBUF_* variables and some Protobuf_*
