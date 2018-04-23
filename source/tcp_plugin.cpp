@@ -1,6 +1,7 @@
 #include "ircbot/tcp_plugin.hpp"
 
 #include "message.pb.h"
+#include "control.pb.h"
 
 TcpPlugin::TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket) :
     Plugin{config},
@@ -30,6 +31,19 @@ void TcpPlugin::startReceiving() {
 }
 
 void TcpPlugin::onInit() {
+  ircbot::ControlRequest ctrl_req;
+  ctrl_req.set_type(ircbot::ControlRequest::INIT);
+
+  std::string ctrl_req_buf;
+  ctrl_req.SerializeToString(&ctrl_req_buf);
+  const size_t buf_size = ctrl_req_buf.size();
+  size_t sent = m_socket.send(
+    asio::buffer(ctrl_req_buf.data(), buf_size)
+  );
+
+  if (sent < buf_size) {
+    LOG(ERROR, "Sent ", sent, " out of ", buf_size, " bytes of ControlInitRequest to plugin ", getName());
+  }
 }
 
 void TcpPlugin::onMessage(IRCMessage /*msg*/) {
