@@ -1,16 +1,9 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
-
-if(${PYTHON_VERSION_MAJOR} EQUAL 3)
-    set(PYTHON "python3")
-else()
-    set(PYTHON "python")
-endif()
-
 find_package(Threads REQUIRED)
-find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem ${PYTHON})
+find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem python)
 find_package(Doxygen)
 find_package(Protobuf REQUIRED)
 
@@ -116,7 +109,6 @@ set(HEADERS
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
-protobuf_generate_python(PROTO_PY ${PROTOBUF_FILES})
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES} ${PROTO_SRC} ${PROTO_HDR})
 target_link_libraries("ircbot"
