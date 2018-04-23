@@ -1,0 +1,25 @@
+syntax = "proto2";
+
+message ControlRequest {
+    enum Type {
+        SHUTDOWN = 1;
+        RELOAD = 2;
+        RESTART = 3;
+    }
+
+    required Type type = 1;
+    optional string msg = 2;
+    optional int32 code = 3;
+}
+
+message ControlResponse {
+    enum Response {
+        FINISHED_OK = 1;
+        FINISHED_ERROR = 2;
+        NOT_FINISHED = 3;
+    }
+
+    required Response response = 1;
+    optional string msg = 2;
+    optional int32 code = 3;
+}

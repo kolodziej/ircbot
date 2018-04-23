@@ -55,6 +55,7 @@ set(PROTOBUF_FILES
     protobuf/message.proto
     protobuf/init.proto
     protobuf/irc_message.proto
+    protobuf/control.proto
 )
 
 set(SOURCES
