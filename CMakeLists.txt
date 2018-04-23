@@ -7,6 +7,13 @@ find_package(Protobuf REQUIRED)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 
+# Workaround for different versions of CMake
+# Some versions define PROTOBUF_* variables and some Protobuf_*
+if(NOT DEFINED Protobuf_LIBRARIES)
+    set(Protobuf_LIBRARIES ${PROTOBUF_LIBRARIES})
+    set(Protobuf_INCLUDE_DIR ${PROTOBUF_INCLUDE_DIR})
+endif()
+
 include(GNUInstallDirs)
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
