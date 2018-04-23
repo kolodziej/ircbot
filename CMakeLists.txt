@@ -109,6 +109,7 @@ set(HEADERS
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
+protobuf_generate_python(PROTO_PY ${PROTOBUF_FILES})
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES} ${PROTO_SRC} ${PROTO_HDR})
 target_link_libraries("ircbot"
