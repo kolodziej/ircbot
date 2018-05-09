@@ -122,6 +122,8 @@ target_link_libraries("ircbot"
     ${BUILTIN_PLUGINS}
 )
 
+add_subdirectory(pyircbot)
+
 if(${BUILD_PLUGINS})
     add_subdirectory(plugins)
 endif()
