@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "ircbot/client.hpp"
+#include "ircbot/plugin_impl.hpp"
 #include "ircbot/plugin_config.hpp"
 #include "ircbot/irc_message.hpp"
 #include "ircbot/command_parser.hpp"
@@ -32,8 +33,9 @@ class Plugin {
   /** Constructor 
    *
    * \param config PluginConfig instance with prefix for command configured
+   * \param impl unique pointer to PluginImpl (plugin specific implementation)
    */
-  Plugin(PluginConfig config);
+  Plugin(PluginConfig config, std::unique_ptr<PluginImpl>&& impl);
 
   /** Destructor
    * 
@@ -206,6 +208,9 @@ class Plugin {
 
   /** thread for this plugin */
   std::thread m_thread;
+
+  /** plugin implementation */
+  std::unique_ptr<PluginImpl> m_impl;
 };
 
 #endif

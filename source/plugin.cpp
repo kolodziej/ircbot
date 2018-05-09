@@ -5,12 +5,13 @@
 #include "ircbot/unexpected_character.hpp"
 #include "ircbot/helpers.hpp"
 
-Plugin::Plugin(PluginConfig config) :
+Plugin::Plugin(PluginConfig config, std::unique_ptr<PluginImpl>&& impl) :
     m_client{config.client},
     m_id{config.id},
     m_cfg{config.config},
     m_command_parser{nullptr},
-    m_running{true} {
+    m_running{true},
+    m_impl{std::move(impl)} {
   LOG(INFO, "Initialized plugin with ID: '", getId(), "'.");
 }
 
