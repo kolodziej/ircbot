@@ -39,7 +39,7 @@ class Plugin {
    * 
    * Performs shutdown operations and waits for running thread to terminate.
    */
-  ~Plugin();
+  virtual ~Plugin() {};
 
   /** Get pointer to client */
   std::shared_ptr<Client> client();

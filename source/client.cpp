@@ -231,8 +231,13 @@ void Client::stop() {
   for (auto& plugin : m_plugins) {
     plugin->stop();
   }
+
+  LOG(INFO, "Stopping admin port (if exists)...");
   stopAdminPort();
+  LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
+
+  LOG(INFO, "Client is stopped. Ready to exit.");
 }
 
 void Client::signal(int signum) {

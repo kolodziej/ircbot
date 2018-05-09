@@ -147,10 +147,10 @@ int main(int argc, char **argv) {
     // start tcp plugin server
     client->startTcpPluginServer(tcp_server_host, tcp_server_port);
 
+    LOG(INFO, "Spawning io_thread");
     std::thread io_thread([&io] { io.run(); });
-    client->run();
 
-    LOG(INFO, "Waiting for io_thread");
+    LOG(INFO, "Waiting for io_thread...");
     io_thread.join();
 
   } catch (std::runtime_error& exc) {

@@ -14,13 +14,6 @@ Plugin::Plugin(PluginConfig config) :
   LOG(INFO, "Initialized plugin with ID: '", getId(), "'.");
 }
 
-Plugin::~Plugin() {
-  onShutdown();
-
-  if (m_thread.joinable())
-    m_thread.join();
-}
-
 std::shared_ptr<Client> Plugin::client() {
   return m_client;
 }
@@ -32,7 +25,11 @@ std::string Plugin::getId() const {
 void Plugin::stop() {
   LOG(INFO, "Stopping plugin: ", getId());
   m_running = false;
-  m_thread.join();
+
+  if (m_thread.joinable())
+    m_thread.join();
+
+  onShutdown();
 }
 
 void Plugin::receive(IRCMessage cmd) {
