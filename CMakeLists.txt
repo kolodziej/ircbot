@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.1.0)
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(Threads REQUIRED)
-find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem python)
+find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem)
 find_package(Doxygen)
 find_package(Protobuf REQUIRED)
 
@@ -15,6 +15,9 @@ if(NOT DEFINED Protobuf_LIBRARIES)
 endif()
 
 include(GNUInstallDirs)
+
+add_subdirectory(pybind11)
+include_directories("${CMAKE_SOURCE_DIR}/pybind11/include")
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
@@ -109,7 +112,6 @@ set(HEADERS
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
-protobuf_generate_python(PROTO_PY ${PROTOBUF_FILES})
 
 add_library("ircbot" SHARED ${HEADERS} ${SOURCES} ${PROTO_SRC} ${PROTO_HDR})
 target_link_libraries("ircbot"
@@ -119,8 +121,6 @@ target_link_libraries("ircbot"
     ${CMAKE_THREAD_LIBS_INIT}
     ${BUILTIN_PLUGINS}
 )
-
-add_custom_target(PythonProtobuf ALL DEPENDS ${PROTO_PY})
 
 if(${BUILD_PLUGINS})
     add_subdirectory(plugins)

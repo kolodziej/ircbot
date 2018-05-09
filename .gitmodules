@@ -2,3 +2,6 @@
 	path = gtest
 	url = https://git.kolodziej.it/KolK/gtest.git
 	branch = good-old-gtest
+[submodule "pybind11"]
+	path = pybind11
+	url = https://github.com/pybind/pybind11
