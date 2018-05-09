@@ -19,6 +19,9 @@ void TcpPlugin::startReceiving() {
     if (error == 0) {
       std::string data{m_buffer.data(), bytes};
       parseMessage(data);
+    } else if (error == asio::error::operation_aborted) {
+      LOG(INFO, "Asynchronous receiving messages cancelled for plugin: ", getId());
+      return;
     }
 
     startReceiving();
@@ -59,7 +62,12 @@ bool TcpPlugin::filter(const IRCMessage& /*msg*/) {
 }
 
 void TcpPlugin::onShutdown() {
-
+  DEBUG("Shutting down socket for Tcp Plugin ", getId());
+  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+  DEBUG("Canceling all asynchronous operations for Tcp Plugin ", getId());
+  m_socket.cancel();
+  DEBUG("Closing socket for Tcp Plugin ", getId());
+  m_socket.close();
 }
 
 void TcpPlugin::parseMessage(const std::string& data) {

@@ -35,10 +35,10 @@ void TcpPluginServer::acceptConnections() {
       auto endpoint = m_socket.remote_endpoint();
       LOG(INFO, "Accepted new connection: ", endpoint.address().to_string(), ":", endpoint.port());
       initializePlugin();
-   } else if (error == asio::error::operation_aborted) {
-      LOG(INFO, "Canceling asynchronous connection accepting!");
-      return;
-   }
+    } else if (error == asio::error::operation_aborted) {
+       LOG(INFO, "Canceling asynchronous connection accepting!");
+       return;
+    }
 
     LOG(INFO, "Waiting for new connection...");
     acceptConnections();
@@ -55,8 +55,9 @@ void TcpPluginServer::stop() {
 }
 
 void TcpPluginServer::initializePlugin() {
-  uint16_t port = m_socket.local_endpoint().port();
-  std::string plugin_id{"tcp_plugin_" + std::to_string(port)};
+  std::string host = m_socket.remote_endpoint().address().to_string();
+  uint16_t port = m_socket.remote_endpoint().port();
+  std::string plugin_id{"tcp_plugin_" + host + ":" + std::to_string(port)};
 
   PluginConfig config{
     m_client,
