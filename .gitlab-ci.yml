@@ -71,7 +71,7 @@ source:
     - ircbot
     - x86_64
   script:
-    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs protobuf
+    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs protobuf pybind11
   artifacts:
     paths:
       - ircbot-source.tar.gz
