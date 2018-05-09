@@ -1,5 +1,7 @@
 set(SOURCES
   bot.cpp
+  plugin.cpp
+  pyircbot.cpp
 )
 
 pybind11_add_module(pyircbot ${SOURCES})

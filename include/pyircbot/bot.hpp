@@ -32,14 +32,4 @@ class Bot {
   void parse();
 };
 
-PYBIND11_MODULE(pyircbot, m) {
-  py::class_<Bot>(m, "Bot")
-    .def(py::init<const std::string&, uint16_t>(),
-         py::arg("hostname"), py::arg("port"))
-    .def("hostname", &Bot::hostname)
-    .def("port", &Bot::port)
-    .def("connect", &Bot::connect)
-    .def("send", &Bot::send);
-}
-
 #endif
