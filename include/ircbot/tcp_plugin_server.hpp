@@ -54,21 +54,6 @@ class TcpPluginServer {
 
   /** get init request from plugin, authenticate plugin and initialize it */
   void initializePlugin();
-
-  /** parse InitRequest from plugin */
-  std::tuple<bool, std::string, std::string> parseInitRequest(const std::string& req);
-
-  /** serialize InitResponse message */
-  std::string serializeInitResponse(ircbot::InitResponse::Status status);
-
-  /** authenticate plugin */
-  bool authenticatePlugin(const std::string& token);
-
-  /** create Tcp Plugin */
-  std::unique_ptr<TcpPlugin> createPlugin(const std::string& plugin_id, const std::string& token);
-
-  /** close connection on temporary socket */
-  void deinitializePlugin(ircbot::InitResponse::Status status);
 };
 
 #endif
