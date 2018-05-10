@@ -1,5 +1,8 @@
 #include "pyircbot/bot.hpp"
 
+#include <iostream>
+
+#include "message.pb.h"
 #include "ircbot/version.hpp"
 
 Bot::Bot(const std::string& hostname, uint16_t port) :
@@ -24,6 +27,16 @@ void Bot::connect() {
   m_socket.connect(endpoint);
 }
 
+void Bot::start() {
+  m_io_thread = std::move(std::thread{[this] { m_io.run(); }});
+}
+
+void Bot::stop() {
+  m_socket.cancel();
+  m_socket.close();
+  m_io_thread.join();
+}
+
 void Bot::send(const std::string& data) {
   m_socket.send(asio::buffer(data.data(), data.size()));
 }
@@ -31,7 +44,7 @@ void Bot::send(const std::string& data) {
 void Bot::receive() {
   auto callback = [this](const boost::system::error_code& ec, std::size_t bytes) {
     if (ec == 0) {
-      parse();
+      parse(bytes);
     } else {
       return;
     }
@@ -45,6 +58,9 @@ void Bot::receive() {
   );
 }
 
-void Bot::parse() {
-
+void Bot::parse(size_t bytes) {
+  ircbot::Message msg; 
+  auto msg_str = std::string{m_buffer.data(), bytes};
+  msg.ParseFromString(msg_str);
+  std::cout << "Received " << bytes << " bytes: " << msg_str << "\n";
 }

@@ -17,5 +17,8 @@ PYBIND11_MODULE(pyircbot, m) {
     .def("hostname", &Bot::hostname)
     .def("port", &Bot::port)
     .def("connect", &Bot::connect)
-    .def("send", &Bot::send);
+    .def("start", &Bot::start)
+    .def("stop", &Bot::stop)
+    .def("send", &Bot::send)
+    .def("receive", &Bot::receive);
 }

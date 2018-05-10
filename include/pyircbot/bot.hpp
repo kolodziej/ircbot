@@ -1,6 +1,7 @@
 #ifndef _PYIRCBOT_BOT_HPP
 #define _PYIRCBOT_BOT_HPP
 
+#include <thread>
 #include <pybind11/pybind11.h>
 #include <boost/asio.hpp>
 
@@ -17,7 +18,12 @@ class Bot {
   uint16_t port() const;
 
   void connect();
+
+  void start();
+  void stop();
+
   void send(const std::string& data);
+  void receive();
 
  private:
   const std::string m_hostname;
@@ -26,10 +32,11 @@ class Bot {
   asio::io_service m_io;
   asio::ip::tcp::socket m_socket;
 
+  std::thread m_io_thread;
+
   std::array<char, 8192> m_buffer;
 
-  void receive();
-  void parse();
+  void parse(size_t bytes);
 };
 
 #endif
