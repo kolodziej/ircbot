@@ -1,13 +1,17 @@
 #include "ircbot/tcp_plugin.hpp"
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #include "message.pb.h"
 #include "control.pb.h"
 
 TcpPlugin::TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket) :
     Plugin{config},
     m_socket{std::move(socket)},
+    m_init_timer{m_socket.get_io_service()},
     m_name{TcpPlugin::defaultName(m_socket)} {
   startReceiving();
+  startInitTimer();
 }
 
 std::string TcpPlugin::getName() const {
@@ -32,6 +36,16 @@ void TcpPlugin::startReceiving() {
       asio::buffer(m_buffer.data(), m_buffer.size()),
       callback
   );
+}
+
+void TcpPlugin::startInitTimer() {
+  auto callback = [this](const boost::system::error_code& /*ec*/) {
+    LOG(ERROR, "TcpPlugin ", getName(), ": initialization timer expired! Stopping.");
+    stop();
+  };
+
+  m_init_timer.expires_from_now(boost::posix_time::seconds(5));
+  m_init_timer.async_wait(callback);
 }
 
 void TcpPlugin::onInit() {
@@ -63,6 +77,8 @@ bool TcpPlugin::filter(const IRCMessage& /*msg*/) {
 }
 
 void TcpPlugin::onShutdown() {
+  m_init_timer.cancel();
+
   DEBUG("Shutting down socket for Tcp Plugin ", getId());
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   DEBUG("Canceling all asynchronous operations for Tcp Plugin ", getId());
@@ -104,6 +120,7 @@ void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
   if (client()->authenticatePlugin(token)) {
     LOG(INFO, "TcpPlugin ", getName(), " has been successfully authenticated!");
     m_name = name;
+    m_init_timer.cancel();
   } else {
     LOG(ERROR, "TcpPlugin ", getName(), " failed to authenticate! Stopping.");
     stop();

@@ -24,6 +24,7 @@ class Bot {
 
   void send(const std::string& data);
   void receive();
+  void initialize(const std::string& name, const std::string& token);
 
  private:
   const std::string m_hostname;

@@ -20,5 +20,7 @@ PYBIND11_MODULE(pyircbot, m) {
     .def("start", &Bot::start)
     .def("stop", &Bot::stop)
     .def("send", &Bot::send)
-    .def("receive", &Bot::receive);
+    .def("receive", &Bot::receive)
+    .def("initialize", &Bot::initialize,
+         py::arg("name"), py::arg("token"));
 }

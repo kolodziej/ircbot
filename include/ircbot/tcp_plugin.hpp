@@ -25,6 +25,9 @@ class TcpPlugin : public Plugin {
   /** start receiving messages from plugin */
   void startReceiving();
 
+  /** initialize initialization timer */
+  void startInitTimer();
+
   void onInit();
   void onMessage(IRCMessage msg);
   void onNewConfiguration();
@@ -36,6 +39,9 @@ class TcpPlugin : public Plugin {
  private:
   /** asio tcp socket for communication with plugin */
   asio::ip::tcp::socket m_socket;
+
+  /** initialization timer */
+  asio::deadline_timer m_init_timer;
 
   /** buffer for received messages */
   std::array<char, 8192> m_buffer;

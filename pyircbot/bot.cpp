@@ -64,3 +64,17 @@ void Bot::parse(size_t bytes) {
   msg.ParseFromString(msg_str);
   std::cout << "Received " << bytes << " bytes: " << msg_str << "\n";
 }
+
+void Bot::initialize(const std::string& name, const std::string& token) {
+  ircbot::Message msg;
+  msg.set_type(ircbot::Message::INIT_REQUEST);
+  
+  ircbot::InitRequest* req = msg.mutable_init_req();
+  req->set_name(name);
+  req->set_token(token);
+
+  std::string serialized;
+  msg.SerializeToString(&serialized);
+
+  send(serialized);
+}
