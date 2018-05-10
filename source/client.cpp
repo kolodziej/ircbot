@@ -262,10 +262,6 @@ Client::PluginVectorIter Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
   return m_plugins.insert(m_plugins.end(), std::move(plugin));
 }
 
-Client::PluginVectorIter Client::addTcpPlugin(asio::ip::tcp::socket&& socket) {
-  
-}
-
 void Client::removePlugin(PluginVectorIter it) {
   if (it == m_plugins.end()) {
     throw std::runtime_error{"There is no such plugin!"};

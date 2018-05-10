@@ -141,14 +141,6 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   PluginVectorIter addPlugin(std::unique_ptr<Plugin>&& plugin);
 
-  /** Adds TcpPlugin
-   *
-   * \param socket boost asio tcp socket connected to plugin
-   * 
-   * \return iterator to inserted plugin
-   */
-  PluginVectorIter addTcpPlugin(asio::ip::tcp::socket&& socket);
-
   /** Removes plugin from client instance
    *
    * \param it iterator to plugin in vector (may be obtained using findPlugin
