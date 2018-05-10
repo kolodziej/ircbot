@@ -4,8 +4,9 @@
 #include "ircbot/plugin.hpp"
 
 #include <array>
-
 #include <boost/asio.hpp>
+
+#include "message.pb.h"
 
 namespace asio = boost::asio;
 
@@ -30,6 +31,8 @@ class TcpPlugin : public Plugin {
   bool filter(const IRCMessage& msg);
   void onShutdown();
 
+  static std::string defaultName(asio::ip::tcp::socket& socket);
+
  private:
   /** asio tcp socket for communication with plugin */
   asio::ip::tcp::socket m_socket;
@@ -37,11 +40,15 @@ class TcpPlugin : public Plugin {
   /** buffer for received messages */
   std::array<char, 8192> m_buffer;
 
+  /** plugin's name **/
+  std::string m_name;
+
   /** parse received message
    *
    * \param data received data
    */
   void parseMessage(const std::string& data);
+  void processInitRequest(const ircbot::InitRequest& req);
 };
 
 #endif

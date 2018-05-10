@@ -5,12 +5,13 @@
 
 TcpPlugin::TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket) :
     Plugin{config},
-    m_socket{std::move(socket)} {
+    m_socket{std::move(socket)},
+    m_name{TcpPlugin::defaultName(m_socket)} {
   startReceiving();
 }
 
 std::string TcpPlugin::getName() const {
-  return std::string{"TcpPlugin: "} + getId();
+  return m_name;
 }
 
 void TcpPlugin::startReceiving() {
@@ -70,7 +71,41 @@ void TcpPlugin::onShutdown() {
   m_socket.close();
 }
 
+std::string TcpPlugin::defaultName(asio::ip::tcp::socket& socket) {
+  std::string name{
+    "tcp_plugin:" +
+    socket.remote_endpoint().address().to_string() + ":" +
+    std::to_string(socket.remote_endpoint().port())
+  };
+
+  return name;
+}
+
 void TcpPlugin::parseMessage(const std::string& data) {
+  LOG(INFO, "TcpPlugin ", getName(), " received a message. Trying to parse.");
   ircbot::Message msg;
   msg.ParseFromString(data);
+
+  if (msg.type() == ircbot::Message::INIT_REQUEST) {
+    DEBUG("TcpPlugin ", getName(), ": Received INIT_REQUEST");
+    if (msg.has_init_req()) {
+      DEBUG("TcpPlugin ", getName(), ": Has init_req");
+      processInitRequest(msg.init_req());
+    }
+  }
+}
+
+void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
+  LOG(INFO, "Processing initializatino request from ", getName()); 
+  const auto& name = req.name();
+  const auto& token = req.token();
+
+  LOG(INFO, "Trying to authenticate plugin ", getName(), " as: ", name, " with token: ", token);
+  if (client()->authenticatePlugin(token)) {
+    LOG(INFO, "TcpPlugin ", getName(), " has been successfully authenticated!");
+    m_name = name;
+  } else {
+    LOG(ERROR, "TcpPlugin ", getName(), " failed to authenticate! Stopping.");
+    stop();
+  }
 }
