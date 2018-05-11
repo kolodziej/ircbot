@@ -108,7 +108,16 @@ void Bot::initResponse(const ircbot::InitResponse& resp) {
 }
 
 void Bot::ircMessage(const ircbot::IrcMessage& irc_msg) {
-  std::cout << "Received IRCMessage!";
+  IRCMessage msg;
+  msg.servername = irc_msg.servername();
+  msg.user = irc_msg.user();
+  msg.nick = irc_msg.nick();
+  msg.host = irc_msg.host();
+  msg.command = irc_msg.command();
+  for (int i = 0; i < irc_msg.params_size(); ++i) {
+    msg.params.push_back(irc_msg.params(i));
+  }
+  m_plugin.onMessage(msg);
 }
 
 void Bot::controlRequest(const ircbot::ControlRequest& req) {

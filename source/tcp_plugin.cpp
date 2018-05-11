@@ -70,8 +70,27 @@ void TcpPlugin::onInit() {
   }
 }
 
-void TcpPlugin::onMessage(IRCMessage /*msg*/) {
+void TcpPlugin::onMessage(IRCMessage received_msg) {
+  ircbot::Message msg;
+  msg.set_type(ircbot::Message::IRC_MESSAGE);
 
+  ircbot::IrcMessage* irc_msg = msg.mutable_irc_msg();
+  irc_msg->set_servername(received_msg.servername);
+  irc_msg->set_user(received_msg.user);
+  irc_msg->set_nick(received_msg.nick);
+  irc_msg->set_host(received_msg.host);
+  irc_msg->set_command(received_msg.command);
+
+  for (const auto& param : received_msg.params) {
+    irc_msg->add_params(param);
+  }
+
+  DEBUG("Serializing IRCMessage to ircbot::IrcMessage");
+  std::string serialized;
+  msg.SerializeToString(&serialized);
+
+  LOG(INFO, "Sending ircbot::IRCMessage to TcpPlugin ", getName());
+  send(serialized);
 }
 
 void TcpPlugin::onNewConfiguration() {
@@ -137,6 +156,7 @@ void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
     m_init_timer.cancel();
 
     sendInitResponse(ircbot::InitResponse::OK);
+    spawn();
   } else {
     LOG(ERROR, "TcpPlugin ", getName(), " failed to authenticate! Stopping.");
     sendInitResponse(ircbot::InitResponse::ERROR);

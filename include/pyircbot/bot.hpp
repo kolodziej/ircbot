@@ -4,7 +4,6 @@
 #include <thread>
 #include <atomic>
 #include <array>
-#include <pybind11/pybind11.h>
 #include <boost/asio.hpp>
 
 #include "pyircbot/plugin.hpp"
@@ -13,7 +12,6 @@
 #include "irc_message.pb.h"
 #include "control.pb.h"
 
-namespace py = pybind11;
 namespace asio = boost::asio;
 
 class Bot {
