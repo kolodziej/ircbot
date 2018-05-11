@@ -54,7 +54,15 @@ class TcpPlugin : public Plugin {
    * \param data received data
    */
   void parseMessage(const std::string& data);
+
+  /** send message
+   *
+   * \param msg string containing message
+   */
+  void send(const std::string& msg);
+
   void processInitRequest(const ircbot::InitRequest& req);
+  void sendInitResponse(const ircbot::InitResponse::Status& status);
 };
 
 #endif

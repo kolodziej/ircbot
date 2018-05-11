@@ -39,7 +39,10 @@ void TcpPlugin::startReceiving() {
 }
 
 void TcpPlugin::startInitTimer() {
-  auto callback = [this](const boost::system::error_code& /*ec*/) {
+  auto callback = [this](const boost::system::error_code& ec) {
+    if (ec == asio::error::operation_aborted)
+      return;
+
     LOG(ERROR, "TcpPlugin ", getName(), ": initialization timer expired! Stopping.");
     stop();
   };
@@ -111,6 +114,11 @@ void TcpPlugin::parseMessage(const std::string& data) {
   }
 }
 
+void TcpPlugin::send(const std::string& msg) {
+  LOG(INFO, "TcpPlugin ", getName(), ": Sending ", msg.size(), " bytes to tcp plugin");
+  m_socket.send(asio::buffer(msg.data(), msg.size()));
+}
+
 void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
   LOG(INFO, "Processing initializatino request from ", getName()); 
   const auto& name = req.name();
@@ -121,8 +129,23 @@ void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
     LOG(INFO, "TcpPlugin ", getName(), " has been successfully authenticated!");
     m_name = name;
     m_init_timer.cancel();
+
+    sendInitResponse(ircbot::InitResponse::OK);
   } else {
     LOG(ERROR, "TcpPlugin ", getName(), " failed to authenticate! Stopping.");
+    sendInitResponse(ircbot::InitResponse::ERROR);
     stop();
   }
+}
+
+void TcpPlugin::sendInitResponse(const ircbot::InitResponse::Status& status) {
+  ircbot::Message msg;
+  msg.set_type(ircbot::Message::INIT_RESPONSE);
+
+  ircbot::InitResponse* resp = msg.mutable_init_resp();
+  resp->set_status(status);
+
+  std::string msg_str;
+  msg.SerializeToString(&msg_str);
+  send(msg_str);
 }

@@ -5,10 +5,17 @@
 #include "message.pb.h"
 #include "ircbot/version.hpp"
 
-Bot::Bot(const std::string& hostname, uint16_t port) :
+Bot::Bot(const std::string& hostname, uint16_t port, Plugin plugin) :
   m_hostname{hostname},
   m_port{port},
-  m_socket{m_io} {
+  m_plugin{plugin},
+  m_socket{m_io},
+  m_started{false} {
+}
+
+Bot::~Bot() {
+  if (m_started)
+    stop();
 }
 
 std::string Bot::hostname() const {
@@ -29,12 +36,14 @@ void Bot::connect() {
 
 void Bot::start() {
   m_io_thread = std::move(std::thread{[this] { m_io.run(); }});
+  m_started = true;
 }
 
 void Bot::stop() {
   m_socket.cancel();
   m_socket.close();
   m_io_thread.join();
+  m_started = false;
 }
 
 void Bot::send(const std::string& data) {
@@ -62,7 +71,18 @@ void Bot::parse(size_t bytes) {
   ircbot::Message msg; 
   auto msg_str = std::string{m_buffer.data(), bytes};
   msg.ParseFromString(msg_str);
-  std::cout << "Received " << bytes << " bytes: " << msg_str << "\n";
+
+  switch (msg.type()) {
+    case ircbot::Message::INIT_RESPONSE:
+      initResponse(msg.init_resp());
+      break;
+    case ircbot::Message::IRC_MESSAGE:
+      ircMessage(msg.irc_msg());
+      break;
+    case ircbot::Message::CONTROL_REQUEST:
+      controlRequest(msg.ctrl_req());
+      break;
+  }
 }
 
 void Bot::initialize(const std::string& name, const std::string& token) {
@@ -77,4 +97,34 @@ void Bot::initialize(const std::string& name, const std::string& token) {
   msg.SerializeToString(&serialized);
 
   send(serialized);
+}
+
+void Bot::initResponse(const ircbot::InitResponse& resp) {
+  if (resp.status() == ircbot::InitResponse::OK) {
+    std::cout << "initialized. can continue!\n";
+  } else {
+    std::cout << "some error occurred during initialization\n";
+  }
+}
+
+void Bot::ircMessage(const ircbot::IrcMessage& irc_msg) {
+  std::cout << "Received IRCMessage!";
+}
+
+void Bot::controlRequest(const ircbot::ControlRequest& req) {
+  switch (req.type()) {
+    case ircbot::ControlRequest::INIT:
+      m_plugin.onInit();
+      break;
+    case ircbot::ControlRequest::SHUTDOWN:
+      m_plugin.onShutdown();
+      stop();
+      break;
+    case ircbot::ControlRequest::RELOAD:
+      m_plugin.onReload();
+      break;
+    case ircbot::ControlRequest::RESTART:
+      m_plugin.onRestart();
+      break;
+  }
 }
