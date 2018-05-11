@@ -27,6 +27,9 @@ void TcpPlugin::startReceiving() {
     } else if (error == asio::error::operation_aborted) {
       LOG(INFO, "Asynchronous receiving messages cancelled for plugin: ", getId());
       return;
+    } else {
+      LOG(ERROR, "TcpPlugin ", getName(), ": error during receiving message! Stopping!");
+      return;
     }
 
     startReceiving();
