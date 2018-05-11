@@ -106,14 +106,17 @@ std::string TcpPlugin::defaultName(asio::ip::tcp::socket& socket) {
 void TcpPlugin::parseMessage(const std::string& data) {
   LOG(INFO, "TcpPlugin ", getName(), " received a message. Trying to parse.");
   ircbot::Message msg;
-  msg.ParseFromString(data);
-
-  if (msg.type() == ircbot::Message::INIT_REQUEST) {
-    DEBUG("TcpPlugin ", getName(), ": Received INIT_REQUEST");
-    if (msg.has_init_req()) {
-      DEBUG("TcpPlugin ", getName(), ": Has init_req");
-      processInitRequest(msg.init_req());
+  if (msg.ParseFromString(data)) {
+    LOG(INFO, "TcpPlugin ", getName(), ": Message parsed!")
+    if (msg.type() == ircbot::Message::INIT_REQUEST) {
+      DEBUG("TcpPlugin ", getName(), ": Received INIT_REQUEST");
+      if (msg.has_init_req()) {
+        DEBUG("TcpPlugin ", getName(), ": Has init_req");
+        processInitRequest(msg.init_req());
+      }
     }
+  } else {
+    LOG(ERROR, "Received message has incorrect format!");
   }
 }
 
