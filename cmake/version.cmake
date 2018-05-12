@@ -18,5 +18,5 @@ execute_process(
   OUTPUT_STRIP_TRAILING_WHITESPACE
 )
 
-set(RELEASE_TYPE development)
+set(RELEASE_TYPE tcp-plugin-dev)
 set(RELEASE_NAME)
