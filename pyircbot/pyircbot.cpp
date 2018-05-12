@@ -5,7 +5,6 @@
 #include "pyircbot/bot.hpp"
 #include "pyircbot/plugin.hpp"
 #include "ircbot/irc_message.hpp"
-#include "ircbot/command_parser.hpp"
 
 namespace py = pybind11;
 
@@ -16,7 +15,6 @@ PYBIND11_MODULE(pyircbot, m) {
     .def_readwrite("token", &Plugin::token)
     .def_readwrite("onInit", &Plugin::onInit)
     .def_readwrite("onMessage", &Plugin::onMessage)
-    .def_readwrite("onCommand", &Plugin::onCommand)
     .def_readwrite("onShutdown", &Plugin::onShutdown)
     .def_readwrite("onRestart", &Plugin::onRestart)
     .def_readwrite("onReload", &Plugin::onReload);
@@ -47,10 +45,4 @@ PYBIND11_MODULE(pyircbot, m) {
     .def_readwrite("host", &IRCMessage::host)
     .def_readwrite("command", &IRCMessage::command)
     .def_readwrite("params", &IRCMessage::params);
-
-  py::class_<CommandParser::Command>(m, "Command")
-    .def(py::init())
-    .def_readwrite("command", &CommandParser::Command::command)
-    .def_readwrite("arguments", &CommandParser::Command::arguments)
-    .def_readwrite("irc_message", &CommandParser::Command::irc_message);
 }
