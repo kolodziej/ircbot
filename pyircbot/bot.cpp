@@ -16,6 +16,8 @@ Bot::Bot(const std::string& hostname, uint16_t port, Plugin plugin) :
 Bot::~Bot() {
   if (m_started)
     stop();
+
+  wait();
 }
 
 std::string Bot::hostname() const {
@@ -34,16 +36,29 @@ void Bot::connect() {
   m_socket.connect(endpoint);
 }
 
+bool Bot::connected() const {
+  return m_socket.is_open();
+}
+
 void Bot::start() {
-  m_io_thread = std::move(std::thread{[this] { m_io.run(); }});
   m_started = true;
+  m_io.run();
+}
+
+void Bot::async_start() {
+  m_started = true;
+  m_io_thread = std::move(std::thread{[this] { m_io.run(); }});
 }
 
 void Bot::stop() {
+  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   m_socket.cancel();
   m_socket.close();
-  m_io_thread.join();
-  m_started = false;
+}
+
+void Bot::wait() {
+  if (m_io_thread.joinable())
+    m_io_thread.join();
 }
 
 void Bot::send(const std::string& data) {

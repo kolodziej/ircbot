@@ -23,12 +23,14 @@ class Bot {
   uint16_t port() const;
 
   void start();
-  void async_start() {}
+  void async_start();
   void stop();
+  void wait();
   void send(const std::string& data);
 
  public: // change to private
   void connect();
+  bool connected() const;
 
   void receive();
   void initialize(const std::string& name, const std::string& token);
