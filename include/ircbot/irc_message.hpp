@@ -6,6 +6,8 @@
 #include <ostream>
 #include <initializer_list>
 
+#include "irc_message.pb.h"
+
 /** \class IRCMessage
  *
  * \brief Representation of parsed IRC message (compliant with RFC 1459)
@@ -56,6 +58,13 @@ struct IRCMessage {
    * for generating logs)
    */
   std::string toString(bool stripCRLF = false) const;
+
+  /** Conversion from Protobuf IrcMessage to IRCMessage
+   *
+   * \param pb_msg object of protobuf IrcMessage
+   * \return IRCMessage object
+   */
+  static IRCMessage fromProtobuf(const ircbot::IrcMessage&);
 };
 
 #endif

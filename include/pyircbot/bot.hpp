@@ -28,6 +28,7 @@ class Bot {
   void stop();
   void wait();
   void send(const std::string& data);
+  void sendIrcMessage(const IRCMessage& sourcemsg);
 
  private:
   void connect();

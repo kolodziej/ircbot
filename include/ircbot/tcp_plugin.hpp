@@ -59,9 +59,10 @@ class TcpPlugin : public Plugin {
    *
    * \param msg string containing message
    */
-  void send(const std::string& msg);
+  void sendToPlugin(const std::string& msg);
 
   void processInitRequest(const ircbot::InitRequest& req);
+  void processIrcMessage(const ircbot::IrcMessage& irc_msg);
   void sendInitResponse(const ircbot::InitResponse::Status& status);
   void sendControlRequest(const ircbot::ControlRequest::Type& type,
                           const std::string& msg = {},

@@ -29,7 +29,8 @@ PYBIND11_MODULE(pyircbot, m) {
     .def("async_start", &Bot::async_start)
     .def("stop", &Bot::stop)
     .def("wait", &Bot::wait)
-    .def("send", &Bot::send);
+    .def("send", &Bot::send)
+    .def("sendIrcMessage", &Bot::sendIrcMessage);
 
   py::class_<IRCMessage>(m, "IRCMessage")
     .def(py::init())

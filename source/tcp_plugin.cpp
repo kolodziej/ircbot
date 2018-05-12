@@ -90,7 +90,7 @@ void TcpPlugin::onMessage(IRCMessage received_msg) {
   msg.SerializeToString(&serialized);
 
   LOG(INFO, "Sending ircbot::IRCMessage to TcpPlugin ", getName());
-  send(serialized);
+  sendToPlugin(serialized);
 }
 
 void TcpPlugin::onNewConfiguration() {
@@ -130,19 +130,31 @@ void TcpPlugin::parseMessage(const std::string& data) {
   ircbot::Message msg;
   if (msg.ParseFromString(data)) {
     LOG(INFO, "TcpPlugin ", getName(), ": Message parsed!")
-    if (msg.type() == ircbot::Message::INIT_REQUEST) {
-      DEBUG("TcpPlugin ", getName(), ": Received INIT_REQUEST");
-      if (msg.has_init_req()) {
-        DEBUG("TcpPlugin ", getName(), ": Has init_req");
-        processInitRequest(msg.init_req());
-      }
+    switch (msg.type()) {
+      case ircbot::Message::INIT_REQUEST:
+        DEBUG("TcpPlugin ", getName(), ": Received INIT_REQUEST");
+        if (msg.has_init_req()) {
+          DEBUG("TcpPlugin ", getName(), ": Has init_req");
+          processInitRequest(msg.init_req());
+        }
+        break;
+      case ircbot::Message::IRC_MESSAGE:
+        DEBUG("TcpPlugin ", getName(), ": Received IRC_MESSAGE");
+        if (msg.has_irc_msg()) {
+          DEBUG("TcpPlugin ", getName(), ": Has irc_msg");
+          processIrcMessage(msg.irc_msg());
+        }
+        break;
+      default:
+        LOG(WARNING, "Received unsupported type of message!");
+        break;
     }
   } else {
     LOG(ERROR, "Received message has incorrect format!");
   }
 }
 
-void TcpPlugin::send(const std::string& msg) {
+void TcpPlugin::sendToPlugin(const std::string& msg) {
   LOG(INFO, "TcpPlugin ", getName(), ": Sending ", msg.size(), " bytes to tcp plugin");
   m_socket.send(asio::buffer(msg.data(), msg.size()));
 }
@@ -167,6 +179,11 @@ void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
   }
 }
 
+void TcpPlugin::processIrcMessage(const ircbot::IrcMessage& pb_msg) {
+  IRCMessage msg = IRCMessage::fromProtobuf(pb_msg);
+  send(msg);
+}
+
 void TcpPlugin::sendInitResponse(const ircbot::InitResponse::Status& status) {
   ircbot::Message msg;
   msg.set_type(ircbot::Message::INIT_RESPONSE);
@@ -176,7 +193,7 @@ void TcpPlugin::sendInitResponse(const ircbot::InitResponse::Status& status) {
 
   std::string serialized;
   msg.SerializeToString(&serialized);
-  send(serialized);
+  sendToPlugin(serialized);
 }
 
 void TcpPlugin::sendControlRequest(const ircbot::ControlRequest::Type& type,
@@ -194,5 +211,5 @@ void TcpPlugin::sendControlRequest(const ircbot::ControlRequest::Type& type,
 
   std::string serialized;
   msg.SerializeToString(&serialized);
-  send(serialized);
+  sendToPlugin(serialized);
 }

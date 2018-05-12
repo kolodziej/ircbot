@@ -8,15 +8,17 @@
 
 namespace py = pybind11;
 
+class Bot;
+
 struct Plugin {
   std::string name;
   std::string token;
 
-  std::function<void()> onInit;
-  std::function<void(IRCMessage)> onMessage;
-  std::function<void()> onShutdown;
-  std::function<void()> onRestart;
-  std::function<void()> onReload;
+  std::function<void(Bot*)> onInit;
+  std::function<void(Bot*, IRCMessage)> onMessage;
+  std::function<void(Bot*)> onShutdown;
+  std::function<void(Bot*)> onRestart;
+  std::function<void(Bot*)> onReload;
 };
 
 #endif
