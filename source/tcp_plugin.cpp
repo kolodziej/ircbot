@@ -104,6 +104,9 @@ bool TcpPlugin::filter(const IRCMessage& /*msg*/) {
 void TcpPlugin::onShutdown() {
   m_init_timer.cancel();
 
+  DEBUG("Sending SHUTDOWN message to TcpPlugin ", getId());
+  sendControlRequest(ircbot::ControlRequest::SHUTDOWN);
+
   DEBUG("Shutting down socket for Tcp Plugin ", getId());
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   DEBUG("Canceling all asynchronous operations for Tcp Plugin ", getId());
@@ -171,7 +174,25 @@ void TcpPlugin::sendInitResponse(const ircbot::InitResponse::Status& status) {
   ircbot::InitResponse* resp = msg.mutable_init_resp();
   resp->set_status(status);
 
-  std::string msg_str;
-  msg.SerializeToString(&msg_str);
-  send(msg_str);
+  std::string serialized;
+  msg.SerializeToString(&serialized);
+  send(serialized);
+}
+
+void TcpPlugin::sendControlRequest(const ircbot::ControlRequest::Type& type,
+                                   const std::string& req_msg,
+                                   uint32_t code) {
+  ircbot::Message msg;
+  msg.set_type(ircbot::Message::CONTROL_REQUEST);
+
+  ircbot::ControlRequest* req = msg.mutable_ctrl_req();
+  req->set_type(type);
+  if (not req_msg.empty())
+    req->set_msg(req_msg);
+  if (code > 0)
+    req->set_code(code);
+
+  std::string serialized;
+  msg.SerializeToString(&serialized);
+  send(serialized);
 }

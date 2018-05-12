@@ -40,20 +40,36 @@ bool Bot::connected() const {
   return m_socket.is_open();
 }
 
-void Bot::start() {
+void Bot::start(bool async) {
   m_started = true;
-  m_io.run();
+  connect();
+  initialize(m_plugin.name, m_plugin.token);
+  receive();
+
+  if (async)
+    async_start_io();
+  else
+    start_io();
 }
 
 void Bot::async_start() {
-  m_started = true;
+  start(true);
+}
+
+void Bot::start_io() {
+  m_io.run();
+}
+
+void Bot::async_start_io() {
   m_io_thread = std::move(std::thread{[this] { m_io.run(); }});
 }
 
 void Bot::stop() {
-  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-  m_socket.cancel();
-  m_socket.close();
+  if (m_socket.is_open()) {
+    m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+    m_socket.cancel();
+    m_socket.close();
+  }
 }
 
 void Bot::wait() {
@@ -69,11 +85,12 @@ void Bot::receive() {
   auto callback = [this](const boost::system::error_code& ec, std::size_t bytes) {
     if (ec == 0) {
       parse(bytes);
+      receive();
+    } else if (ec == asio::error::operation_aborted) {
+      std::cerr << "Receiving has been canceled." << std::endl;
     } else {
-      return;
+      std::cerr << "An error occurred. Message could not be received!" << std::endl;
     }
-
-    receive();
   };
 
   m_socket.async_receive(
@@ -97,6 +114,10 @@ void Bot::parse(size_t bytes) {
     case ircbot::Message::CONTROL_REQUEST:
       controlRequest(msg.ctrl_req());
       break;
+    default:
+    case ircbot::Message::INIT_REQUEST:
+    case ircbot::Message::CONTROL_RESPONSE:
+      break;
   }
 }
 
@@ -116,13 +137,17 @@ void Bot::initialize(const std::string& name, const std::string& token) {
 
 void Bot::initResponse(const ircbot::InitResponse& resp) {
   if (resp.status() == ircbot::InitResponse::OK) {
-    std::cout << "initialized. can continue!\n";
+    std::cout << "Plugin has been initialized successfully!" << std::endl;
   } else {
-    std::cout << "some error occurred during initialization\n";
+    std::cout << "some error occurred during initialization!" << std::endl;
   }
 }
 
 void Bot::ircMessage(const ircbot::IrcMessage& irc_msg) {
+  if (not m_plugin.onMessage) {
+    return;
+  }
+
   IRCMessage msg;
   msg.servername = irc_msg.servername();
   msg.user = irc_msg.user();
@@ -138,17 +163,21 @@ void Bot::ircMessage(const ircbot::IrcMessage& irc_msg) {
 void Bot::controlRequest(const ircbot::ControlRequest& req) {
   switch (req.type()) {
     case ircbot::ControlRequest::INIT:
-      m_plugin.onInit();
+      if (m_plugin.onInit)
+        m_plugin.onInit();
       break;
     case ircbot::ControlRequest::SHUTDOWN:
-      m_plugin.onShutdown();
+      if (m_plugin.onShutdown)
+        m_plugin.onShutdown();
       stop();
       break;
     case ircbot::ControlRequest::RELOAD:
-      m_plugin.onReload();
+      if (m_plugin.onReload)
+        m_plugin.onReload();
       break;
     case ircbot::ControlRequest::RESTART:
-      m_plugin.onRestart();
+      if (m_plugin.onRestart)
+        m_plugin.onRestart();
       break;
   }
 }

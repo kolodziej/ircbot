@@ -24,14 +24,12 @@ PYBIND11_MODULE(pyircbot, m) {
          py::arg("hostname"), py::arg("port"), py::arg("plugin"))
     .def("hostname", &Bot::hostname)
     .def("port", &Bot::port)
-    .def("connect", &Bot::connect)
     .def("connected", &Bot::connected)
-    .def("start", &Bot::start)
+    .def("start", &Bot::start, py::arg("async") = false)
+    .def("async_start", &Bot::async_start)
     .def("stop", &Bot::stop)
-    .def("send", &Bot::send)
-    .def("receive", &Bot::receive)
-    .def("initialize", &Bot::initialize,
-         py::arg("name"), py::arg("token"));
+    .def("wait", &Bot::wait)
+    .def("send", &Bot::send);
 
   py::class_<IRCMessage>(m, "IRCMessage")
     .def(py::init())

@@ -63,6 +63,9 @@ class TcpPlugin : public Plugin {
 
   void processInitRequest(const ircbot::InitRequest& req);
   void sendInitResponse(const ircbot::InitResponse::Status& status);
+  void sendControlRequest(const ircbot::ControlRequest::Type& type,
+                          const std::string& msg = {},
+                          uint32_t code = 0);
 };
 
 #endif

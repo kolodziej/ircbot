@@ -22,15 +22,15 @@ class Bot {
   std::string hostname() const;
   uint16_t port() const;
 
-  void start();
+  void start(bool async = false);
   void async_start();
+  bool connected() const;
   void stop();
   void wait();
   void send(const std::string& data);
 
- public: // change to private
+ private:
   void connect();
-  bool connected() const;
 
   void receive();
   void initialize(const std::string& name, const std::string& token);
@@ -40,6 +40,9 @@ class Bot {
   void controlRequest(const ircbot::ControlRequest& req);
 
   void parse(size_t bytes);
+
+  void start_io();
+  void async_start_io();
 
  private:
   const std::string m_hostname;
