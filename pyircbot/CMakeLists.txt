@@ -1,7 +1,15 @@
 set(SOURCES
   bot.cpp
   plugin.cpp
+  helpers.cpp
   pyircbot.cpp
+)
+
+set(HEADERS
+  pyircbot/bot.hpp
+  pyircbot/plugin.hpp
+  pyircbot/helpers.hpp
+  pyircbot/pyircbot.hpp
 )
 
 pybind11_add_module(pyircbot ${SOURCES})

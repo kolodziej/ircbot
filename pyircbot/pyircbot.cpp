@@ -4,6 +4,7 @@
 
 #include "pyircbot/bot.hpp"
 #include "pyircbot/plugin.hpp"
+#include "pyircbot/helpers.hpp"
 #include "ircbot/irc_message.hpp"
 
 namespace py = pybind11;
@@ -44,4 +45,7 @@ PYBIND11_MODULE(pyircbot, m) {
     .def_readwrite("host", &IRCMessage::host)
     .def_readwrite("command", &IRCMessage::command)
     .def_readwrite("params", &IRCMessage::params);
+
+  m.def("response_destination", helpers::responseDestination,
+        py::arg("msg"), py::arg("priv") = false);
 }
