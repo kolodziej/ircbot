@@ -22,8 +22,7 @@ class Bot {
   std::string hostname() const;
   uint16_t port() const;
 
-  void start(bool async = false);
-  void async_start();
+  void start();
   bool connected() const;
   void stop();
   void wait();
@@ -41,9 +40,6 @@ class Bot {
   void controlRequest(const ircbot::ControlRequest& req);
 
   void parse(size_t bytes);
-
-  void start_io();
-  void async_start_io();
 
  private:
   const std::string m_hostname;

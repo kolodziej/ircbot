@@ -40,27 +40,12 @@ bool Bot::connected() const {
   return m_socket.is_open();
 }
 
-void Bot::start(bool async) {
+void Bot::start() {
   m_started = true;
   connect();
   initialize(m_plugin.name, m_plugin.token);
   receive();
 
-  if (async)
-    async_start_io();
-  else
-    start_io();
-}
-
-void Bot::async_start() {
-  start(true);
-}
-
-void Bot::start_io() {
-  m_io.run();
-}
-
-void Bot::async_start_io() {
   m_io_thread = std::move(std::thread{[this] { m_io.run(); }});
 }
 
