@@ -94,7 +94,7 @@ void TcpPlugin::onMessage(IRCMessage received_msg) {
 }
 
 void TcpPlugin::onNewConfiguration() {
-
+  LOG(WARNING, "Setting configuration in TcpPlugins is not supported yet!");
 }
 
 bool TcpPlugin::filter(const IRCMessage& /*msg*/) {
