@@ -29,6 +29,7 @@ void TcpPlugin::startReceiving() {
       return;
     } else {
       LOG(ERROR, "TcpPlugin ", getName(), ": error during receiving message! Stopping!");
+      stop();
       return;
     }
 
@@ -104,15 +105,28 @@ bool TcpPlugin::filter(const IRCMessage& /*msg*/) {
 void TcpPlugin::onShutdown() {
   m_init_timer.cancel();
 
+  if (not m_socket.is_open()) {
+    LOG(INFO, "TcpPlugin ", getId(), ": socket is not open. Closing without shutdown sequence!");
+    return;
+  }
+
   DEBUG("Sending SHUTDOWN message to TcpPlugin ", getId());
   sendControlRequest(ircbot::ControlRequest::SHUTDOWN);
 
-  DEBUG("Shutting down socket for Tcp Plugin ", getId());
-  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+  try {
+    DEBUG("Shutting down socket for Tcp Plugin ", getId());
+    m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+  } catch (const boost::system::system_error& error) {
+    LOG(ERROR, "Could not shutdown connection to Tcp Plugin ", getId());
+  }
+
   DEBUG("Canceling all asynchronous operations for Tcp Plugin ", getId());
   m_socket.cancel();
   DEBUG("Closing socket for Tcp Plugin ", getId());
   m_socket.close();
+
+  LOG(INFO, "Removing plugin from Client");
+  client()->removePlugin(getId());
 }
 
 std::string TcpPlugin::defaultName(asio::ip::tcp::socket& socket) {
@@ -155,8 +169,12 @@ void TcpPlugin::parseMessage(const std::string& data) {
 }
 
 void TcpPlugin::sendToPlugin(const std::string& msg) {
-  LOG(INFO, "TcpPlugin ", getName(), ": Sending ", msg.size(), " bytes to tcp plugin");
-  m_socket.send(asio::buffer(msg.data(), msg.size()));
+  try {
+    LOG(INFO, "TcpPlugin ", getId(), ": Sending ", msg.size(), " bytes to tcp plugin");
+    m_socket.send(asio::buffer(msg.data(), msg.size()));
+  } catch (const boost::system::system_error& error) {
+    LOG(ERROR, "Could not send data to TcpPlugin ", getId(), ": ", error.what());
+  }
 }
 
 void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {

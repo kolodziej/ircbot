@@ -95,6 +95,7 @@ void Bot::receive() {
       std::cerr << "Receiving has been canceled." << std::endl;
     } else {
       std::cerr << "An error occurred. Message could not be received!" << std::endl;
+      stop();
     }
   };
 

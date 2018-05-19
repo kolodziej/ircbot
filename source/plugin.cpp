@@ -23,6 +23,9 @@ std::string Plugin::getId() const {
 }
 
 void Plugin::stop() {
+  if (not m_running)
+    return;
+
   LOG(INFO, "Stopping plugin: ", getId());
   m_running = false;
 
@@ -43,6 +46,7 @@ void Plugin::receive(IRCMessage cmd) {
 
 void Plugin::run() {
   using namespace std::literals::chrono_literals;
+  m_running = true;
 
   onInit();
 
