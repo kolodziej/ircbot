@@ -263,10 +263,20 @@ Client::PluginVectorIter Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
 }
 
 void Client::removePlugin(PluginVectorIter it) {
+  LOG(INFO, "Removing plugin ", (*it)->getId());
   if (it == m_plugins.end()) {
     throw std::runtime_error{"There is no such plugin!"};
   }
   m_plugins.erase(it);
+}
+
+void Client::removePlugin(const std::string& pluginId) {
+  auto plugin = findPlugin(pluginId);
+  if (plugin != m_plugins.end()) {
+    removePlugin(plugin);
+  } else {
+    LOG(ERROR, "Could not found plugin with id ", pluginId);
+  }
 }
 
 std::vector<std::string> Client::listPlugins() const {

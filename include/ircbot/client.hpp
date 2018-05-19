@@ -148,6 +148,12 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   void removePlugin(PluginVectorIter it);
 
+  /** Removes plugin from client instance
+   *
+   * \param pluginId string containing plugin id to remove
+   */
+  void removePlugin(const std::string& pluginId);
+
   /** Return list of all plugins' names added to this instance
    *
    * \return vector of plugins' names
