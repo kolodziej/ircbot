@@ -1,5 +1,6 @@
 #include "pyircbot/helpers.hpp"
 
+namespace pyircbot {
 namespace helpers {
 
 std::string responseDestination(const IRCMessage& msg, bool priv) {
@@ -13,4 +14,4 @@ std::string responseDestination(const IRCMessage& msg, bool priv) {
   return msg.nick;
 }
 
-}
+} } // namespace pyircbot::helpers

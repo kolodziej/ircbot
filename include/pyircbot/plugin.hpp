@@ -8,6 +8,8 @@
 
 namespace py = pybind11;
 
+namespace pyircbot {
+
 class Bot;
 
 struct Plugin {
@@ -20,5 +22,7 @@ struct Plugin {
   std::function<void(Bot*)> onRestart;
   std::function<void(Bot*)> onReload;
 };
+
+} // namespace pyircbot
 
 #endif

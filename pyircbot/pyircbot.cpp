@@ -10,6 +10,10 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(pyircbot, m) {
+  using pyircbot::Plugin;
+  using pyircbot::Bot;
+  using pyircbot::helpers::responseDestination;
+
   py::class_<Plugin>(m, "Plugin")
     .def(py::init())
     .def_readwrite("name", &Plugin::name)
@@ -46,6 +50,6 @@ PYBIND11_MODULE(pyircbot, m) {
     .def_readwrite("command", &IRCMessage::command)
     .def_readwrite("params", &IRCMessage::params);
 
-  m.def("response_destination", helpers::responseDestination,
+  m.def("response_destination", responseDestination,
         py::arg("msg"), py::arg("priv") = false);
 }

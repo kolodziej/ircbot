@@ -14,6 +14,8 @@
 
 namespace asio = boost::asio;
 
+namespace pyircbot {
+
 class Bot {
  public:
   Bot(const std::string& hostname, uint16_t port, Plugin plugin);
@@ -57,5 +59,7 @@ class Bot {
 
   bool m_started;
 };
+
+} // namespace pyircbot
 
 #endif

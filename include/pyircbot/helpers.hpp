@@ -5,6 +5,7 @@
 
 #include "ircbot/irc_message.hpp"
 
+namespace pyircbot {
 namespace helpers {
 
 /** Generate destination for PRIVMSG
@@ -19,6 +20,6 @@ namespace helpers {
  */
 std::string responseDestination(const IRCMessage& msg, bool priv = false);
 
-}
+} } // namespace pyircbot::helpers
 
 #endif

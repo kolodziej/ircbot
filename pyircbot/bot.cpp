@@ -5,6 +5,8 @@
 #include "message.pb.h"
 #include "ircbot/version.hpp"
 
+namespace pyircbot {
+
 Bot::Bot(const std::string& hostname, uint16_t port, Plugin plugin) :
   m_hostname{hostname},
   m_port{port},
@@ -196,3 +198,5 @@ void Bot::controlRequest(const ircbot::ControlRequest& req) {
       break;
   }
 }
+
+} // namespace pyircbot
