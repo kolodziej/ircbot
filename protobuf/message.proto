@@ -1,0 +1,26 @@
+syntax = "proto2";
+
+import "init.proto";
+import "irc_message.proto";
+import "control.proto";
+
+package ircbot;
+
+message Message {
+    enum MessageType {
+        INIT_REQUEST = 1;
+        INIT_RESPONSE = 2;
+        IRC_MESSAGE = 3;
+        CONTROL_REQUEST = 4;
+        CONTROL_RESPONSE = 5;
+    }
+
+    required MessageType type = 1;
+    oneof data {
+        InitRequest init_req = 2;
+        InitResponse init_resp = 3;
+        IrcMessage irc_msg = 4;
+        ControlRequest ctrl_req = 5;
+        ControlResponse ctrl_resp = 6;
+    }
+}

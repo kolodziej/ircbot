@@ -1,0 +1,1 @@
+#include "pyircbot/plugin.hpp"

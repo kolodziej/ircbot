@@ -71,13 +71,13 @@ source:
     - ircbot
     - x86_64
   script:
-    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs
+    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs protobuf pybind11 pyircbot
   artifacts:
     paths:
       - ircbot-source.tar.gz
 
 build:
-  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
+  image: docker.kolk.cc/ircbot-debian:$IMAGE_ID
   stage: Build
   tags:
     - docker
@@ -120,7 +120,7 @@ docs:
       - docs.tar.xz
 
 test:
-  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
+  image: docker.kolk.cc/ircbot-debian:$IMAGE_ID
   stage: Test
   tags:
     - docker

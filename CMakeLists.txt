@@ -1,14 +1,30 @@
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.1.0)
 
+find_package(PythonInterp REQUIRED)
+find_package(PythonLibs REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Boost 1.53 REQUIRED COMPONENTS system program_options filesystem)
 find_package(Doxygen)
+find_package(Protobuf REQUIRED)
+
+# Workaround for different versions of CMake
+# Some versions define PROTOBUF_* variables and some Protobuf_*
+if(NOT DEFINED Protobuf_LIBRARIES)
+    set(Protobuf_LIBRARIES ${PROTOBUF_LIBRARIES})
+    set(Protobuf_INCLUDE_DIR ${PROTOBUF_INCLUDE_DIR})
+endif()
 
 include(GNUInstallDirs)
 
+add_subdirectory(pybind11)
+include_directories("${CMAKE_SOURCE_DIR}/pybind11/include")
+
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
+include_directories("${CMAKE_BINARY_DIR}")
 include_directories(${Boost_INCLUDE_DIR})
+include_directories(${PYTHON_INCLUDE_DIR})
+include_directories(${Protobuf_INCLUDE_DIR})
 
 include_directories("${CMAKE_SOURCE_DIR}/gtest/include")
 
@@ -38,6 +54,13 @@ configure_file("${CMAKE_SOURCE_DIR}/cmake/version-info.in"
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
 
+set(PROTOBUF_FILES
+    protobuf/message.proto
+    protobuf/init.proto
+    protobuf/irc_message.proto
+    protobuf/control.proto
+)
+
 set(SOURCES
     source/log_output.cpp
     source/log_level.cpp
@@ -57,6 +80,8 @@ set(SOURCES
     source/so_plugin.cpp
     source/unexpected_character.cpp
     source/admin_port.cpp
+    source/tcp_plugin.cpp
+    source/tcp_plugin_server.cpp
 )
 
 set(HEADERS
@@ -82,11 +107,22 @@ set(HEADERS
     include/ircbot/unexpected_character.hpp
     include/ircbot/plugin_config.hpp
     include/ircbot/admin_port.hpp
+    include/ircbot/tcp_plugin.hpp
+    include/ircbot/tcp_plugin_server.hpp
 )
 
-add_library("ircbot" SHARED ${HEADERS} ${SOURCES})
-target_link_libraries("ircbot" ${Boost_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT}
-    ${BUILTIN_PLUGINS})
+protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
+
+add_library("ircbot" SHARED ${HEADERS} ${SOURCES} ${PROTO_SRC} ${PROTO_HDR})
+target_link_libraries("ircbot"
+    ${Boost_LIBRARIES}
+    ${Protobuf_LIBRARIES}
+    ${PYTHON_LIBRARIES}
+    ${CMAKE_THREAD_LIBS_INIT}
+    ${BUILTIN_PLUGINS}
+)
+
+add_subdirectory(pyircbot)
 
 if(${BUILD_PLUGINS})
     add_subdirectory(plugins)

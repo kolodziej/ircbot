@@ -1,0 +1,16 @@
+syntax = "proto2";
+
+package ircbot;
+
+message InitRequest {
+    required string name = 1;
+    required string token = 2;
+}
+
+message InitResponse {
+    enum Status {
+        OK = 1;
+        ERROR = 2;
+    }
+    required Status status = 1;
+}

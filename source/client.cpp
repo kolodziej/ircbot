@@ -12,6 +12,7 @@
 
 #include "ircbot/plugin.hpp"
 #include "ircbot/so_plugin.hpp"
+#include "ircbot/tcp_plugin_server.hpp"
 #include "ircbot/helpers.hpp"
 
 Client::Client(asio::io_service& io_service, Config cfg) :
@@ -19,6 +20,7 @@ Client::Client(asio::io_service& io_service, Config cfg) :
     m_socket{io_service},
     m_cfg{cfg},
     m_admin_port{nullptr},
+    m_tcp_plugin_server{nullptr},
     m_running{false}
 {}
 
@@ -174,6 +176,25 @@ void Client::stopAdminPort() {
   }
 }
 
+void Client::startTcpPluginServer(const std::string& host, uint16_t port) {
+  if (m_tcp_plugin_server != nullptr) {
+    LOG(ERROR, "TcpPluginServer has already been initialized!");
+    return;
+  }
+
+  m_tcp_plugin_server = std::make_unique<TcpPluginServer>(shared_from_this(), host, port);
+  m_tcp_plugin_server->acceptConnections();
+}
+
+void Client::stopTcpPluginServer() {
+  if (m_tcp_plugin_server == nullptr) {
+    LOG(ERROR, "TcpPluginServer hasn't been initialized so cannot be stopped!");
+    return;
+  }
+
+  m_tcp_plugin_server->stop();
+}
+
 void Client::disconnect() {
   m_running = false;
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
@@ -181,7 +202,7 @@ void Client::disconnect() {
 }
 
 void Client::send(IRCMessage cmd) {
-  send(static_cast<std::string>(cmd));
+  send(cmd.toString());
 }
 
 void Client::send(std::string msg) {
@@ -194,7 +215,7 @@ void Client::send(std::string msg) {
     }
   };
   auto const_buf = asio::const_buffers_1(msg.data(), msg.size());
-  LOG(DEBUG, "Trying to send message: ", msg.data());
+  DEBUG("Trying to send message: ", std::string{msg.data(), msg.size()});
   m_socket.async_send(const_buf, write_handler);
 }
 
@@ -210,7 +231,13 @@ void Client::stop() {
   for (auto& plugin : m_plugins) {
     plugin->stop();
   }
+
+  LOG(INFO, "Stopping admin port (if exists)...");
   stopAdminPort();
+  LOG(INFO, "Stopping tcp plugin server (if exists)...");
+  stopTcpPluginServer();
+
+  LOG(INFO, "Client is stopped. Ready to exit.");
 }
 
 void Client::signal(int signum) {
@@ -236,10 +263,20 @@ Client::PluginVectorIter Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
 }
 
 void Client::removePlugin(PluginVectorIter it) {
+  LOG(INFO, "Removing plugin ", (*it)->getId());
   if (it == m_plugins.end()) {
     throw std::runtime_error{"There is no such plugin!"};
   }
   m_plugins.erase(it);
+}
+
+void Client::removePlugin(const std::string& pluginId) {
+  auto plugin = findPlugin(pluginId);
+  if (plugin != m_plugins.end()) {
+    removePlugin(plugin);
+  } else {
+    LOG(ERROR, "Could not found plugin with id ", pluginId);
+  }
 }
 
 std::vector<std::string> Client::listPlugins() const {
@@ -249,6 +286,20 @@ std::vector<std::string> Client::listPlugins() const {
   }
 
   return names;
+}
+
+bool Client::authenticatePlugin(const std::string& token) {
+  const std::string real_token = m_cfg.tree().get("plugin_token", std::string{});
+  if (real_token.empty()) {
+    LOG(ERROR, "Token for TCP plugins has not been set or is empty!");
+    return false;
+  }
+
+  if (real_token == token) {
+    return true;
+  }
+
+  return false;
 }
 
 std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,

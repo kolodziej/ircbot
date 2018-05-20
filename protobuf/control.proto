@@ -1,0 +1,28 @@
+syntax = "proto2";
+
+package ircbot;
+
+message ControlRequest {
+    enum Type {
+        INIT = 1;
+        SHUTDOWN = 2;
+        RELOAD = 3;
+        RESTART = 4;
+    }
+
+    required Type type = 1;
+    optional string msg = 2;
+    optional int32 code = 3;
+}
+
+message ControlResponse {
+    enum Response {
+        FINISHED_OK = 1;
+        FINISHED_ERROR = 2;
+        NOT_FINISHED = 3;
+    }
+
+    required Response response = 1;
+    optional string msg = 2;
+    optional int32 code = 3;
+}

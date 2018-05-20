@@ -29,3 +29,4 @@ make DESTDIR=$RPM_BUILD_ROOT install
 %{_libdir}/ircbot/plugins/clipboard.so
 %{_libdir}/ircbot/plugins/simple_commands.so
 %{_libdir}/libircbot.so
+%{_libdir}/python2.7/site-packages/pyircbot.so

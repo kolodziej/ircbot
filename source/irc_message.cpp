@@ -42,3 +42,17 @@ std::string IRCMessage::toString(bool stripCRLF) const {
 
   return stream.str();
 }
+
+IRCMessage IRCMessage::fromProtobuf(const ircbot::IrcMessage& pb_msg) {
+  IRCMessage msg;
+  msg.servername = pb_msg.servername();
+  msg.user = pb_msg.user();
+  msg.nick = pb_msg.nick();
+  msg.host = pb_msg.host();
+  msg.command = pb_msg.command();
+  for (int i = 0; i < pb_msg.params_size(); ++i) {
+    msg.params.push_back(pb_msg.params(i));
+  }
+
+  return msg;
+}
