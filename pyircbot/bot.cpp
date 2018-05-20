@@ -40,6 +40,10 @@ bool Bot::connected() const {
   return m_socket.is_open();
 }
 
+bool Bot::isRunning() const {
+  return m_started;
+}
+
 void Bot::start() {
   m_started = true;
   connect();
@@ -50,6 +54,8 @@ void Bot::start() {
 }
 
 void Bot::stop() {
+  m_started = false;
+
   if (m_socket.is_open()) {
     m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
     m_socket.cancel();
@@ -91,11 +97,14 @@ void Bot::receive() {
     if (ec == 0) {
       parse(bytes);
       receive();
-    } else if (ec == asio::error::operation_aborted) {
-      std::cerr << "Receiving has been canceled." << std::endl;
     } else {
-      std::cerr << "An error occurred. Message could not be received!" << std::endl;
-      stop();
+      if (ec == asio::error::operation_aborted) {
+        std::cerr << "Receiving has been canceled." << std::endl;
+      } else if (ec == asio::error::eof) {
+        std::cerr << "Connection closed!" << std::endl;
+      } else {
+        std::cerr << "An error occurred. Message could not be received!" << std::endl;
+      }
     }
   };
 

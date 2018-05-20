@@ -24,16 +24,17 @@ void TcpPlugin::startReceiving() {
     if (error == 0) {
       std::string data{m_buffer.data(), bytes};
       parseMessage(data);
-    } else if (error == asio::error::operation_aborted) {
-      LOG(INFO, "Asynchronous receiving messages cancelled for plugin: ", getId());
-      return;
+      startReceiving();
     } else {
-      LOG(ERROR, "TcpPlugin ", getName(), ": error during receiving message! Stopping!");
-      stop();
-      return;
-    }
+      if (error == asio::error::operation_aborted) {
+        LOG(INFO, "Asynchronous receiving messages cancelled for plugin: ", getId());
+      } else {
+        LOG(ERROR, "TcpPlugin ", getName(), ": error during receiving message! Stopping!");
+      }
 
-    startReceiving();
+      m_ready_for_shutdown.set_value();
+      stop();
+    }
   };
 
   m_socket.async_receive(
@@ -112,6 +113,9 @@ void TcpPlugin::onShutdown() {
 
   DEBUG("Sending SHUTDOWN message to TcpPlugin ", getId());
   sendControlRequest(ircbot::ControlRequest::SHUTDOWN);
+
+  LOG(INFO, "Waiting until TcpPlugin ", getId(), " is ready for shutdown...");
+  m_ready_for_shutdown.get_future().get();
 
   try {
     DEBUG("Shutting down socket for Tcp Plugin ", getId());

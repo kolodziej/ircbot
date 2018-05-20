@@ -22,8 +22,9 @@ class Bot {
   std::string hostname() const;
   uint16_t port() const;
 
-  void start();
   bool connected() const;
+  bool isRunning() const;
+  void start();
   void stop();
   void wait();
   void send(const std::string& data);

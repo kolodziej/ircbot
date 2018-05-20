@@ -4,6 +4,7 @@
 #include "ircbot/plugin.hpp"
 
 #include <array>
+#include <future>
 #include <boost/asio.hpp>
 
 #include "message.pb.h"
@@ -48,6 +49,8 @@ class TcpPlugin : public Plugin {
 
   /** plugin's name **/
   std::string m_name;
+
+  std::promise<void> m_ready_for_shutdown;
 
   /** parse received message
    *

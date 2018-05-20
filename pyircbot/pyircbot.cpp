@@ -28,6 +28,7 @@ PYBIND11_MODULE(pyircbot, m) {
     .def("connected", &Bot::connected)
     .def("start", &Bot::start)
     .def("stop", &Bot::stop)
+    .def("isRunning", &Bot::isRunning)
     .def("wait", &Bot::wait)
     .def("send", &Bot::send)
     .def("sendIrcMessage", &Bot::sendIrcMessage);
