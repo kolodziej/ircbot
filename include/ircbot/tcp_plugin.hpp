@@ -64,10 +64,10 @@ class TcpPlugin : public Plugin {
    */
   void sendToPlugin(const std::string& msg);
 
-  void processInitRequest(const ircbot::InitRequest& req);
-  void processIrcMessage(const ircbot::IrcMessage& irc_msg);
-  void sendInitResponse(const ircbot::InitResponse::Status& status);
-  void sendControlRequest(const ircbot::ControlRequest::Type& type,
+  void processInitRequest(const PluginProtocol::InitRequest& req);
+  void processIrcMessage(const PluginProtocol::IrcMessage& irc_msg);
+  void sendInitResponse(const PluginProtocol::InitResponse::Status& status);
+  void sendControlRequest(const PluginProtocol::ControlRequest::Type& type,
                           const std::string& msg = {},
                           uint32_t code = 0);
 };

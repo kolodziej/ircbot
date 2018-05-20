@@ -57,8 +57,8 @@ void TcpPlugin::startInitTimer() {
 }
 
 void TcpPlugin::onInit() {
-  ircbot::ControlRequest ctrl_req;
-  ctrl_req.set_type(ircbot::ControlRequest::INIT);
+  PluginProtocol::ControlRequest ctrl_req;
+  ctrl_req.set_type(PluginProtocol::ControlRequest::INIT);
 
   std::string ctrl_req_buf;
   ctrl_req.SerializeToString(&ctrl_req_buf);
@@ -73,10 +73,10 @@ void TcpPlugin::onInit() {
 }
 
 void TcpPlugin::onMessage(IRCMessage received_msg) {
-  ircbot::Message msg;
-  msg.set_type(ircbot::Message::IRC_MESSAGE);
+  PluginProtocol::Message msg;
+  msg.set_type(PluginProtocol::Message::IRC_MESSAGE);
 
-  ircbot::IrcMessage* irc_msg = msg.mutable_irc_msg();
+  PluginProtocol::IrcMessage* irc_msg = msg.mutable_irc_msg();
   irc_msg->set_servername(received_msg.servername);
   irc_msg->set_user(received_msg.user);
   irc_msg->set_nick(received_msg.nick);
@@ -87,11 +87,11 @@ void TcpPlugin::onMessage(IRCMessage received_msg) {
     irc_msg->add_params(param);
   }
 
-  DEBUG("Serializing IRCMessage to ircbot::IrcMessage");
+  DEBUG("Serializing IRCMessage to PluginProtocol::IrcMessage");
   std::string serialized;
   msg.SerializeToString(&serialized);
 
-  LOG(INFO, "Sending ircbot::IRCMessage to TcpPlugin ", getName());
+  LOG(INFO, "Sending PluginProtocol::IRCMessage to TcpPlugin ", getName());
   sendToPlugin(serialized);
 }
 
@@ -112,7 +112,7 @@ void TcpPlugin::onShutdown() {
   }
 
   DEBUG("Sending SHUTDOWN message to TcpPlugin ", getId());
-  sendControlRequest(ircbot::ControlRequest::SHUTDOWN);
+  sendControlRequest(PluginProtocol::ControlRequest::SHUTDOWN);
 
   LOG(INFO, "Waiting until TcpPlugin ", getId(), " is ready for shutdown...");
   m_ready_for_shutdown.get_future().get();
@@ -145,18 +145,18 @@ std::string TcpPlugin::defaultName(asio::ip::tcp::socket& socket) {
 
 void TcpPlugin::parseMessage(const std::string& data) {
   LOG(INFO, "TcpPlugin ", getName(), " received a message. Trying to parse.");
-  ircbot::Message msg;
+  PluginProtocol::Message msg;
   if (msg.ParseFromString(data)) {
     LOG(INFO, "TcpPlugin ", getName(), ": Message parsed!")
     switch (msg.type()) {
-      case ircbot::Message::INIT_REQUEST:
+      case PluginProtocol::Message::INIT_REQUEST:
         DEBUG("TcpPlugin ", getName(), ": Received INIT_REQUEST");
         if (msg.has_init_req()) {
           DEBUG("TcpPlugin ", getName(), ": Has init_req");
           processInitRequest(msg.init_req());
         }
         break;
-      case ircbot::Message::IRC_MESSAGE:
+      case PluginProtocol::Message::IRC_MESSAGE:
         DEBUG("TcpPlugin ", getName(), ": Received IRC_MESSAGE");
         if (msg.has_irc_msg()) {
           DEBUG("TcpPlugin ", getName(), ": Has irc_msg");
@@ -181,7 +181,7 @@ void TcpPlugin::sendToPlugin(const std::string& msg) {
   }
 }
 
-void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
+void TcpPlugin::processInitRequest(const PluginProtocol::InitRequest& req) {
   LOG(INFO, "Processing initializatino request from ", getName()); 
   const auto& name = req.name();
   const auto& token = req.token();
@@ -192,25 +192,25 @@ void TcpPlugin::processInitRequest(const ircbot::InitRequest& req) {
     m_name = name;
     m_init_timer.cancel();
 
-    sendInitResponse(ircbot::InitResponse::OK);
+    sendInitResponse(PluginProtocol::InitResponse::OK);
     spawn();
   } else {
     LOG(ERROR, "TcpPlugin ", getName(), " failed to authenticate! Stopping.");
-    sendInitResponse(ircbot::InitResponse::ERROR);
+    sendInitResponse(PluginProtocol::InitResponse::ERROR);
     stop();
   }
 }
 
-void TcpPlugin::processIrcMessage(const ircbot::IrcMessage& pb_msg) {
+void TcpPlugin::processIrcMessage(const PluginProtocol::IrcMessage& pb_msg) {
   IRCMessage msg = IRCMessage::fromProtobuf(pb_msg);
   send(msg);
 }
 
-void TcpPlugin::sendInitResponse(const ircbot::InitResponse::Status& status) {
-  ircbot::Message msg;
-  msg.set_type(ircbot::Message::INIT_RESPONSE);
+void TcpPlugin::sendInitResponse(const PluginProtocol::InitResponse::Status& status) {
+  PluginProtocol::Message msg;
+  msg.set_type(PluginProtocol::Message::INIT_RESPONSE);
 
-  ircbot::InitResponse* resp = msg.mutable_init_resp();
+  PluginProtocol::InitResponse* resp = msg.mutable_init_resp();
   resp->set_status(status);
 
   std::string serialized;
@@ -218,13 +218,13 @@ void TcpPlugin::sendInitResponse(const ircbot::InitResponse::Status& status) {
   sendToPlugin(serialized);
 }
 
-void TcpPlugin::sendControlRequest(const ircbot::ControlRequest::Type& type,
+void TcpPlugin::sendControlRequest(const PluginProtocol::ControlRequest::Type& type,
                                    const std::string& req_msg,
                                    uint32_t code) {
-  ircbot::Message msg;
-  msg.set_type(ircbot::Message::CONTROL_REQUEST);
+  PluginProtocol::Message msg;
+  msg.set_type(PluginProtocol::Message::CONTROL_REQUEST);
 
-  ircbot::ControlRequest* req = msg.mutable_ctrl_req();
+  PluginProtocol::ControlRequest* req = msg.mutable_ctrl_req();
   req->set_type(type);
   if (not req_msg.empty())
     req->set_msg(req_msg);

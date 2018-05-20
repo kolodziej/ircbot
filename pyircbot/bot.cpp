@@ -75,10 +75,10 @@ void Bot::send(const std::string& data) {
 }
 
 void Bot::sendIrcMessage(const IRCMessage& sourcemsg) {
-  ircbot::Message msg;
-  msg.set_type(ircbot::Message::IRC_MESSAGE);
+  PluginProtocol::Message msg;
+  msg.set_type(PluginProtocol::Message::IRC_MESSAGE);
 
-  ircbot::IrcMessage* ircmsg = msg.mutable_irc_msg();
+  PluginProtocol::IrcMessage* ircmsg = msg.mutable_irc_msg();
   ircmsg->set_servername(sourcemsg.servername);
   ircmsg->set_user(sourcemsg.user);
   ircmsg->set_nick(sourcemsg.nick);
@@ -117,32 +117,32 @@ void Bot::receive() {
 }
 
 void Bot::parse(size_t bytes) {
-  ircbot::Message msg; 
+  PluginProtocol::Message msg; 
   auto msg_str = std::string{m_buffer.data(), bytes};
   msg.ParseFromString(msg_str);
 
   switch (msg.type()) {
-    case ircbot::Message::INIT_RESPONSE:
+    case PluginProtocol::Message::INIT_RESPONSE:
       initResponse(msg.init_resp());
       break;
-    case ircbot::Message::IRC_MESSAGE:
+    case PluginProtocol::Message::IRC_MESSAGE:
       ircMessage(msg.irc_msg());
       break;
-    case ircbot::Message::CONTROL_REQUEST:
+    case PluginProtocol::Message::CONTROL_REQUEST:
       controlRequest(msg.ctrl_req());
       break;
     default:
-    case ircbot::Message::INIT_REQUEST:
-    case ircbot::Message::CONTROL_RESPONSE:
+    case PluginProtocol::Message::INIT_REQUEST:
+    case PluginProtocol::Message::CONTROL_RESPONSE:
       break;
   }
 }
 
 void Bot::initialize(const std::string& name, const std::string& token) {
-  ircbot::Message msg;
-  msg.set_type(ircbot::Message::INIT_REQUEST);
+  PluginProtocol::Message msg;
+  msg.set_type(PluginProtocol::Message::INIT_REQUEST);
   
-  ircbot::InitRequest* req = msg.mutable_init_req();
+  PluginProtocol::InitRequest* req = msg.mutable_init_req();
   req->set_name(name);
   req->set_token(token);
 
@@ -152,15 +152,15 @@ void Bot::initialize(const std::string& name, const std::string& token) {
   send(serialized);
 }
 
-void Bot::initResponse(const ircbot::InitResponse& resp) {
-  if (resp.status() == ircbot::InitResponse::OK) {
+void Bot::initResponse(const PluginProtocol::InitResponse& resp) {
+  if (resp.status() == PluginProtocol::InitResponse::OK) {
     std::cout << "Plugin has been initialized successfully!" << std::endl;
   } else {
     std::cout << "some error occurred during initialization!" << std::endl;
   }
 }
 
-void Bot::ircMessage(const ircbot::IrcMessage& irc_msg) {
+void Bot::ircMessage(const PluginProtocol::IrcMessage& irc_msg) {
   if (not m_plugin.onMessage) {
     return;
   }
@@ -177,22 +177,22 @@ void Bot::ircMessage(const ircbot::IrcMessage& irc_msg) {
   m_plugin.onMessage(this, msg);
 }
 
-void Bot::controlRequest(const ircbot::ControlRequest& req) {
+void Bot::controlRequest(const PluginProtocol::ControlRequest& req) {
   switch (req.type()) {
-    case ircbot::ControlRequest::INIT:
+    case PluginProtocol::ControlRequest::INIT:
       if (m_plugin.onInit)
         m_plugin.onInit(this);
       break;
-    case ircbot::ControlRequest::SHUTDOWN:
+    case PluginProtocol::ControlRequest::SHUTDOWN:
       if (m_plugin.onShutdown)
         m_plugin.onShutdown(this);
       stop();
       break;
-    case ircbot::ControlRequest::RELOAD:
+    case PluginProtocol::ControlRequest::RELOAD:
       if (m_plugin.onReload)
         m_plugin.onReload(this);
       break;
-    case ircbot::ControlRequest::RESTART:
+    case PluginProtocol::ControlRequest::RESTART:
       if (m_plugin.onRestart)
         m_plugin.onRestart(this);
       break;

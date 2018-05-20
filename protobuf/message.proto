@@ -4,7 +4,7 @@ import "init.proto";
 import "irc_message.proto";
 import "control.proto";
 
-package ircbot;
+package PluginProtocol;
 
 message Message {
     enum MessageType {

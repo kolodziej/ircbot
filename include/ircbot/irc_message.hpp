@@ -64,7 +64,7 @@ struct IRCMessage {
    * \param pb_msg object of protobuf IrcMessage
    * \return IRCMessage object
    */
-  static IRCMessage fromProtobuf(const ircbot::IrcMessage&);
+  static IRCMessage fromProtobuf(const PluginProtocol::IrcMessage&);
 };
 
 #endif

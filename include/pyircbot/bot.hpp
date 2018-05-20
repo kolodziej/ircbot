@@ -108,19 +108,19 @@ class Bot {
    *
    * \param resp InitResponse message
    */
-  void initResponse(const ircbot::InitResponse& resp);
+  void initResponse(const PluginProtocol::InitResponse& resp);
 
   /** Method processing received IrcMessage messages
    *
    * \param irc_msg IrcMessage message
    */
-  void ircMessage(const ircbot::IrcMessage& irc_msg);
+  void ircMessage(const PluginProtocol::IrcMessage& irc_msg);
 
   /** Method processing received ControlRequest messages
    *
    * \param req ControlRequest message
    */
-  void controlRequest(const ircbot::ControlRequest& req);
+  void controlRequest(const PluginProtocol::ControlRequest& req);
 
   /** Parse bytes received from IRCBot
    *
