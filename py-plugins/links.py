@@ -26,7 +26,8 @@ HTTP_REGEX = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][
 def getTitle(link):
     try:
         soup = BeautifulSoup(urlopen(link), 'lxml')
-        return soup.title.string
+        title = soup.title.string.strip().replace('\n', ' ').replace('\r', '')
+        return title
     except:
         return None
 
