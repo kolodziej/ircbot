@@ -11,12 +11,12 @@ CommandParser::CommandParser(ParserConfig config) :
 CommandParser::Command CommandParser::parse(const std::string& command) {
   using helpers::isIn;
 
-  const char space = 0x20;
-  const char dquote = '"';
-  const char quote = '\'';
-  const char escape = '\\';
-  const char cr = 0xd;
-  const char lf = 0xa;
+  static const char space = 0x20;
+  static const char dquote = '"';
+  static const char quote = '\'';
+  static const char escape = '\\';
+  static const char cr = 0xd;
+  static const char lf = 0xa;
 
   int do_escape{0};
   bool is_quoted{false};
