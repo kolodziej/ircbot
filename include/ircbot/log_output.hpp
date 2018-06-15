@@ -20,7 +20,7 @@ class LogOutput {
    * \param level minimum log level that will be logged to this output
    */
   LogOutput(LogLevel level);
-  
+
   /** Logging function
    *
    * \param level log level for given message
@@ -39,6 +39,6 @@ class LogOutput {
   LogLevel m_level;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

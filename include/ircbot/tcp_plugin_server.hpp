@@ -25,8 +25,7 @@ class TcpPluginServer {
    * \param host hostname/ip addr on which server should listen for connections
    * \pararm port tcp port on which server should listen
    */
-  TcpPluginServer(std::shared_ptr<Client> client,
-                  const std::string& host,
+  TcpPluginServer(std::shared_ptr<Client> client, const std::string& host,
                   uint16_t port);
 
   /** start accepting connections from plugins */
@@ -58,6 +57,6 @@ class TcpPluginServer {
   void initializePlugin();
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

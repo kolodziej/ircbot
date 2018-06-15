@@ -1,14 +1,14 @@
 #ifndef _CONFIG_HPP
 #define _CONFIG_HPP
 
-#include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
 
 namespace pt = boost::property_tree;
 
 namespace ircbot {
 
-/** \class Config 
+/** \class Config
  *
  * \brief Proxy class for boost::property_tree::ptree
  *
@@ -66,6 +66,6 @@ class Config {
   pt::ptree m_pt;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

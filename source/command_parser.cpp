@@ -1,14 +1,12 @@
 #include "ircbot/command_parser.hpp"
 
-#include "ircbot/logger.hpp"
 #include "ircbot/helpers.hpp"
+#include "ircbot/logger.hpp"
 #include "ircbot/unexpected_character.hpp"
 
 namespace ircbot {
 
-CommandParser::CommandParser(ParserConfig config) :
-    m_config{config} {
-}
+CommandParser::CommandParser(ParserConfig config) : m_config{config} {}
 
 CommandParser::Command CommandParser::parse(const std::string& command) {
   using helpers::isIn;
@@ -58,15 +56,14 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
       } else if (x == cr or x == lf) {
         DEBUG("Ignoring CR or LF character");
       } else {
-        throw UnexpectedCharacter(std::string{1, x},
-                                  "a-zA-Z0-9-");
+        throw UnexpectedCharacter(std::string{1, x}, "a-zA-Z0-9-");
       }
     } else if (state == State::ARGUMENT) {
       if (do_escape > 0) {
         token.put(x);
         DEBUG("Appending escaped character: ", x);
       } else if (x == escape) {
-        do_escape = 2; // escape this character and next one
+        do_escape = 2;  // escape this character and next one
         DEBUG("Setting escape");
       } else if (x == quote) {
         if (is_quoted and not is_dquote) {
@@ -121,15 +118,11 @@ CommandParser::Command CommandParser::parse(const std::string& command) {
   return cmd;
 }
 
-ParserConfig CommandParser::getConfig() const {
-  return m_config;
-}
+ParserConfig CommandParser::getConfig() const { return m_config; }
 
 bool CommandParser::isCommandCharacter(char x) {
-  return ((x >= 'a' and x <= 'z') or
-          (x >= 'A' and x <= 'Z') or
-          (x >= '0' and x <= '9') or
-          (x == '-'));
+  return ((x >= 'a' and x <= 'z') or (x >= 'A' and x <= 'Z') or
+          (x >= '0' and x <= '9') or (x == '-'));
 }
 
-} // namespace ircbot
+}  // namespace ircbot

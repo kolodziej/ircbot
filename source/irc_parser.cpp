@@ -1,26 +1,17 @@
 #include "ircbot/irc_parser.hpp"
 
-#include "ircbot/logger.hpp"
 #include "ircbot/helpers.hpp"
+#include "ircbot/logger.hpp"
 
 namespace ircbot {
 
-IRCParser::IRCParser() :
-    m_state{State::NONE},
-    m_last_token{TokenType::LF}
-{}
+IRCParser::IRCParser() : m_state{State::NONE}, m_last_token{TokenType::LF} {}
 
-void IRCParser::parse(const std::string& message) {
-  lexer(message);
-}
+void IRCParser::parse(const std::string& message) { lexer(message); }
 
-size_t IRCParser::messagesCount() const {
-  return m_messages.size();
-}
+size_t IRCParser::messagesCount() const { return m_messages.size(); }
 
-bool IRCParser::messagesEmpty() const {
-  return m_messages.empty();
-}
+bool IRCParser::messagesEmpty() const { return m_messages.empty(); }
 
 IRCMessage IRCParser::getMessage() {
   IRCMessage msg = m_messages.front();
@@ -74,7 +65,7 @@ void IRCParser::lexer(const std::string& message) {
         token.put(x);
       } else {
         putToken(TokenType::USER, token);
-        
+
         if (x == space) {
           m_state = State::COMMAND;
           DEBUG("Lexer transforming state to COMMAND");
@@ -128,18 +119,15 @@ void IRCParser::lexer(const std::string& message) {
         m_state = State::TRAILING;
         DEBUG("Lexer transforming state to TRAILING");
       } else if (x == space) {
-        if (not token.str().empty())
-          putToken(TokenType::PARAM, token);
+        if (not token.str().empty()) putToken(TokenType::PARAM, token);
       } else if (x == cr) {
-        if (not token.str().empty())
-          putToken(TokenType::PARAM, token);
+        if (not token.str().empty()) putToken(TokenType::PARAM, token);
 
         putToken(TokenType::CR);
         m_state = State::CR;
         DEBUG("Lexer transforming state to CR");
       } else if (x == lf) {
-        if (not token.str().empty())
-          putToken(TokenType::PARAM, token);
+        if (not token.str().empty()) putToken(TokenType::PARAM, token);
 
         putToken(TokenType::LF);
         m_state = State::LF;
@@ -172,7 +160,7 @@ void IRCParser::lexer(const std::string& message) {
         // report error!
       }
     }
-    
+
     if (m_state == State::LF) {
       parser();
       m_state = State::NONE;
@@ -264,8 +252,6 @@ void IRCParser::putToken(TokenType type, std::stringstream& token) {
   token.str(std::string());
 }
 
-void IRCParser::putToken(TokenType type) {
-  m_tokens.emplace(type);
-}
+void IRCParser::putToken(TokenType type) { m_tokens.emplace(type); }
 
-} // namespace ircbot
+}  // namespace ircbot

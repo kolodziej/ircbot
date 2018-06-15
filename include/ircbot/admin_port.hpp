@@ -3,9 +3,9 @@
 
 #include "ircbot/command_parser.hpp"
 
+#include <array>
 #include <memory>
 #include <string>
-#include <array>
 
 #include <boost/asio.hpp>
 
@@ -74,7 +74,6 @@ class AdminPort {
     void startReceiving();
   };
 
-
   /** Pointer to client which is managed with this AdminPort */
   std::shared_ptr<Client> m_client;
 
@@ -88,11 +87,11 @@ class AdminPort {
   asio::local::stream_protocol::socket m_socket;
 
   CommandParser m_command_parser;
-  
+
   /** Connected clients */
   std::vector<AdminPortClient> m_clients;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

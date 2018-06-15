@@ -1,12 +1,12 @@
 #ifndef _COMMAND_PARSER_HPP
 #define _COMMAND_PARSER_HPP
 
+#include <queue>
 #include <string>
 #include <vector>
-#include <queue>
 
-#include "ircbot/parser_config.hpp"
 #include "ircbot/irc_message.hpp"
+#include "ircbot/parser_config.hpp"
 
 namespace ircbot {
 
@@ -24,18 +24,18 @@ class CommandParser {
  public:
   /** Possible token types */
   enum class TokenType {
-    COMMAND, /**< command */
+    COMMAND,  /**< command */
     ARGUMENT, /**< single argument */
-    END, /**< end of command */
-    IGNORE /**< indicates that whole command should be ignored */
+    END,      /**< end of command */
+    IGNORE    /**< indicates that whole command should be ignored */
   };
 
   /** All possible states during parsing phase */
   enum class State {
     START = 0, /**< initial state */
-    PREFIX, /**< prefix character */
-    COMMAND, /**< command part */
-    ARGUMENT, /**< arguments */
+    PREFIX,    /**< prefix character */
+    COMMAND,   /**< command part */
+    ARGUMENT,  /**< arguments */
   };
 
   /** \class Token
@@ -71,7 +71,7 @@ class CommandParser {
   /** Takes a command as a string and returns parsed command
    *
    * \param command string with command from user
-   * 
+   *
    * \return parsed command (Command object)
    */
   Command parse(const std::string& command);
@@ -83,7 +83,7 @@ class CommandParser {
   /** Checks if character is from a-zA-Z0-9- set
    *
    * \param x character
-   * 
+   *
    * \return true if character is from given set
    */
   bool isCommandCharacter(char x);
@@ -95,6 +95,6 @@ class CommandParser {
   State m_state;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

@@ -2,49 +2,39 @@
 
 #include <iostream>
 
-#include "message.pb.h"
 #include "ircbot/version.hpp"
+#include "message.pb.h"
 
 namespace pyircbot {
 
-Bot::Bot(const std::string& hostname, uint16_t port, Plugin plugin) :
-  m_hostname{hostname},
-  m_port{port},
-  m_plugin{plugin},
-  m_socket{m_io},
-  m_started{false} {
-}
+Bot::Bot(const std::string& hostname, uint16_t port, Plugin plugin)
+    : m_hostname{hostname},
+      m_port{port},
+      m_plugin{plugin},
+      m_socket{m_io},
+      m_started{false} {}
 
 Bot::~Bot() {
-  if (m_started)
-    stop();
+  if (m_started) stop();
 
   wait();
 }
 
-std::string Bot::hostname() const {
-  return m_hostname;
-}
+std::string Bot::hostname() const { return m_hostname; }
 
-uint16_t Bot::port() const {
-  return m_port;
-}
+uint16_t Bot::port() const { return m_port; }
 
 void Bot::connect() {
   asio::ip::tcp::resolver resolver{m_io};
-  auto endpoint_it = resolver.resolve({ m_hostname, std::to_string(m_port) });
+  auto endpoint_it = resolver.resolve({m_hostname, std::to_string(m_port)});
   auto endpoint = endpoint_it->endpoint();
 
   m_socket.connect(endpoint);
 }
 
-bool Bot::connected() const {
-  return m_socket.is_open();
-}
+bool Bot::connected() const { return m_socket.is_open(); }
 
-bool Bot::isRunning() const {
-  return m_started;
-}
+bool Bot::isRunning() const { return m_started; }
 
 void Bot::start() {
   m_started = true;
@@ -66,8 +56,7 @@ void Bot::stop() {
 }
 
 void Bot::wait() {
-  if (m_io_thread.joinable())
-    m_io_thread.join();
+  if (m_io_thread.joinable()) m_io_thread.join();
 }
 
 void Bot::send(const std::string& data) {
@@ -95,7 +84,8 @@ void Bot::sendIrcMessage(const ircbot::IRCMessage& sourcemsg) {
 }
 
 void Bot::receive() {
-  auto callback = [this](const boost::system::error_code& ec, std::size_t bytes) {
+  auto callback = [this](const boost::system::error_code& ec,
+                         std::size_t bytes) {
     if (ec == 0) {
       parse(bytes);
       receive();
@@ -105,19 +95,18 @@ void Bot::receive() {
       } else if (ec == asio::error::eof) {
         std::cerr << "Connection closed!" << std::endl;
       } else {
-        std::cerr << "An error occurred. Message could not be received!" << std::endl;
+        std::cerr << "An error occurred. Message could not be received!"
+                  << std::endl;
       }
     }
   };
 
-  m_socket.async_receive(
-    asio::buffer(m_buffer.data(), m_buffer.size()),
-    callback
-  );
+  m_socket.async_receive(asio::buffer(m_buffer.data(), m_buffer.size()),
+                         callback);
 }
 
 void Bot::parse(size_t bytes) {
-  PluginProtocol::Message msg; 
+  PluginProtocol::Message msg;
   auto msg_str = std::string{m_buffer.data(), bytes};
   msg.ParseFromString(msg_str);
 
@@ -141,7 +130,7 @@ void Bot::parse(size_t bytes) {
 void Bot::initialize(const std::string& name, const std::string& token) {
   PluginProtocol::Message msg;
   msg.set_type(PluginProtocol::Message::INIT_REQUEST);
-  
+
   PluginProtocol::InitRequest* req = msg.mutable_init_req();
   req->set_name(name);
   req->set_token(token);
@@ -180,23 +169,19 @@ void Bot::ircMessage(const PluginProtocol::IrcMessage& irc_msg) {
 void Bot::controlRequest(const PluginProtocol::ControlRequest& req) {
   switch (req.type()) {
     case PluginProtocol::ControlRequest::INIT:
-      if (m_plugin.onInit)
-        m_plugin.onInit(this);
+      if (m_plugin.onInit) m_plugin.onInit(this);
       break;
     case PluginProtocol::ControlRequest::SHUTDOWN:
-      if (m_plugin.onShutdown)
-        m_plugin.onShutdown(this);
+      if (m_plugin.onShutdown) m_plugin.onShutdown(this);
       stop();
       break;
     case PluginProtocol::ControlRequest::RELOAD:
-      if (m_plugin.onReload)
-        m_plugin.onReload(this);
+      if (m_plugin.onReload) m_plugin.onReload(this);
       break;
     case PluginProtocol::ControlRequest::RESTART:
-      if (m_plugin.onRestart)
-        m_plugin.onRestart(this);
+      if (m_plugin.onRestart) m_plugin.onRestart(this);
       break;
   }
 }
 
-} // namespace pyircbot
+}  // namespace pyircbot

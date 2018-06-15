@@ -1,10 +1,10 @@
 #ifndef _IRC_MESSAGE_HPP
 #define _IRC_MESSAGE_HPP
 
+#include <initializer_list>
+#include <ostream>
 #include <string>
 #include <vector>
-#include <ostream>
-#include <initializer_list>
 
 #include "irc_message.pb.h"
 
@@ -35,7 +35,7 @@ struct IRCMessage {
 
   /** servername part of message */
   std::string servername;
-  
+
   /** user part of message (may be empty) */
   std::string user;
 
@@ -69,6 +69,6 @@ struct IRCMessage {
   static IRCMessage fromProtobuf(const PluginProtocol::IrcMessage&);
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

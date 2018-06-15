@@ -4,17 +4,12 @@
 
 namespace ircbot {
 
-LogOutput::LogOutput(LogLevel level) :
-  m_level{level} {
-}
+LogOutput::LogOutput(LogLevel level) : m_level{level} {}
 
 void LogOutput::log(LogLevel level, std::string message) {
-  if (level >= m_level)
-    output() << message << std::flush;
+  if (level >= m_level) output() << message << std::flush;
 }
 
-LogLevel LogOutput::level() const {
-  return m_level;
-}
+LogLevel LogOutput::level() const { return m_level; }
 
-} // namespace ircbot
+}  // namespace ircbot

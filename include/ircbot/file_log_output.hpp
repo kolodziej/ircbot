@@ -18,13 +18,13 @@ class FileLogOutput : public LogOutput {
  public:
   /** Constructor
    *
-   * \param fname path to log file 
+   * \param fname path to log file
    * \param level minimum log level that will be logged to this output
    */
   FileLogOutput(const std::string& fname, LogLevel level);
 
   /** Constructor - handles opened file
-   * 
+   *
    * \param file rvalue reference to output file stream; log output becomes
    * owner of this object
    * \param level minimum log level that will be logged to this output
@@ -39,6 +39,6 @@ class FileLogOutput : public LogOutput {
   std::ofstream m_file;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

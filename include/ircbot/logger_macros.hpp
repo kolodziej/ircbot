@@ -3,9 +3,9 @@
 
 #ifdef LOG_DEBUG
 
-#define DEBUG(...) \
-  ircbot::Logger::m_logger_instance(ircbot::LogLevel::DEBUG, __PRETTY_FUNCTION__, \
-                            ": ", __VA_ARGS__);
+#define DEBUG(...)                                           \
+  ircbot::Logger::m_logger_instance(ircbot::LogLevel::DEBUG, \
+                                    __PRETTY_FUNCTION__, ": ", __VA_ARGS__);
 
 #else
 
@@ -13,8 +13,8 @@
 
 #endif
 
-#define LOG(level, ...) \
-  ircbot::Logger::m_logger_instance(ircbot::LogLevel::level, __PRETTY_FUNCTION__, \
-                            ": ", __VA_ARGS__);
+#define LOG(level, ...)                                      \
+  ircbot::Logger::m_logger_instance(ircbot::LogLevel::level, \
+                                    __PRETTY_FUNCTION__, ": ", __VA_ARGS__);
 
 #endif

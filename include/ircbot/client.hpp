@@ -1,22 +1,22 @@
 #ifndef _CLIENT_HPP
 #define _CLIENT_HPP
 
-#include <boost/asio.hpp>
-#include <string>
-#include <memory>
-#include <condition_variable>
-#include <thread>
-#include <mutex>
-#include <atomic>
 #include <array>
+#include <atomic>
+#include <boost/asio.hpp>
+#include <condition_variable>
 #include <map>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <thread>
 
-#include "ircbot/irc_parser.hpp"
-#include "ircbot/irc_message.hpp"
-#include "ircbot/config.hpp"
-#include "ircbot/plugin_config.hpp"
 #include "ircbot/admin_port.hpp"
+#include "ircbot/config.hpp"
+#include "ircbot/irc_message.hpp"
+#include "ircbot/irc_parser.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/plugin_config.hpp"
 
 namespace asio = boost::asio;
 
@@ -73,7 +73,7 @@ class Client : public std::enable_shared_from_this<Client> {
   void stopAdminPort();
 
   /** Initializes tcp plugin server
-   * 
+   *
    * \param host host on which server should listen
    * \param port tcp port on which server should listen
    */
@@ -93,20 +93,20 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   void send(std::string msg);
 
-  /** Start client */ 
+  /** Start client */
   void run();
   /** Stop client */
   void stop();
   /** Signal handler */
   void signal(int);
 
-  /** Load plugin marked in configuration with given id 
+  /** Load plugin marked in configuration with given id
    *
    * \param pluginId plugin identification string
    */
   PluginVectorIter loadPlugin(const std::string& pluginId);
 
-  /** Load plugin marked in configuration with given id 
+  /** Load plugin marked in configuration with given id
    *
    * \param pluginId plugin identification string
    * \param config configuration (may be loaded from configuration file or given
@@ -119,7 +119,7 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Load plugin from shared object file
    *
-   * \param fname shared object filename 
+   * \param fname shared object filename
    * \param config plugin configuration
    *
    * \return unique pointer to SoPlugin object
@@ -130,16 +130,16 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Find plugin by id
    *
    * \param pluginId plugin id matching one given in configuration file
-   * 
+   *
    * \return iterator to element in vector of unique pointers to plugins
    */
   PluginVectorIter findPlugin(const std::string& pluginId);
-  
+
   /** Add plugin to client instance
    *
    * \param plugin r-value reference to unique pointer to Plugin instance
    *
-   * \return iterator to inserted plugin 
+   * \return iterator to inserted plugin
    */
   PluginVectorIter addPlugin(std::unique_ptr<Plugin>&& plugin);
 
@@ -205,7 +205,7 @@ class Client : public std::enable_shared_from_this<Client> {
   std::array<char, 4096> m_buffer;
 
   Config m_cfg;
-  
+
   /** instance of AdminPort for this Client */
   std::unique_ptr<AdminPort> m_admin_port;
 
@@ -228,6 +228,6 @@ class Client : public std::enable_shared_from_this<Client> {
   std::mutex m_plugins_mtx;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

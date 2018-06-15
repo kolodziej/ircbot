@@ -10,7 +10,7 @@ namespace ircbot {
 
 class Client;
 
-/** \class PluginConfig 
+/** \class PluginConfig
  *
  * \brief Plugin configuration for plugins loaded from shared object files.
  *
@@ -31,6 +31,6 @@ struct PluginConfig {
   Config config;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

@@ -7,23 +7,22 @@
 
 namespace ircbot {
 
-AdminPort::AdminPort(std::shared_ptr<Client> client, const std::string& socket_path) :
-    m_client{client},
-    m_endpoint{socket_path},
-    m_acceptor{client->getIoService(), m_endpoint},
-    m_socket{client->getIoService()},
-    m_command_parser{ParserConfig{'\0', true}} {
+AdminPort::AdminPort(std::shared_ptr<Client> client,
+                     const std::string& socket_path)
+    : m_client{client},
+      m_endpoint{socket_path},
+      m_acceptor{client->getIoService(), m_endpoint},
+      m_socket{client->getIoService()},
+      m_command_parser{ParserConfig{'\0', true}} {
   LOG(INFO, "Started admin port at: ", socket_path);
 }
 
-AdminPort::~AdminPort() {
-  ::unlink(m_endpoint.path().data());
-}
+AdminPort::~AdminPort() { ::unlink(m_endpoint.path().data()); }
 
 void AdminPort::acceptConnections() {
   using boost::system::error_code;
 
-  auto handler = [this] (const error_code& ec) {
+  auto handler = [this](const error_code& ec) {
     if (ec) {
       if (ec == asio::error::operation_aborted) {
         LOG(INFO, "Canceling asynchronous connection accepting.");
@@ -46,11 +45,7 @@ void AdminPort::stop() {
 }
 
 void AdminPort::addClient() {
-  AdminPortClient client{
-    this,
-    std::move(m_socket),
-    {}
-  };
+  AdminPortClient client{this, std::move(m_socket), {}};
   m_clients.push_back(std::move(client));
   m_clients.back().startReceiving();
 }
@@ -83,7 +78,7 @@ void AdminPort::processCommand(const std::string& command) {
 void AdminPort::AdminPortClient::startReceiving() {
   using boost::system::error_code;
 
-  auto handler = [this] (const error_code& ec, std::size_t bytes) {
+  auto handler = [this](const error_code& ec, std::size_t bytes) {
     if (ec) {
       if (ec == boost::asio::error::operation_aborted) {
         LOG(INFO, "Canceling asynchronous receiving.");
@@ -99,10 +94,8 @@ void AdminPort::AdminPortClient::startReceiving() {
   };
 
   using asio::mutable_buffers_1;
-  socket.async_receive(
-    mutable_buffers_1(buffer.data(), buffer.size()), handler
-  );
-
+  socket.async_receive(mutable_buffers_1(buffer.data(), buffer.size()),
+                       handler);
 }
 
-} // namespace ircbot
+}  // namespace ircbot

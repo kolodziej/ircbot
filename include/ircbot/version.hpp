@@ -3,22 +3,21 @@
 
 #include "version_configuration.hpp"
 
-#include <vector>
 #include <map>
 #include <string>
+#include <vector>
 
 class Plugin;
 
 namespace ircbot {
 namespace version {
 
-static const uint16_t
-  major = VERSION_MAJOR,
-  minor = VERSION_MINOR,
-  patch = VERSION_PATCH;
+static const uint16_t major = VERSION_MAJOR, minor = VERSION_MINOR,
+                      patch = VERSION_PATCH;
 
 std::string str();
 
-} } // namespace ircbot::version
+}  // namespace version
+}  // namespace ircbot
 
 #endif

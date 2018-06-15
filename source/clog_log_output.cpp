@@ -4,12 +4,8 @@
 
 namespace ircbot {
 
-ClogLogOutput::ClogLogOutput(LogLevel level) :
-  LogOutput{level} {
-}
+ClogLogOutput::ClogLogOutput(LogLevel level) : LogOutput{level} {}
 
-std::ostream& ClogLogOutput::output() {
-  return std::clog;
-}
+std::ostream& ClogLogOutput::output() { return std::clog; }
 
-} // namespace ircbot
+}  // namespace ircbot

@@ -18,6 +18,6 @@ const char* LogLevelDesc(LogLevel level);
 
 LogLevel GetLogLevel(const std::string& desc);
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

@@ -3,10 +3,11 @@
 
 #include "ircbot/plugin.hpp"
 
-#define IRCBOT_PLUGIN(PluginName) \
-    extern "C" std::unique_ptr<ircbot::SoPlugin> getPlugin(ircbot::PluginConfig config) { \
-      return std::make_unique<PluginName>(config); \
-    }
+#define IRCBOT_PLUGIN(PluginName)                         \
+  extern "C" std::unique_ptr<ircbot::SoPlugin> getPlugin( \
+      ircbot::PluginConfig config) {                      \
+    return std::make_unique<PluginName>(config);          \
+  }
 
 namespace ircbot {
 
@@ -21,6 +22,6 @@ class SoPlugin : public Plugin {
   void* m_so_library;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

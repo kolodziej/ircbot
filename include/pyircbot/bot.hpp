@@ -1,16 +1,16 @@
 #ifndef _PYIRCBOT_BOT_HPP
 #define _PYIRCBOT_BOT_HPP
 
-#include <thread>
-#include <atomic>
 #include <array>
+#include <atomic>
 #include <boost/asio.hpp>
+#include <thread>
 
 #include "pyircbot/plugin.hpp"
 
+#include "control.pb.h"
 #include "init.pb.h"
 #include "irc_message.pb.h"
-#include "control.pb.h"
 
 namespace asio = boost::asio;
 
@@ -25,7 +25,7 @@ namespace pyircbot {
 class Bot {
  public:
   /** Default constructor
-   * 
+   *
    * \param hostname hostname on which plugin IRCBot is listening for plugins'
    * connections
    * \param port TCP port on which IRCBot is listening for plugins' connections
@@ -60,7 +60,7 @@ class Bot {
   bool isRunning() const;
 
   /** Starts plugin
-   *  
+   *
    *  - connect to IRCBot
    *  - initialize itself (sends name and token to IRCBot)
    *  - initialize asynchronous receiving messages from IRCBot
@@ -157,6 +157,6 @@ class Bot {
   bool m_started;
 };
 
-} // namespace pyircbot
+}  // namespace pyircbot
 
 #endif

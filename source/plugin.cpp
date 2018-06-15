@@ -2,44 +2,38 @@
 
 #include <chrono>
 
-#include "ircbot/unexpected_character.hpp"
 #include "ircbot/helpers.hpp"
+#include "ircbot/unexpected_character.hpp"
 
 namespace ircbot {
 
-Plugin::Plugin(PluginConfig config) :
-    m_client{config.client},
-    m_id{config.id},
-    m_cfg{config.config},
-    m_command_parser{nullptr},
-    m_running{true} {
+Plugin::Plugin(PluginConfig config)
+    : m_client{config.client},
+      m_id{config.id},
+      m_cfg{config.config},
+      m_command_parser{nullptr},
+      m_running{true} {
   LOG(INFO, "Initialized plugin with ID: '", getId(), "'.");
 }
 
-std::shared_ptr<Client> Plugin::client() {
-  return m_client;
-}
+std::shared_ptr<Client> Plugin::client() { return m_client; }
 
-std::string Plugin::getId() const {
-  return m_id;
-}
+std::string Plugin::getId() const { return m_id; }
 
 void Plugin::stop() {
-  if (not m_running)
-    return;
+  if (not m_running) return;
 
   LOG(INFO, "Stopping plugin: ", getId());
   m_running = false;
 
-  if (m_thread.joinable())
-    m_thread.join();
+  if (m_thread.joinable()) m_thread.join();
 
   onShutdown();
 }
 
 void Plugin::receive(IRCMessage cmd) {
   std::unique_lock<std::mutex> lock{m_incoming_mtx};
-  m_incoming.push_back(cmd); 
+  m_incoming.push_back(cmd);
   DEBUG("New message added to plugin's incoming queue");
   lock.unlock();
 
@@ -56,41 +50,37 @@ void Plugin::run() {
     std::unique_lock<std::mutex> lock{m_incoming_mtx};
     if (m_incoming_cv.wait_for(lock, 500ms,
                                [this] { return commandsCount(); })) {
-      IRCMessage cmd = getCommand();    
+      IRCMessage cmd = getCommand();
       if (not m_command_parser) {
         onMessage(cmd);
       } else if (isCommand(cmd)) {
         try {
           CommandParser::Command parsed_cmd =
-             m_command_parser->parse(cmd.params.back());
+              m_command_parser->parse(cmd.params.back());
 
           parsed_cmd.irc_message = cmd;
           onCommand(parsed_cmd);
         } catch (UnexpectedCharacter& unexp) {
-          LOG(WARNING, "Could not parse user command: ",
-              cmd.params.back(), ". ", unexp.what());
+          LOG(WARNING, "Could not parse user command: ", cmd.params.back(),
+              ". ", unexp.what());
         } catch (std::exception& exc) {
           LOG(ERROR, "Error during command parsing: ", exc.what());
         }
       } else {
-        LOG(WARNING, "Could not run neither onMessage nor onCommand for"
-            " message: ", cmd.toString());
+        LOG(WARNING,
+            "Could not run neither onMessage nor onCommand for"
+            " message: ",
+            cmd.toString());
       }
     }
   }
 }
 
-void Plugin::onCommand(CommandParser::Command cmd) {
-  callFunction(cmd);
-}
+void Plugin::onCommand(CommandParser::Command cmd) { callFunction(cmd); }
 
-bool Plugin::isRunning() const {
-  return m_running;
-}
+bool Plugin::isRunning() const { return m_running; }
 
-size_t Plugin::commandsCount() const {
-  return m_incoming.size();
-}
+size_t Plugin::commandsCount() const { return m_incoming.size(); }
 
 IRCMessage Plugin::getCommand() {
   auto cmd = m_incoming.front();
@@ -98,24 +88,18 @@ IRCMessage Plugin::getCommand() {
   return cmd;
 }
 
-void Plugin::send(const IRCMessage& cmd) {
-  m_client->send(cmd);
-}
+void Plugin::send(const IRCMessage& cmd) { m_client->send(cmd); }
 
-pt::ptree& Plugin::cfg() {
-  return m_cfg.tree();
-}
+pt::ptree& Plugin::cfg() { return m_cfg.tree(); }
 
-bool Plugin::filter(const IRCMessage& /*cmd*/) {
-  return true;
-}
+bool Plugin::filter(const IRCMessage& /*cmd*/) { return true; }
 
 bool Plugin::preFilter(const IRCMessage& cmd) {
   if (m_command_parser != nullptr) {
     if (not isCommand(cmd)) {
       return false;
     }
-  } 
+  }
 
   return true;
 }
@@ -125,13 +109,9 @@ void Plugin::setConfig(Config cfg) {
   onNewConfiguration();
 }
 
-Config& Plugin::getConfig() {
-  return m_cfg;
-}
+Config& Plugin::getConfig() { return m_cfg; }
 
-const Config& Plugin::getConfig() const {
-  return m_cfg;
-}
+const Config& Plugin::getConfig() const { return m_cfg; }
 
 void Plugin::spawn() {
   auto plugin_call = [this] {
@@ -151,9 +131,7 @@ void Plugin::installCommandParser(std::shared_ptr<CommandParser> parser) {
   m_command_parser = parser;
 }
 
-bool Plugin::hasCommandParser() const {
-  return m_command_parser != nullptr;
-}
+bool Plugin::hasCommandParser() const { return m_command_parser != nullptr; }
 
 void Plugin::deinstallCommandParser() {
   LOG(INFO, "Removing command parser from plugin ", getId());
@@ -161,11 +139,9 @@ void Plugin::deinstallCommandParser() {
 }
 
 bool Plugin::isCommand(IRCMessage cmd) const {
-  if (not m_command_parser)
-    return false;
+  if (not m_command_parser) return false;
 
-  if (cmd.params.size() < 1)
-    return false;
+  if (cmd.params.size() < 1) return false;
 
   char prefix = cmd.params.back()[0];
   return (cmd.command == "PRIVMSG" and
@@ -195,4 +171,4 @@ void Plugin::callFunction(const CommandParser::Command& command) {
   }
 }
 
-} // namespace ircbot
+}  // namespace ircbot

@@ -22,27 +22,27 @@ class IRCParser {
   /** Tokens' types used to identify parts returned by lexer */
   enum class TokenType {
     SERVERNAME, /**< servername part of message */
-    NICK, /**< nick part of message */
-    USER, /**< user part of message */
-    HOST, /**< host part of message */
-    COMMAND, /**< command part of message */
-    PARAM, /**< single parameter */
-    CR, /**< carriage return character */
-    LF /**< line feed character */
+    NICK,       /**< nick part of message */
+    USER,       /**< user part of message */
+    HOST,       /**< host part of message */
+    COMMAND,    /**< command part of message */
+    PARAM,      /**< single parameter */
+    CR,         /**< carriage return character */
+    LF          /**< line feed character */
   };
 
   enum class State {
-    NONE, /**< Initial state */
+    NONE,            /**< Initial state */
     SERVERNAME_NICK, /**< servername or nick part of message */
-    USER, /**< user part of message */
-    HOST, /**< host part of message */
-    COMMAND, /**< first character of command */
-    COMMAND_NUM, /**< numeric command */
-    COMMAND_LETTER, /**< alphanumeric command */
-    PARAMS, /**< parameters */
-    TRAILING, /**< trailing parameter */
-    CR, /**< carriage return character */
-    LF /**< line feed character */
+    USER,            /**< user part of message */
+    HOST,            /**< host part of message */
+    COMMAND,         /**< first character of command */
+    COMMAND_NUM,     /**< numeric command */
+    COMMAND_LETTER,  /**< alphanumeric command */
+    PARAMS,          /**< parameters */
+    TRAILING,        /**< trailing parameter */
+    CR,              /**< carriage return character */
+    LF               /**< line feed character */
   };
 
   /** \class Token
@@ -59,23 +59,24 @@ class IRCParser {
      * \brief Constructor taking only type
      *
      * Constructs Token without content (e.g. LF, CR)
-     * 
+     *
      * \param type type of token
      */
     Token(TokenType type) : type{type} {}
 
-    /** Constructor 
+    /** Constructor
      *
      * \brief Constructor taking type and value of token
-     * 
+     *
      * \param type type of token
      * \param value characters which belong to token
      */
-    Token(TokenType type, const std::string& value) : type{type}, value{value} {}
+    Token(TokenType type, const std::string& value)
+        : type{type}, value{value} {}
   };
 
-  /** Default constructor 
-   * 
+  /** Default constructor
+   *
    * Initializes parser with state State::NONE and last token TokenType::LF
    */
   IRCParser();
@@ -156,6 +157,6 @@ class IRCParser {
   std::queue<IRCMessage> m_messages;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

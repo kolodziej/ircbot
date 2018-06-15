@@ -4,14 +4,9 @@
 
 namespace ircbot {
 
-Config::Config(const std::string& fname) :
-    m_fname{fname} {
-  loadFile();
-}
+Config::Config(const std::string& fname) : m_fname{fname} { loadFile(); }
 
-Config::Config(const pt::ptree& pt) :
-  m_pt{pt} {
-}
+Config::Config(const pt::ptree& pt) : m_pt{pt} {}
 
 void Config::loadFile() {
   if (m_fname.empty()) {
@@ -39,8 +34,6 @@ void Config::saveFile(const std::string& fname) {
   saveFile();
 }
 
-pt::ptree& Config::tree() {
-  return m_pt;
-}
+pt::ptree& Config::tree() { return m_pt; }
 
-} // namespace ircbot
+}  // namespace ircbot

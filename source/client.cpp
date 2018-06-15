@@ -1,30 +1,28 @@
 #include "ircbot/client.hpp"
 
+#include <chrono>
 #include <stdexcept>
 #include <thread>
-#include <chrono>
 #include <utility>
-#include <stdexcept>
 
 #include <boost/filesystem.hpp>
 
 #include <dlfcn.h>
 
+#include "ircbot/helpers.hpp"
 #include "ircbot/plugin.hpp"
 #include "ircbot/so_plugin.hpp"
 #include "ircbot/tcp_plugin_server.hpp"
-#include "ircbot/helpers.hpp"
 
 namespace ircbot {
 
-Client::Client(asio::io_service& io_service, Config cfg) :
-    m_io_service{io_service},
-    m_socket{io_service},
-    m_cfg{cfg},
-    m_admin_port{nullptr},
-    m_tcp_plugin_server{nullptr},
-    m_running{false}
-{}
+Client::Client(asio::io_service& io_service, Config cfg)
+    : m_io_service{io_service},
+      m_socket{io_service},
+      m_cfg{cfg},
+      m_admin_port{nullptr},
+      m_tcp_plugin_server{nullptr},
+      m_running{false} {}
 
 void Client::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
@@ -87,14 +85,10 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
   }
 
   if (ext == ".so") {
-    LOG(INFO, "Loading plugin from shared library: ", path,
-        " with ID: '", pluginId, "'.");
+    LOG(INFO, "Loading plugin from shared library: ", path, " with ID: '",
+        pluginId, "'.");
 
-    PluginConfig cfg{
-      shared_from_this(),
-      pluginId,
-      config
-    };
+    PluginConfig cfg{shared_from_this(), pluginId, config};
     auto plugin = loadSoPlugin(path, cfg);
 
     if (plugin == nullptr) {
@@ -114,7 +108,7 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
 
 void Client::startAsyncReceive() {
   using asio::mutable_buffers_1;
-  
+
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
     if (ec) {
       stopAsyncReceive();
@@ -143,8 +137,8 @@ void Client::startAsyncReceive() {
     startAsyncReceive();
   };
 
-  m_socket.async_receive(
-      mutable_buffers_1(m_buffer.data(), m_buffer.size()), handler);
+  m_socket.async_receive(mutable_buffers_1(m_buffer.data(), m_buffer.size()),
+                         handler);
 }
 
 void Client::stopAsyncReceive() {
@@ -161,10 +155,7 @@ void Client::startAdminPort(const std::string& socket_path) {
     return;
   }
 
-  m_admin_port = std::make_unique<AdminPort>(
-    shared_from_this(),
-    socket_path
-  );
+  m_admin_port = std::make_unique<AdminPort>(shared_from_this(), socket_path);
 
   m_admin_port->acceptConnections();
 }
@@ -184,7 +175,8 @@ void Client::startTcpPluginServer(const std::string& host, uint16_t port) {
     return;
   }
 
-  m_tcp_plugin_server = std::make_unique<TcpPluginServer>(shared_from_this(), host, port);
+  m_tcp_plugin_server =
+      std::make_unique<TcpPluginServer>(shared_from_this(), host, port);
   m_tcp_plugin_server->acceptConnections();
 }
 
@@ -203,9 +195,7 @@ void Client::disconnect() {
   m_socket.close();
 }
 
-void Client::send(IRCMessage cmd) {
-  send(cmd.toString());
-}
+void Client::send(IRCMessage cmd) { send(cmd.toString()); }
 
 void Client::send(std::string msg) {
   auto write_handler = [this](boost::system::error_code ec,
@@ -253,7 +243,7 @@ void Client::signal(int signum) {
 }
 
 Client::PluginVectorIter Client::findPlugin(const std::string& pluginId) {
-  auto pred = [pluginId] (const std::unique_ptr<Plugin>& plugin) {
+  auto pred = [pluginId](const std::unique_ptr<Plugin>& plugin) {
     return plugin->getId() == pluginId;
   };
   return std::find_if(m_plugins.begin(), m_plugins.end(), pred);
@@ -291,7 +281,8 @@ std::vector<std::string> Client::listPlugins() const {
 }
 
 bool Client::authenticatePlugin(const std::string& token) {
-  const std::string real_token = m_cfg.tree().get("plugin_token", std::string{});
+  const std::string real_token =
+      m_cfg.tree().get("plugin_token", std::string{});
   if (real_token.empty()) {
     LOG(ERROR, "Token for TCP plugins has not been set or is empty!");
     return false;
@@ -314,8 +305,8 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
 
   void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
   std::function<std::unique_ptr<SoPlugin>(PluginConfig)> func =
-      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(PluginConfig)>
-      (getPluginFunc);
+      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(PluginConfig)>(
+          getPluginFunc);
 
   if (func == nullptr) {
     LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
@@ -362,8 +353,8 @@ void Client::reloadPlugin(const std::string& pluginId) {
 
   LOG(INFO, "Reloading plugin ", pluginId);
   (*it)->stop();
-  void * so_lib = m_dl_plugins[pluginId];
-  removePlugin(it); 
+  void* so_lib = m_dl_plugins[pluginId];
+  removePlugin(it);
   if (dlclose(so_lib) != 0) {
     LOG(ERROR, "Could not unload so library!");
   }
@@ -372,8 +363,6 @@ void Client::reloadPlugin(const std::string& pluginId) {
   (*plugin)->spawn();
 }
 
-asio::io_service& Client::getIoService() {
-  return m_io_service;
-}
+asio::io_service& Client::getIoService() { return m_io_service; }
 
-} // namespace ircbot
+}  // namespace ircbot

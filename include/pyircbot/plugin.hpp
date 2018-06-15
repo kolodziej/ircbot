@@ -1,8 +1,8 @@
 #ifndef _PYIRCBOT_PLUGIN_HPP
 #define _PYIRCBOT_PLUGIN_HPP
 
-#include <functional>
 #include <pybind11/pybind11.h>
+#include <functional>
 
 #include "ircbot/irc_message.hpp"
 
@@ -41,6 +41,6 @@ struct Plugin {
   std::function<void(Bot*)> onReload;
 };
 
-} // namespace pyircbot
+}  // namespace pyircbot
 
 #endif

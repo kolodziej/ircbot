@@ -18,10 +18,9 @@ struct UnexpectedCharacter : std::logic_error {
    * \param expected character (may be descriptive, range, list of possible
    * characters)
    */
-  UnexpectedCharacter(const std::string& given,
-                      const std::string& excpected);
+  UnexpectedCharacter(const std::string& given, const std::string& excpected);
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

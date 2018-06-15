@@ -1,10 +1,10 @@
 #ifndef _LOGGER_HPP
 #define _LOGGER_HPP
 
-#include <vector>
-#include <sstream>
-#include <mutex>
 #include <memory>
+#include <mutex>
+#include <sstream>
+#include <vector>
 
 #include "ircbot/log_level.hpp"
 #include "ircbot/log_output.hpp"
@@ -25,7 +25,7 @@ class Logger {
  public:
   /** std::unique_ptr to LogOutput */
   using LogOutputPtr = std::unique_ptr<LogOutput>;
-  
+
   /** Add output to logger instance
    *
    * \param output rvalue reference to unique pointer to LogOutput instance
@@ -42,6 +42,7 @@ class Logger {
 
   /** Get reference to the only existing instance of Logger */
   static Logger& getInstance();
+
  private:
   Logger() = default;
 
@@ -69,7 +70,7 @@ class Logger {
   static Logger m_logger_instance;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #include "ircbot/logger.impl.hpp"
 

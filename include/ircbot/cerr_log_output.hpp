@@ -5,17 +5,16 @@
 
 namespace ircbot {
 
-
 /** \class CerrLogOutput
  *
- * \brief Representation of std::cerr 
+ * \brief Representation of std::cerr
  *
  * Output for Logger. Prints everything to std::cerr.
  */
 
 class CerrLogOutput : public LogOutput {
  public:
-  /** Default constructor 
+  /** Default constructor
    *
    * \param level minimum log level that will be logged to this output
    */
@@ -25,7 +24,6 @@ class CerrLogOutput : public LogOutput {
   std::ostream& output();
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif
-

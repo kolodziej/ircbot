@@ -2,7 +2,8 @@
 
 #include <sstream>
 
-namespace ircbot { namespace version {
+namespace ircbot {
+namespace version {
 
 static const char* git_branch = GIT_BRANCH;
 static const char* git_commit = GIT_COMMIT;
@@ -16,9 +17,11 @@ std::string str() {
 #ifdef RELEASE_TYPE
   stream << '[' << RELEASE_TYPE << "] ";
 #endif
-  stream << "(git-commit " << git_commit << "; git-branch " << git_branch << ')';
+  stream << "(git-commit " << git_commit << "; git-branch " << git_branch
+         << ')';
 
   return stream.str();
 }
 
-} } // namespace ircbot::version
+}  // namespace version
+}  // namespace ircbot

@@ -4,8 +4,8 @@
 #include "ircbot/plugin.hpp"
 
 #include <array>
-#include <future>
 #include <boost/asio.hpp>
+#include <future>
 
 #include "message.pb.h"
 
@@ -70,10 +70,9 @@ class TcpPlugin : public Plugin {
   void processIrcMessage(const PluginProtocol::IrcMessage& irc_msg);
   void sendInitResponse(const PluginProtocol::InitResponse::Status& status);
   void sendControlRequest(const PluginProtocol::ControlRequest::Type& type,
-                          const std::string& msg = {},
-                          uint32_t code = 0);
+                          const std::string& msg = {}, uint32_t code = 0);
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

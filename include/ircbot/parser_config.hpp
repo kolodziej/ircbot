@@ -16,6 +16,6 @@ struct ParserConfig {
   bool parseOneCommand;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

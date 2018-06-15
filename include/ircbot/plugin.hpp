@@ -1,20 +1,20 @@
 #ifndef _PLUGIN_HPP
 #define _PLUGIN_HPP
 
-#include <memory>
-#include <deque>
 #include <atomic>
+#include <condition_variable>
+#include <deque>
+#include <memory>
 #include <mutex>
 #include <thread>
-#include <condition_variable>
 #include <unordered_map>
 
 #include "ircbot/client.hpp"
-#include "ircbot/plugin_config.hpp"
-#include "ircbot/irc_message.hpp"
 #include "ircbot/command_parser.hpp"
 #include "ircbot/config.hpp"
+#include "ircbot/irc_message.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/plugin_config.hpp"
 
 namespace ircbot {
 
@@ -31,17 +31,17 @@ class Plugin {
   using CmdFunction = std::function<void(const CommandParser::Command&)>;
 
  public:
-  /** Constructor 
+  /** Constructor
    *
    * \param config PluginConfig instance with prefix for command configured
    */
   Plugin(PluginConfig config);
 
   /** Destructor
-   * 
+   *
    * Performs shutdown operations and waits for running thread to terminate.
    */
-  virtual ~Plugin() {};
+  virtual ~Plugin(){};
 
   /** Get pointer to client */
   std::shared_ptr<Client> client();
@@ -95,7 +95,7 @@ class Plugin {
   /** If Plugin has instance of CommandParser, this function checks if given
    * message is a command using isCommand function.
    *
-   * \param cmd const reference to message 
+   * \param cmd const reference to message
    */
   bool preFilter(const IRCMessage& cmd);
 
@@ -162,8 +162,8 @@ class Plugin {
   pt::ptree& cfg();
 
   /** Add function that can be called using commands passed by user via irc
-   * message 
-   * 
+   * message
+   *
    * \param cmd command name
    * \param f function that should be called
    */
@@ -171,7 +171,7 @@ class Plugin {
 
   /** Remove function for given command
    *
-   * \param cmd command for which function should be removed 
+   * \param cmd command for which function should be removed
    */
   void removeFunction(const std::string& cmd);
 
@@ -213,6 +213,6 @@ class Plugin {
   std::thread m_thread;
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

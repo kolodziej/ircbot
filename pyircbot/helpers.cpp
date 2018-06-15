@@ -4,14 +4,16 @@ namespace pyircbot {
 namespace helpers {
 
 std::string responseDestination(const ircbot::IRCMessage& msg, bool priv) {
-  if (not priv and msg.command == "PRIVMSG" and (
-      msg.params[0][0] == '#' or  // standard channels available accros whole network
-      msg.params[0][0] == '&' or  // local channels
-      msg.params[0][0] == '+')) { // modeless channels
+  if (not priv and msg.command == "PRIVMSG" and
+      (msg.params[0][0] ==
+           '#' or  // standard channels available accros whole network
+       msg.params[0][0] == '&' or   // local channels
+       msg.params[0][0] == '+')) {  // modeless channels
     return msg.params[0];
   }
 
   return msg.nick;
 }
 
-} } // namespace pyircbot::helpers
+}  // namespace helpers
+}  // namespace pyircbot

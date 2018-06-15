@@ -21,8 +21,7 @@ void Logger::operator()(LogLevel level, Args... args) {
   log(args...);
 
   std::string log_msg = m_stream.str();
-  for (auto& output : m_outputs)
-    output->log(level, log_msg);
+  for (auto& output : m_outputs) output->log(level, log_msg);
 }
 
 template <typename First, typename... Rest>
@@ -31,4 +30,4 @@ void Logger::log(First f, Rest... r) {
   log(r...);
 }
 
-} // namespace ircbot
+}  // namespace ircbot

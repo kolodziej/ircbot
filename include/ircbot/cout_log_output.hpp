@@ -24,6 +24,6 @@ class CoutLogOutput : public LogOutput {
   std::ostream& output();
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif

@@ -24,12 +24,11 @@ const char* LogLevelDesc(LogLevel level) {
 
 LogLevel GetLogLevel(const std::string& desc) {
   static std::map<std::string, LogLevel> levels{
-    { "DEBUG", LogLevel::DEBUG },
-    { "INFO", LogLevel::INFO },
-    { "WARNING", LogLevel::WARNING },
-    { "ERROR", LogLevel::ERROR },
-    { "CRITICAL", LogLevel::CRITICAL }
-  };
+      {"DEBUG", LogLevel::DEBUG},
+      {"INFO", LogLevel::INFO},
+      {"WARNING", LogLevel::WARNING},
+      {"ERROR", LogLevel::ERROR},
+      {"CRITICAL", LogLevel::CRITICAL}};
 
   if (not levels.count(desc)) {
     throw std::runtime_error{"Could not convert description to LogLevel!"};
@@ -38,4 +37,4 @@ LogLevel GetLogLevel(const std::string& desc) {
   return levels[desc];
 }
 
-} // namespace ircbot
+}  // namespace ircbot
