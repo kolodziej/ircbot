@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace version {
+namespace ircbot { namespace version {
 
 static const char* git_branch = GIT_BRANCH;
 static const char* git_commit = GIT_COMMIT;
@@ -21,4 +21,4 @@ std::string str() {
   return stream.str();
 }
 
-}
+} } // namespace ircbot::version

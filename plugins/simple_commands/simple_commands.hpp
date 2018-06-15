@@ -3,14 +3,14 @@
 
 #include "ircbot/so_plugin.hpp"
 
-class SimpleCommands : public SoPlugin {
+class SimpleCommands : public ircbot::SoPlugin {
  public:
-  SimpleCommands(PluginConfig config) :
-      SoPlugin{config} {
+  SimpleCommands(ircbot::PluginConfig config) :
+      ircbot::SoPlugin{config} {
     installCommandParser(
-      std::make_shared<CommandParser>(ParserConfig{'!', true})
+      std::make_shared<ircbot::CommandParser>(ircbot::ParserConfig{'!', true})
     );
-    addFunction("help", [this] (const CommandParser::Command& cmd) {
+    addFunction("help", [this] (const ircbot::CommandParser::Command& cmd) {
       helpCommand(cmd);
     });
   }
@@ -18,7 +18,7 @@ class SimpleCommands : public SoPlugin {
   std::string getName() const override;
 
  private:
-  void helpCommand(const CommandParser::Command& cmd);
+  void helpCommand(const ircbot::CommandParser::Command& cmd);
 };
 
 IRCBOT_PLUGIN(SimpleCommands)

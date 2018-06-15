@@ -11,6 +11,8 @@
 namespace asio = boost::asio;
 namespace ptime = boost::posix_time;
 
+namespace ircbot {
+
 TcpPluginServer::TcpPluginServer(std::shared_ptr<Client> client,
                                  const std::string& host,
                                  uint16_t port) :
@@ -68,3 +70,5 @@ void TcpPluginServer::initializePlugin() {
   auto plugin = std::make_unique<TcpPlugin>(config, std::move(m_socket));
   m_client->addPlugin(std::move(plugin));
 }
+
+} // namespace ircbot

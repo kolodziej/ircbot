@@ -6,6 +6,8 @@
 
 #include "ircbot/config.hpp"
 
+namespace ircbot {
+
 class Client;
 
 /** \class PluginConfig 
@@ -28,5 +30,7 @@ struct PluginConfig {
   /** plugin configuration - actual configuration of plugin */
   Config config;
 };
+
+} // namespace ircbot
 
 #endif

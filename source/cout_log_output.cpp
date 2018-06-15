@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+namespace ircbot {
+
 CoutLogOutput::CoutLogOutput(LogLevel level) :
   LogOutput{level}
 {}
@@ -9,3 +11,5 @@ CoutLogOutput::CoutLogOutput(LogLevel level) :
 std::ostream& CoutLogOutput::output() {
   return std::cout;
 }
+
+} // namespace ircbot

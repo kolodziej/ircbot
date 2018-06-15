@@ -22,6 +22,8 @@
 namespace asio = boost::asio;
 namespace opt = boost::program_options;
 
+using namespace ircbot;
+
 namespace signal_handling {
 
 static Client* client = nullptr;

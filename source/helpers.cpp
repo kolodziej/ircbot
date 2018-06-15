@@ -4,6 +4,8 @@
 
 #include "ircbot/logger.hpp"
 
+namespace ircbot {
+
 namespace helpers {
 
 std::string removeLineFeed(const std::string& str) {
@@ -36,4 +38,4 @@ bool isIn(char c, const std::string& s) {
   return s.find(c) != std::string::npos;
 }
 
-}
+} } // namespace ircbot::helpers

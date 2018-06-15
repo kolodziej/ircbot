@@ -5,6 +5,8 @@
 #include "ircbot/unexpected_character.hpp"
 #include "ircbot/helpers.hpp"
 
+namespace ircbot {
+
 Plugin::Plugin(PluginConfig config) :
     m_client{config.client},
     m_id{config.id},
@@ -192,3 +194,5 @@ void Plugin::callFunction(const CommandParser::Command& command) {
     LOG(INFO, "Function for such command doesn't exist: ", command.command);
   }
 }
+
+} // namespace ircbot

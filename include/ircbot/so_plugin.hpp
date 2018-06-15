@@ -4,9 +4,11 @@
 #include "ircbot/plugin.hpp"
 
 #define IRCBOT_PLUGIN(PluginName) \
-    extern "C" std::unique_ptr<SoPlugin> getPlugin(PluginConfig config) { \
+    extern "C" std::unique_ptr<ircbot::SoPlugin> getPlugin(ircbot::PluginConfig config) { \
       return std::make_unique<PluginName>(config); \
     }
+
+namespace ircbot {
 
 class SoPlugin : public Plugin {
  public:
@@ -18,5 +20,7 @@ class SoPlugin : public Plugin {
  private:
   void* m_so_library;
 };
+
+} // namespace ircbot
 
 #endif

@@ -6,6 +6,8 @@
 
 namespace pt = boost::property_tree;
 
+namespace ircbot {
+
 /** \class Config 
  *
  * \brief Proxy class for boost::property_tree::ptree
@@ -63,5 +65,7 @@ class Config {
   /** property tree handling configuration */
   pt::ptree m_pt;
 };
+
+} // namespace ircbot
 
 #endif

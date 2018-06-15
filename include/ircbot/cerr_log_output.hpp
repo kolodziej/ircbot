@@ -3,6 +3,9 @@
 
 #include "ircbot/log_output.hpp"
 
+namespace ircbot {
+
+
 /** \class CerrLogOutput
  *
  * \brief Representation of std::cerr 
@@ -21,6 +24,8 @@ class CerrLogOutput : public LogOutput {
   /** Returns reference to output stream (std::ostream) */
   std::ostream& output();
 };
+
+} // namespace ircbot
 
 #endif
 

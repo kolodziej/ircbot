@@ -5,6 +5,8 @@
 
 #include <unistd.h>
 
+namespace ircbot {
+
 AdminPort::AdminPort(std::shared_ptr<Client> client, const std::string& socket_path) :
     m_client{client},
     m_endpoint{socket_path},
@@ -100,4 +102,7 @@ void AdminPort::AdminPortClient::startReceiving() {
   socket.async_receive(
     mutable_buffers_1(buffer.data(), buffer.size()), handler
   );
+
 }
+
+} // namespace ircbot

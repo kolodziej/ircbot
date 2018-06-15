@@ -18,11 +18,13 @@
 #include "ircbot/admin_port.hpp"
 #include "ircbot/logger.hpp"
 
+namespace asio = boost::asio;
+
+namespace ircbot {
+
 class Plugin;
 class SoPlugin;
 class TcpPluginServer;
-
-namespace asio = boost::asio;
 
 /** \class Client
  *
@@ -225,5 +227,7 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Mutex protecting vector of plugins */
   std::mutex m_plugins_mtx;
 };
+
+} // namespace ircbot
 
 #endif

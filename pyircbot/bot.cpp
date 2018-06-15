@@ -74,7 +74,7 @@ void Bot::send(const std::string& data) {
   m_socket.send(asio::buffer(data.data(), data.size()));
 }
 
-void Bot::sendIrcMessage(const IRCMessage& sourcemsg) {
+void Bot::sendIrcMessage(const ircbot::IRCMessage& sourcemsg) {
   PluginProtocol::Message msg;
   msg.set_type(PluginProtocol::Message::IRC_MESSAGE);
 
@@ -165,7 +165,7 @@ void Bot::ircMessage(const PluginProtocol::IrcMessage& irc_msg) {
     return;
   }
 
-  IRCMessage msg;
+  ircbot::IRCMessage msg;
   msg.servername = irc_msg.servername();
   msg.user = irc_msg.user();
   msg.nick = irc_msg.nick();

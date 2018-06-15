@@ -4,6 +4,8 @@
 
 #include "ircbot/helpers.hpp"
 
+using namespace ircbot;
+
 Clipboard::Clipboard(PluginConfig config) :
     SoPlugin{config},
     m_size{10},

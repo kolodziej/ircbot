@@ -8,6 +8,8 @@
 
 #include "irc_message.pb.h"
 
+namespace ircbot {
+
 /** \class IRCMessage
  *
  * \brief Representation of parsed IRC message (compliant with RFC 1459)
@@ -66,5 +68,7 @@ struct IRCMessage {
    */
   static IRCMessage fromProtobuf(const PluginProtocol::IrcMessage&);
 };
+
+} // namespace ircbot
 
 #endif

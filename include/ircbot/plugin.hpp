@@ -16,6 +16,8 @@
 #include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
+namespace ircbot {
+
 /** \class Plugin
  *
  * \brief Base for all plugins
@@ -210,5 +212,7 @@ class Plugin {
   /** thread for this plugin */
   std::thread m_thread;
 };
+
+} // namespace ircbot
 
 #endif

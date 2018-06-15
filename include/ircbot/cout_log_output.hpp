@@ -3,6 +3,8 @@
 
 #include "ircbot/log_output.hpp"
 
+namespace ircbot {
+
 /** \class CoutLogOutput
  *
  * \brief Representation of std::cout
@@ -21,5 +23,7 @@ class CoutLogOutput : public LogOutput {
   /** Returns reference to output stream (std::ostream) */
   std::ostream& output();
 };
+
+} // namespace ircbot
 
 #endif

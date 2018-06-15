@@ -37,18 +37,18 @@ PYBIND11_MODULE(pyircbot, m) {
     .def("send", &Bot::send)
     .def("sendIrcMessage", &Bot::sendIrcMessage);
 
-  py::class_<IRCMessage>(m, "IRCMessage")
+  py::class_<ircbot::IRCMessage>(m, "IRCMessage")
     .def(py::init())
     .def(py::init<const std::string&,
                   std::initializer_list<std::string>>(),
          py::arg("command"), py::arg("params"))
-    .def("__str__", &IRCMessage::operator std::string)
-    .def_readwrite("servername", &IRCMessage::servername)
-    .def_readwrite("user", &IRCMessage::user)
-    .def_readwrite("nick", &IRCMessage::nick)
-    .def_readwrite("host", &IRCMessage::host)
-    .def_readwrite("command", &IRCMessage::command)
-    .def_readwrite("params", &IRCMessage::params);
+    .def("__str__", &ircbot::IRCMessage::operator std::string)
+    .def_readwrite("servername", &ircbot::IRCMessage::servername)
+    .def_readwrite("user", &ircbot::IRCMessage::user)
+    .def_readwrite("nick", &ircbot::IRCMessage::nick)
+    .def_readwrite("host", &ircbot::IRCMessage::host)
+    .def_readwrite("command", &ircbot::IRCMessage::command)
+    .def_readwrite("params", &ircbot::IRCMessage::params);
 
   m.def("response_destination", responseDestination,
         py::arg("msg"), py::arg("priv") = false);

@@ -11,6 +11,8 @@
 
 namespace asio = boost::asio;
 
+namespace ircbot {
+
 class Client;
 
 /** \class AdminPort
@@ -90,5 +92,7 @@ class AdminPort {
   /** Connected clients */
   std::vector<AdminPortClient> m_clients;
 };
+
+} // namespace ircbot
 
 #endif

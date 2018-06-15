@@ -2,6 +2,8 @@
 
 #include "ircbot/logger.hpp"
 
+using namespace ircbot;
+
 Ping::Ping(PluginConfig config) :
     SoPlugin{config}
 {}

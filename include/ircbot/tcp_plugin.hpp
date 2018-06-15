@@ -11,6 +11,8 @@
 
 namespace asio = boost::asio;
 
+namespace ircbot {
+
 class TcpPlugin : public Plugin {
  public:
   /** Default constructor
@@ -71,5 +73,7 @@ class TcpPlugin : public Plugin {
                           const std::string& msg = {},
                           uint32_t code = 0);
 };
+
+} // namespace ircbot
 
 #endif

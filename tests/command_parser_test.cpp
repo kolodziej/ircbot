@@ -10,6 +10,8 @@
 #include "ircbot/cerr_log_output.hpp"
 #include "ircbot/unexpected_character.hpp"
 
+using namespace ircbot;
+
 TEST(CommandParserTest, CorrectCommands) {
   Logger& logger = Logger::getInstance();
   logger.addOutput(std::make_unique<CerrLogOutput>(LogLevel::DEBUG));

@@ -4,6 +4,8 @@
 #include <cstdint>
 #include <string>
 
+namespace ircbot {
+
 enum class LogLevel : uint8_t {
   DEBUG = 0,
   INFO,
@@ -15,5 +17,7 @@ enum class LogLevel : uint8_t {
 const char* LogLevelDesc(LogLevel level);
 
 LogLevel GetLogLevel(const std::string& desc);
+
+} // namespace ircbot
 
 #endif

@@ -6,13 +6,13 @@
 #include <deque>
 #include <string>
 
-class HelloWorld : public SoPlugin {
+class HelloWorld : public ircbot::SoPlugin {
  public:
-  HelloWorld(PluginConfig config);
+  HelloWorld(ircbot::PluginConfig config);
 
   std::string getName() const override;
-  void onMessage(IRCMessage cmd) override;
-  bool filter(const IRCMessage& cmd) override;
+  void onMessage(ircbot::IRCMessage cmd) override;
+  bool filter(const ircbot::IRCMessage& cmd) override;
   
  private:
   std::deque<std::string> m_names;

@@ -5,6 +5,8 @@
 #include "message.pb.h"
 #include "control.pb.h"
 
+namespace ircbot {
+
 TcpPlugin::TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket) :
     Plugin{config},
     m_socket{std::move(socket)},
@@ -235,3 +237,5 @@ void TcpPlugin::sendControlRequest(const PluginProtocol::ControlRequest::Type& t
   msg.SerializeToString(&serialized);
   sendToPlugin(serialized);
 }
+
+} // namespace ircbot

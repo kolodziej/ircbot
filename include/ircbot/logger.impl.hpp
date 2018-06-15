@@ -1,6 +1,8 @@
 #include <iomanip>
 #include <string>
 
+namespace ircbot {
+
 template <typename... Args>
 void Logger::operator()(LogLevel level, Args... args) {
   std::lock_guard<std::mutex> lock(m_mtx);
@@ -28,3 +30,5 @@ void Logger::log(First f, Rest... r) {
   m_stream << f;
   log(r...);
 }
+
+} // namespace ircbot

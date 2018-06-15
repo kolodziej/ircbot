@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <string>
 
+namespace ircbot {
+
 /** \class UnexpectedCharacter
  *
  * \brief Exception thrown on unexpected character
@@ -19,5 +21,7 @@ struct UnexpectedCharacter : std::logic_error {
   UnexpectedCharacter(const std::string& given,
                       const std::string& excpected);
 };
+
+} // namespace ircbot
 
 #endif

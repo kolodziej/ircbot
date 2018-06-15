@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+using namespace ircbot;
+
 Init::Init(PluginConfig config) :
     SoPlugin{config},
     m_stage{0},

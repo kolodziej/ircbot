@@ -2,6 +2,7 @@
 
 #include <sstream>
 
+namespace ircbot {
 
 IRCMessage::IRCMessage(const std::string& command,
                        std::initializer_list<std::string> params) :
@@ -56,3 +57,5 @@ IRCMessage IRCMessage::fromProtobuf(const PluginProtocol::IrcMessage& pb_msg) {
 
   return msg;
 }
+
+} // namespace ircbot

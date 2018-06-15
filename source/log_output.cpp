@@ -2,6 +2,8 @@
 
 #include <ostream>
 
+namespace ircbot {
+
 LogOutput::LogOutput(LogLevel level) :
   m_level{level} {
 }
@@ -14,3 +16,5 @@ void LogOutput::log(LogLevel level, std::string message) {
 LogLevel LogOutput::level() const {
   return m_level;
 }
+
+} // namespace ircbot

@@ -1,5 +1,7 @@
 #include "ircbot/logger.hpp"
 
+namespace ircbot {
+
 Logger& Logger::getInstance() {
   return m_logger_instance;
 }
@@ -13,3 +15,5 @@ void Logger::log() {
 }
   
 Logger Logger::m_logger_instance;
+
+} // namespace ircbot

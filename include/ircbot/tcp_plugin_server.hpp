@@ -14,6 +14,8 @@
 
 namespace asio = boost::asio;
 
+namespace ircbot {
+
 class TcpPluginServer {
  public:
   /** Default constructor
@@ -55,5 +57,7 @@ class TcpPluginServer {
   /** get init request from plugin, authenticate plugin and initialize it */
   void initializePlugin();
 };
+
+} // namespace ircbot
 
 #endif

@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+namespace ircbot {
+
 Config::Config(const std::string& fname) :
     m_fname{fname} {
   loadFile();
@@ -40,3 +42,5 @@ void Config::saveFile(const std::string& fname) {
 pt::ptree& Config::tree() {
   return m_pt;
 }
+
+} // namespace ircbot

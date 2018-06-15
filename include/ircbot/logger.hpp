@@ -11,6 +11,8 @@
 
 #include "ircbot/logger_macros.hpp"
 
+namespace ircbot {
+
 /** \class Logger
  *
  * \brief Logging utility used in IRCBot library
@@ -66,6 +68,8 @@ class Logger {
   /** Single instance of Logger */
   static Logger m_logger_instance;
 };
+
+} // namespace ircbot
 
 #include "ircbot/logger.impl.hpp"
 

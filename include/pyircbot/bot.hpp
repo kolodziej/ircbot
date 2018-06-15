@@ -85,7 +85,7 @@ class Bot {
    *
    * \param sourcemsg IRCMessage instance that should be sent
    */
-  void sendIrcMessage(const IRCMessage& sourcemsg);
+  void sendIrcMessage(const ircbot::IRCMessage& sourcemsg);
 
  private:
   /** Connects to m_hostname and m_port */

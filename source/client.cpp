@@ -15,6 +15,8 @@
 #include "ircbot/tcp_plugin_server.hpp"
 #include "ircbot/helpers.hpp"
 
+namespace ircbot {
+
 Client::Client(asio::io_service& io_service, Config cfg) :
     m_io_service{io_service},
     m_socket{io_service},
@@ -373,3 +375,5 @@ void Client::reloadPlugin(const std::string& pluginId) {
 asio::io_service& Client::getIoService() {
   return m_io_service;
 }
+
+} // namespace ircbot

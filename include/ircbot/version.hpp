@@ -9,6 +9,7 @@
 
 class Plugin;
 
+namespace ircbot {
 namespace version {
 
 static const uint16_t
@@ -18,5 +19,6 @@ static const uint16_t
 
 std::string str();
 
-}
+} } // namespace ircbot::version
+
 #endif

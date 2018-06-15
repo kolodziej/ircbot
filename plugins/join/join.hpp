@@ -6,14 +6,14 @@
 #include <unordered_set>
 #include <string>
 
-class Join : public SoPlugin {
+class Join : public ircbot::SoPlugin {
  public:
-  Join(PluginConfig config);
+  Join(ircbot::PluginConfig config);
 
   std::string getName() const override;
   void onInit() override;
-  void onMessage(IRCMessage cmd) override;
-  bool filter(const IRCMessage& cmd) override;
+  void onMessage(ircbot::IRCMessage cmd) override;
+  bool filter(const ircbot::IRCMessage& cmd) override;
   void onNewConfiguration() override;
  
  private:

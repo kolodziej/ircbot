@@ -4,6 +4,8 @@
 #include "ircbot/helpers.hpp"
 #include "ircbot/unexpected_character.hpp"
 
+namespace ircbot {
+
 CommandParser::CommandParser(ParserConfig config) :
     m_config{config} {
 }
@@ -129,3 +131,5 @@ bool CommandParser::isCommandCharacter(char x) {
           (x >= '0' and x <= '9') or
           (x == '-'));
 }
+
+} // namespace ircbot

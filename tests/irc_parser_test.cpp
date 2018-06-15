@@ -9,6 +9,8 @@
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_message.hpp"
 
+using namespace ircbot;
+
 TEST(IRCParserTest, CorrectSimpleMessages) {
   std::vector<std::string> str_messages{
     ":KolK1!~KolK2@example.com PRIVMSG #cmake :testing message\r\n",

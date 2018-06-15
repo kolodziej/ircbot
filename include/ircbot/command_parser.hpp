@@ -8,6 +8,8 @@
 #include "ircbot/parser_config.hpp"
 #include "ircbot/irc_message.hpp"
 
+namespace ircbot {
+
 /** \class CommandParser
  *
  * \brief Parses commands from users
@@ -92,5 +94,7 @@ class CommandParser {
   /** current state */
   State m_state;
 };
+
+} // namespace ircbot
 
 #endif

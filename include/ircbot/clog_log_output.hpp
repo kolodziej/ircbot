@@ -3,6 +3,8 @@
 
 #include "log_output.hpp"
 
+namespace ircbot {
+
 /** \class ClogLogOutput
  *
  * \brief Representation of std::clog
@@ -21,5 +23,7 @@ class ClogLogOutput : public LogOutput {
   /** Returns reference to output stream (std::ostream) */
   std::ostream& output();
 };
+
+} // namespace ircbot
 
 #endif

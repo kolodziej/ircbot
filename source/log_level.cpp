@@ -3,6 +3,8 @@
 #include <map>
 #include <stdexcept>
 
+namespace ircbot {
+
 const char* LogLevelDesc(LogLevel level) {
   switch (level) {
     case LogLevel::DEBUG:
@@ -35,3 +37,5 @@ LogLevel GetLogLevel(const std::string& desc) {
 
   return levels[desc];
 }
+
+} // namespace ircbot

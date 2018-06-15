@@ -3,13 +3,13 @@
 
 #include "ircbot/so_plugin.hpp"
 
-class Ping : public SoPlugin {
+class Ping : public ircbot::SoPlugin {
  public:
-  Ping(PluginConfig config);
+  Ping(ircbot::PluginConfig config);
 
   std::string getName() const override;
-  void onMessage(IRCMessage cmd) override;
-  bool filter(const IRCMessage& cmd) override;
+  void onMessage(ircbot::IRCMessage cmd) override;
+  bool filter(const ircbot::IRCMessage& cmd) override;
 
  private:
   bool m_ping;

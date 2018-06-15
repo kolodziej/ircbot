@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+namespace ircbot {
+
 FileLogOutput::FileLogOutput(const std::string& fname, LogLevel level) :
   LogOutput{level},
   m_file{fname} {
@@ -18,3 +20,5 @@ FileLogOutput::FileLogOutput(std::ofstream&& file, LogLevel level) :
 std::ostream& FileLogOutput::output() {
   return m_file;
 }
+
+} // namespace ircbot

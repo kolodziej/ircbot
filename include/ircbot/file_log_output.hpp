@@ -5,6 +5,8 @@
 
 #include <fstream>
 
+namespace ircbot {
+
 /** \class FileLogOutput
  *
  * \brief File stream output for logger
@@ -36,5 +38,7 @@ class FileLogOutput : public LogOutput {
   /** Log file */
   std::ofstream m_file;
 };
+
+} // namespace ircbot
 
 #endif

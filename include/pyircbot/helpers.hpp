@@ -18,7 +18,7 @@ namespace helpers {
  * \param priv is this message private?
  * \return destination for response
  */
-std::string responseDestination(const IRCMessage& msg, bool priv = false);
+std::string responseDestination(const ircbot::IRCMessage& msg, bool priv = false);
 
 } } // namespace pyircbot::helpers
 

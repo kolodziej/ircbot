@@ -3,6 +3,8 @@
 #include "ircbot/logger.hpp"
 #include "ircbot/helpers.hpp"
 
+namespace ircbot {
+
 IRCParser::IRCParser() :
     m_state{State::NONE},
     m_last_token{TokenType::LF}
@@ -265,3 +267,5 @@ void IRCParser::putToken(TokenType type, std::stringstream& token) {
 void IRCParser::putToken(TokenType type) {
   m_tokens.emplace(type);
 }
+
+} // namespace ircbot

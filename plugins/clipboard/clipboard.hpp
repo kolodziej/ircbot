@@ -3,13 +3,13 @@
 
 #include "ircbot/so_plugin.hpp"
 
-class Clipboard : public SoPlugin {
+class Clipboard : public ircbot::SoPlugin {
  public:
-  Clipboard(PluginConfig config);
+  Clipboard(ircbot::PluginConfig config);
 
   std::string getName() const override;
-  void onMessage(IRCMessage cmd) override;
-  bool filter(const IRCMessage& cmd) override;
+  void onMessage(ircbot::IRCMessage cmd) override;
+  bool filter(const ircbot::IRCMessage& cmd) override;
   void onNewConfiguration() override;
 
  private:

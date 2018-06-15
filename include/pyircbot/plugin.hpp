@@ -29,7 +29,7 @@ struct Plugin {
   std::function<void(Bot*)> onInit;
 
   /** Function called when new IRC message is received */
-  std::function<void(Bot*, IRCMessage)> onMessage;
+  std::function<void(Bot*, ircbot::IRCMessage)> onMessage;
 
   /** Function called on plugin shutdown caused by IRCBot */
   std::function<void(Bot*)> onShutdown;

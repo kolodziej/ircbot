@@ -2,6 +2,8 @@
 
 #include <dlfcn.h>
 
+namespace ircbot {
+
 SoPlugin::SoPlugin(PluginConfig config) :
     Plugin{config},
     m_so_library{nullptr} {
@@ -14,3 +16,5 @@ void SoPlugin::setSoLibrary(void* library) {
 void* SoPlugin::getSoLibrary() const {
   return m_so_library;
 }
+
+} // namespace ircbot

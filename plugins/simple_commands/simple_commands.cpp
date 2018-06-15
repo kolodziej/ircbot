@@ -1,5 +1,7 @@
 #include "simple_commands.hpp"
 
+using namespace ircbot;
+
 std::string SimpleCommands::getName() const {
   return "SimpleCommands";
 }

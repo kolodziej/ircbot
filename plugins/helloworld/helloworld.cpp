@@ -2,6 +2,8 @@
 
 #include <stdexcept>
 
+using namespace ircbot;
+
 HelloWorld::HelloWorld(PluginConfig config) :
     SoPlugin{config}
 {}

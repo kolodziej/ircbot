@@ -6,6 +6,8 @@
 
 #include "log_level.hpp"
 
+namespace ircbot {
+
 /** \class LogOutput
  *
  * \brief Base abstract class for all logger outputs
@@ -36,5 +38,7 @@ class LogOutput {
   /** minmum log level */
   LogLevel m_level;
 };
+
+} // namespace ircbot
 
 #endif

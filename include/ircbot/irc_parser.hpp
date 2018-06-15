@@ -6,6 +6,8 @@
 
 #include "irc_message.hpp"
 
+namespace ircbot {
+
 /** \class IRCParser
  *
  * \brief State machine for parsing IRC messages (RFC 1459 compliant)
@@ -153,5 +155,7 @@ class IRCParser {
   /** Parsed messages waiting to be extracted with getMessage function */
   std::queue<IRCMessage> m_messages;
 };
+
+} // namespace ircbot
 
 #endif
