@@ -59,6 +59,7 @@ set(PROTOBUF_FILES
     protobuf/init.proto
     protobuf/irc_message.proto
     protobuf/control.proto
+    protobuf/tcp_server.proto
 )
 
 set(SOURCES
@@ -109,6 +110,8 @@ set(HEADERS
     include/ircbot/admin_port.hpp
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
+    include/ircbot/tcp_server.hpp
+    include/ircbot/tcp_server.impl.hpp
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})

@@ -2,6 +2,7 @@
 #define _ADMIN_PORT_HPP
 
 #include "ircbot/command_parser.hpp"
+#include "ircbot/tcp_server.hpp"
 
 #include <array>
 #include <memory>

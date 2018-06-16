@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package TcpServerProtocol;
+
+message Message {
+    enum Type {
+        INIT = 1;
+        INITIALIZED = 2;
+        SHUTDOWN = 3;
+        PING = 4;
+        PONG = 5;
+        DATA = 6;
+    }
+
+    required Type type = 1;
+    optional bytes data = 2;
+}
