@@ -83,6 +83,7 @@ set(SOURCES
     source/admin_port.cpp
     source/tcp_plugin.cpp
     source/tcp_plugin_server.cpp
+    source/tcp_server.cpp
 )
 
 set(HEADERS
@@ -111,7 +112,6 @@ set(HEADERS
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
     include/ircbot/tcp_server.hpp
-    include/ircbot/tcp_server.impl.hpp
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})

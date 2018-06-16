@@ -13,6 +13,4 @@ using namespace ircbot;
 
 TEST(TcpServer, TestPing) {
   boost::asio::io_service io;
-  uint32_t data;
-  TcpServer<uint32_t> server(io, 1234);
 }

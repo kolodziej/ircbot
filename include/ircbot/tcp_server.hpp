@@ -17,7 +17,6 @@ namespace ircbot {
  * connected clients.
  */
 
-template <typename ClientData>
 class TcpServer {
 public:
   TcpServer(asio::io_service& io, uint16_t port);
@@ -28,16 +27,22 @@ public:
   /** stop server */
   void stop();
 
-  /** \class Client
+  /** \class BaseClient
    *
    * minimum data about client connected to server
    */
-  struct Client {
+  class Client {
+  public:
+    Client(asio::ip::tcp::socket &&socket);
+
+    void startReceiving();
+    void send(const std::string &data);
+    void disconnect();
+
+  private:
     asio::ip::tcp::socket m_socket;
 
-    ClientData m_data;
-
-    Client(asio::ip::tcp::socket &&socket, ClientData &&data);
+    std::vector<char> m_buffer;
   };
 
   /** creates new client */
@@ -64,7 +69,5 @@ private:
 };
 
 } // namespace ircbot
-
-#include "tcp_server.impl.hpp"
 
 #endif
