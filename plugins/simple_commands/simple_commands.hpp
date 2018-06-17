@@ -5,12 +5,10 @@
 
 class SimpleCommands : public ircbot::SoPlugin {
  public:
-  SimpleCommands(ircbot::PluginConfig config) :
-      ircbot::SoPlugin{config} {
-    installCommandParser(
-      std::make_shared<ircbot::CommandParser>(ircbot::ParserConfig{'!', true})
-    );
-    addFunction("help", [this] (const ircbot::CommandParser::Command& cmd) {
+  SimpleCommands(ircbot::PluginConfig config) : ircbot::SoPlugin{config} {
+    installCommandParser(std::make_shared<ircbot::CommandParser>(
+        ircbot::ParserConfig{'!', true}));
+    addFunction("help", [this](const ircbot::CommandParser::Command& cmd) {
       helpCommand(cmd);
     });
   }

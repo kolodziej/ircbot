@@ -1,9 +1,9 @@
 #include "gtest/gtest.h"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <fstream>
 
 #include "ircbot/tcp_server.hpp"
 
@@ -11,6 +11,4 @@
 
 using namespace ircbot;
 
-TEST(TcpServer, TestPing) {
-  boost::asio::io_service io;
-}
+TEST(TcpServer, TestPing) { boost::asio::io_service io; }

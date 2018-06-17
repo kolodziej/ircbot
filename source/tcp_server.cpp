@@ -19,7 +19,6 @@ void TcpServer::start() {
 
     listen();
   } catch (const boost::system::system_error &err) {
-
   }
 }
 
@@ -44,7 +43,6 @@ void TcpServer::listen() {
 TcpServer::Client::Client(asio::ip::tcp::socket &&socket)
     : m_socket{std::move(socket)} {}
 
-
 void TcpServer::Client::start() {
   using namespace TcpServerProtocol;
   // init message
@@ -59,9 +57,7 @@ void TcpServer::Client::start() {
   startReceiving();
 }
 
-void TcpServer::Client::stop() {
-
-}
+void TcpServer::Client::stop() {}
 
 bool TcpServer::Client::send(const TcpServerProtocol::Message &msg) {
   std::string msg_data;
@@ -104,8 +100,7 @@ void TcpServer::Client::startReceiving() {
                                  asio::transfer_exactly(headerSize));
 
   if (bytes == headerSize) {
-
-    big_uint32_t payloadSize = *reinterpret_cast<uint32_t*>(buffer);
+    big_uint32_t payloadSize = *reinterpret_cast<uint32_t *>(buffer);
     m_buffer.resize(payloadSize);
     asio::async_read(m_socket, asio::buffer(m_buffer),
                      asio::transfer_exactly(payloadSize), recvHandler);
@@ -116,58 +111,48 @@ void TcpServer::Client::consumeMessage(const TcpServerProtocol::Message &msg) {
   using namespace TcpServerProtocol;
 
   switch (msg.type()) {
-  case Message::INITIALIZED:
-    initialized();
-    break;
+    case Message::INITIALIZED:
+      initialized();
+      break;
 
-  case Message::DISCONNECT:
-    disconnect();
-    break;
+    case Message::DISCONNECT:
+      disconnect();
+      break;
 
-  case Message::PING:
-    ping();
-    break;
+    case Message::PING:
+      ping();
+      break;
 
-  case Message::PONG:
-    pong();
-    break;
+    case Message::PONG:
+      pong();
+      break;
 
-  case Message::DATA:
-    if (msg.has_data()) {
-      data(msg.data());
-    } else {
-      LOG(WARNING, "DATA message hasn't data!");
-    }
-    break;
+    case Message::DATA:
+      if (msg.has_data()) {
+        data(msg.data());
+      } else {
+        LOG(WARNING, "DATA message hasn't data!");
+      }
+      break;
 
-  default:
-    LOG(WARNING, "Received message of unsupported type!");
-    break;
+    default:
+      LOG(WARNING, "Received message of unsupported type!");
+      break;
   }
 }
 
-void TcpServer::Client::initialized() {
+void TcpServer::Client::initialized() {}
 
-}
+void TcpServer::Client::disconnect() {}
 
-void TcpServer::Client::disconnect() {
+void TcpServer::Client::ping() {}
 
-}
+void TcpServer::Client::pong() {}
 
-void TcpServer::Client::ping() {
+void TcpServer::Client::data(const std::string &data) {}
 
-}
-
-void TcpServer::Client::pong() {
-
-}
-
-void TcpServer::Client::data(const std::string &data) {
-  
-}
-
-void TcpServer::acceptClient(Client&& client) {
+void TcpServer::acceptClient(Client &&client) {
   m_clients.push_back(std::move(client));
 }
 
-} // namespace ircbot
+}  // namespace ircbot

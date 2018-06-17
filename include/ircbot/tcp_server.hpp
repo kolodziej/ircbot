@@ -18,8 +18,8 @@ namespace ircbot {
  */
 
 class TcpServer {
-public:
-  TcpServer(asio::io_service& io, uint16_t port);
+ public:
+  TcpServer(asio::io_service &io, uint16_t port);
 
   /** start server */
   void start();
@@ -32,7 +32,7 @@ public:
    * minimum data about client connected to server
    */
   class Client {
-  public:
+   public:
     Client(asio::ip::tcp::socket &&socket);
 
     void start();
@@ -41,7 +41,7 @@ public:
     bool send(const TcpServerProtocol::Message &msg);
     bool send(const std::string &data);
 
-  private:
+   private:
     void startReceiving();
     void consumeMessage(const TcpServerProtocol::Message &msg);
 
@@ -51,7 +51,7 @@ public:
     void pong();
     void data(const std::string &data);
 
-  private:
+   private:
     asio::ip::tcp::socket m_socket;
 
     std::vector<char> m_buffer;
@@ -60,9 +60,9 @@ public:
   /** creates new client */
   virtual void acceptClient(Client &&client);
 
-private:
+ private:
   /** reference to io_service */
-  asio::io_service& m_io;
+  asio::io_service &m_io;
 
   /** port on which server is listening for connections */
   const uint16_t m_port;
@@ -80,6 +80,6 @@ private:
   void listen();
 };
 
-} // namespace ircbot
+}  // namespace ircbot
 
 #endif
