@@ -6,7 +6,7 @@ message Message {
     enum Type {
         INIT = 1;
         INITIALIZED = 2;
-        SHUTDOWN = 3;
+        DISCONNECT = 3;
         PING = 4;
         PONG = 5;
         DATA = 6;

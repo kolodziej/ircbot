@@ -35,9 +35,21 @@ public:
   public:
     Client(asio::ip::tcp::socket &&socket);
 
+    void start();
+    void stop();
+
+    bool send(const TcpServerProtocol::Message &msg);
+    bool send(const std::string &data);
+
+  private:
     void startReceiving();
-    void send(const std::string &data);
+    void consumeMessage(const TcpServerProtocol::Message &msg);
+
+    void initialized();
     void disconnect();
+    void ping();
+    void pong();
+    void data(const std::string &data);
 
   private:
     asio::ip::tcp::socket m_socket;
