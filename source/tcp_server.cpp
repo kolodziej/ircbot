@@ -2,6 +2,7 @@
 
 #include <boost/endian/arithmetic.hpp>
 
+#include "ircbot/helpers.hpp"
 #include "ircbot/logger.hpp"
 #include "tcp_server.pb.h"
 
@@ -49,7 +50,7 @@ void TcpServer::Client::start() {
   Message init_msg;
   init_msg.set_type(Message::INIT);
 
-  auto send_init = [this] -> bool { return send(init_msg); };
+  auto send_init = [this, &init_msg] { return send(init_msg); };
   if (not helpers::retry(send_init, 500, 5, 1.2)) {
     throw std::runtime_error{"could not send init message!"};
   }
