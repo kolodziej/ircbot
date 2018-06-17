@@ -1,6 +1,8 @@
 #ifndef _HELPERS_HPP
 #define _HELPERS_HPP
 
+#include <chrono>
+#include <functional>
 #include <string>
 #include <thread>
 
@@ -14,6 +16,9 @@ void setThreadName(std::thread& thread, const std::string& name);
 bool startsWith(const std::string& str, const std::string& start);
 
 bool isIn(char c, const std::string& s);
+
+bool retry(std::function<bool()> func, uint32_t timeout, uint32_t trials,
+           double timeout_factor = 1.0);
 
 }  // namespace helpers
 }  // namespace ircbot

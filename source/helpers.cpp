@@ -37,5 +37,17 @@ bool isIn(char c, const std::string& s) {
   return s.find(c) != std::string::npos;
 }
 
+bool retry(std::function<bool()> func, uint32_t timeout, uint32_t trials,
+           double timeout_factor) {
+  while (trials-- > 0) {
+    if (func()) return true;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+    timeout *= timeout_factor;
+  }
+
+  return false;
+}
+
 }  // namespace helpers
 }  // namespace ircbot
