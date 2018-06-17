@@ -42,7 +42,7 @@ void TcpServer::listen() {
 }
 
 TcpServer::Client::Client(asio::ip::tcp::socket &&socket)
-    : m_socket{std::move(socket)} {}
+    : m_socket{std::move(socket)}, m_strand{m_socket.get_io_service()} {}
 
 void TcpServer::Client::start() {
   using namespace TcpServerProtocol;
@@ -58,7 +58,7 @@ void TcpServer::Client::start() {
   startReceiving();
 }
 
-void TcpServer::Client::stop() {}
+void TcpServer::Client::stop() { }
 
 bool TcpServer::Client::send(const TcpServerProtocol::Message &msg) {
   std::string msg_data;
@@ -78,6 +78,8 @@ bool TcpServer::Client::send(const std::string &data) {
   return false;
 }
 
+bool TcpServer::Client::isReceiving() const { return true; }
+
 void TcpServer::Client::startReceiving() {
   using boost::endian::big_uint32_t;
 
@@ -93,6 +95,10 @@ void TcpServer::Client::startReceiving() {
         LOG(ERROR, "Could not parse message!");
       }
       startReceiving();
+    } else if (ec == boost::system::errc::operation_canceled) {
+      stopReceiving();
+    } else {
+      LOG(ERROR, "Receiving error: ", ec);
     }
   };
 
@@ -104,7 +110,21 @@ void TcpServer::Client::startReceiving() {
     big_uint32_t payloadSize = *reinterpret_cast<uint32_t *>(buffer);
     m_buffer.resize(payloadSize);
     asio::async_read(m_socket, asio::buffer(m_buffer),
-                     asio::transfer_exactly(payloadSize), recvHandler);
+                     asio::transfer_exactly(payloadSize),
+                     m_strand.wrap(recvHandler));
+  }
+}
+
+void TcpServer::Client::stopReceiving() {}
+
+void TcpServer::Client::disconnect() {
+  auto close = [this] { m_socket.close(); };
+  try {
+    m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+    m_socket.cancel();
+    m_strand.post(close);
+  } catch (const boost::system::system_error &err) {
+    LOG(ERROR, "Could not disconnect socket! Error: ", err.what());
   }
 }
 
@@ -113,27 +133,23 @@ void TcpServer::Client::consumeMessage(const TcpServerProtocol::Message &msg) {
 
   switch (msg.type()) {
     case Message::INITIALIZED:
-      initialized();
+      onInitialized();
       break;
 
     case Message::DISCONNECT:
-      disconnect();
+      onDisconnect();
       break;
 
     case Message::PING:
-      ping();
+      onPing();
       break;
 
     case Message::PONG:
-      pong();
+      onPong();
       break;
 
     case Message::DATA:
-      if (msg.has_data()) {
-        data(msg.data());
-      } else {
-        LOG(WARNING, "DATA message hasn't data!");
-      }
+      onData(msg.data());
       break;
 
     default:
@@ -142,15 +158,15 @@ void TcpServer::Client::consumeMessage(const TcpServerProtocol::Message &msg) {
   }
 }
 
-void TcpServer::Client::initialized() {}
+void TcpServer::Client::onInitialized() {}
 
-void TcpServer::Client::disconnect() {}
+void TcpServer::Client::onDisconnect() {}
 
-void TcpServer::Client::ping() {}
+void TcpServer::Client::onPing() {}
 
-void TcpServer::Client::pong() {}
+void TcpServer::Client::onPong() {}
 
-void TcpServer::Client::data(const std::string &data) {}
+void TcpServer::Client::onData(const std::string &data) {}
 
 void TcpServer::acceptClient(Client &&client) {
   m_clients.push_back(std::move(client));

@@ -41,18 +41,24 @@ class TcpServer {
     bool send(const TcpServerProtocol::Message &msg);
     bool send(const std::string &data);
 
+    bool isReceiving() const;
+
    private:
     void startReceiving();
+    void stopReceiving();
+    void disconnect();
     void consumeMessage(const TcpServerProtocol::Message &msg);
 
-    void initialized();
-    void disconnect();
-    void ping();
-    void pong();
-    void data(const std::string &data);
+    void onInitialized();
+    void onDisconnect();
+    void onPing();
+    void onPong();
+    void onData(const std::string &data);
 
    private:
     asio::ip::tcp::socket m_socket;
+
+    asio::io_service::strand m_strand;
 
     std::vector<char> m_buffer;
   };
