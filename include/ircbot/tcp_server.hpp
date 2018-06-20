@@ -83,7 +83,7 @@ class TcpServer {
   std::vector<Client> m_clients;
 
   /** listen for connections */
-  void listen();
+  void acceptConnections();
 };
 
 }  // namespace ircbot

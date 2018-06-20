@@ -97,6 +97,7 @@ set(HEADERS
     include/ircbot/client.hpp
     include/ircbot/plugin.hpp
     include/ircbot/helpers.hpp
+    include/ircbot/helpers.impl.hpp
     include/ircbot/config.hpp
     include/ircbot/version.hpp
     include/ircbot/cout_log_output.hpp

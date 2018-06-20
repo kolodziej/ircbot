@@ -20,7 +20,10 @@ void TcpServer::start() {
     DEBUG("Binding acceptor's socket to endpoint");
     m_acceptor.bind(endpoint);
 
-    listen();
+    LOG(INFO, "Start listening on port ", m_port);
+    m_acceptor.listen();
+
+    acceptConnections();
   } catch (const boost::system::system_error &err) {
     LOG(ERROR, "Could not start TcpServer on ", m_port, ": ", err.what());
   }
@@ -31,21 +34,28 @@ void TcpServer::stop() {
   m_acceptor.close();
 
   // close all connections
-  for (auto& client : m_clients) {
+  for (auto &client : m_clients) {
     client.stop();
   }
 }
 
-void TcpServer::listen() {
+void TcpServer::acceptConnections() {
   auto acceptHandler = [this](const boost::system::error_code &ec) {
+    using helpers::endpointAddress;
     if (ec == 0) {
+      LOG(INFO, "Accepting new connection from ",
+          endpointAddress(m_socket.remote_endpoint()));
       Client client{std::move(m_socket)};
       acceptClient(std::move(client));
+    } else {
+      LOG(ERROR,
+          "An error occurred during accepting a connectiion! Error code: ", ec);
     }
 
-    listen();
+    acceptConnections();
   };
 
+  LOG(INFO, "Waiting for connection...");
   m_acceptor.async_accept(m_socket, acceptHandler);
 }
 
@@ -66,7 +76,7 @@ void TcpServer::Client::start() {
   startReceiving();
 }
 
-void TcpServer::Client::stop() { }
+void TcpServer::Client::stop() {}
 
 bool TcpServer::Client::send(const TcpServerProtocol::Message &msg) {
   std::string msg_data;
@@ -77,7 +87,9 @@ bool TcpServer::Client::send(const TcpServerProtocol::Message &msg) {
 
 bool TcpServer::Client::send(const std::string &data) {
   try {
+    DEBUG("Trying to send ", data.size(), " bytes.");
     asio::write(m_socket, asio::buffer(data));
+    LOG(INFO, "Sent ", data.size(), " bytes to client.");
     return true;
   } catch (const boost::system::system_error &err) {
     LOG(ERROR, "Could not send message of length: ", data.size(), "!");

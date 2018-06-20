@@ -20,7 +20,12 @@ bool isIn(char c, const std::string& s);
 bool retry(std::function<bool()> func, uint32_t timeout, uint32_t trials,
            double timeout_factor = 1.0);
 
+template <typename Endpoint>
+std::string endpointAddress(Endpoint endpoint);
+
 }  // namespace helpers
 }  // namespace ircbot
+
+#include "ircbot/helpers.impl.hpp"
 
 #endif
