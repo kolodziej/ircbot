@@ -15,17 +15,25 @@ void TcpServer::start() {
   asio::ip::tcp::endpoint endpoint{asio::ip::tcp::v4(), m_port};
 
   try {
+    DEBUG("Opening socket for acceptor");
     m_acceptor.open(endpoint.protocol());
+    DEBUG("Binding acceptor's socket to endpoint");
     m_acceptor.bind(endpoint);
 
     listen();
   } catch (const boost::system::system_error &err) {
+    LOG(ERROR, "Could not start TcpServer on ", m_port, ": ", err.what());
   }
 }
 
 void TcpServer::stop() {
   // stop accepting
+  m_acceptor.close();
+
   // close all connections
+  for (auto& client : m_clients) {
+    client.stop();
+  }
 }
 
 void TcpServer::listen() {
@@ -169,6 +177,7 @@ void TcpServer::Client::onPong() {}
 void TcpServer::Client::onData(const std::string &data) {}
 
 void TcpServer::acceptClient(Client &&client) {
+  client.start();
   m_clients.push_back(std::move(client));
 }
 
