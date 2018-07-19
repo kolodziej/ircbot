@@ -97,6 +97,7 @@ set(SOURCES
     source/admin_port.cpp
     source/tcp_plugin.cpp
     source/tcp_plugin_server.cpp
+    source/network/buffer.cpp
 )
 
 set(HEADERS
@@ -124,6 +125,7 @@ set(HEADERS
     include/ircbot/admin_port.hpp
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
+    include/ircbot/network/buffer.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )
