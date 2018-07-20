@@ -3,19 +3,27 @@
 namespace ircbot {
 namespace network {
 
-size_t Buffer::size() const {
-  return m_buffer.size();
-}
+Buffer::Buffer() : Buffer{Buffer::default_buffer_size} {}
 
-void Buffer::append(const char *data, size_t size) {
+Buffer::Buffer(size_t size) : m_buffer{size} {}
+
+size_t Buffer::size() const { return m_buffer.size(); }
+
+bool Buffer::full() const { return m_buffer.full(); }
+
+bool Buffer::empty() const { return m_buffer.empty(); }
+
+void Buffer::append(const char* data, size_t size) {
   std::string t{data, size};
   append(t);
 }
 
 void Buffer::append(const std::string& data) {
   std::lock_guard<std::mutex> guard{m_buffer_mtx};
-  m_buffer.assign(data.begin(), data.end());
+  m_buffer.insert(m_buffer.end(), data.begin(), data.end());
 }
+
+std::string Buffer::get() { return get(size()); }
 
 std::string Buffer::get(size_t num) {
   std::lock_guard<std::mutex> guard{m_buffer_mtx};
@@ -29,5 +37,5 @@ std::string Buffer::get(size_t num) {
   return ret;
 }
 
-} // namespace ircbot
-} // namespace network
+}  // namespace ircbot
+}  // namespace network

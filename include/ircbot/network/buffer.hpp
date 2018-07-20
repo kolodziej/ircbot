@@ -14,13 +14,18 @@ namespace network {
 class Buffer {
  public:
   constexpr static const size_t default_buffer_size = DEFAULT_BUFFER_SIZE;
-  Buffer() = default;
+
+  Buffer();
+  Buffer(size_t size);
 
   size_t size() const;
+  bool full() const;
+  bool empty() const;
 
-  void append(const char *data, size_t size);
+  void append(const char* data, size_t size);
   void append(const std::string& data);
 
+  std::string get();
   std::string get(size_t num);
 
  private:
@@ -28,7 +33,7 @@ class Buffer {
   std::mutex m_buffer_mtx;
 };
 
-} // namespace network
-} // namespace ircbot
+}  // namespace network
+}  // namespace ircbot
 
 #endif

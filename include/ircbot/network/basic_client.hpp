@@ -13,7 +13,7 @@ class BasicClient {
   virtual void receive(const Buffer& buf) = 0;
 };
 
-} // namespace network
-} // namespace ircbot
+}  // namespace network
+}  // namespace ircbot
 
 #endif
