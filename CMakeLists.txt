@@ -99,6 +99,7 @@ set(SOURCES
     source/tcp_plugin_server.cpp
     source/network/buffer.cpp
     source/network/client.cpp
+    source/network/context_provider.cpp
 )
 
 set(HEADERS
@@ -128,7 +129,9 @@ set(HEADERS
     include/ircbot/tcp_plugin_server.hpp
     include/ircbot/network/buffer.hpp
     include/ircbot/network/basic_client.hpp
+    include/ircbot/network/basic_server.hpp
     include/ircbot/network/client.hpp
+    include/ircbot/network/context_provider.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )

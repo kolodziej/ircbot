@@ -13,6 +13,8 @@ namespace network {
 template <typename Socket>
 class Client : public BasicClient {
  public:
+  Client(asio::io_service& io, const typename Socket::endpoint_type&);
+
   virtual void connect();
   virtual void send(const Buffer& buf);
   virtual void receive(const Buffer& buf);
@@ -24,5 +26,7 @@ class Client : public BasicClient {
 
 } // namespace network
 } // namespace ircbot
+
+#include "ircbot/network/client.impl.hpp"
 
 #endif
