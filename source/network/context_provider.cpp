@@ -1,19 +1,13 @@
 #include "ircbot/network/context_provider.hpp"
 
 namespace ircbot {
-namespace network {
+  namespace network {
 
-ContextProvider::~ContextProvider() {
-  stop();
-}
+ContextProvider::~ContextProvider() { stop(); }
 
-ContextProvider& ContextProvider::getInstance() {
-  return m_instance;
-}
+ContextProvider& ContextProvider::getInstance() { return m_instance; }
 
-ContextProvider::Context& ContextProvider::getContext() {
-  return m_context;
-}
+ContextProvider::Context& ContextProvider::getContext() { return m_context; }
 
 void ContextProvider::run() {
   auto ctx_run = [this] { m_context.run(); };
@@ -22,11 +16,9 @@ void ContextProvider::run() {
 }
 
 void ContextProvider::stop() {
-  if (m_work != nullptr)
-    m_work.reset(nullptr);
+  if (m_work != nullptr) m_work.reset(nullptr);
 
-  if (m_context_thread.joinable())
-    m_context_thread.join();
+  if (m_context_thread.joinable()) m_context_thread.join();
 }
 
 ContextProvider ContextProvider::m_instance;

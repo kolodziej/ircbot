@@ -1,9 +1,9 @@
 #ifndef _IRCBOT_NETWORK_CONTEXT_PROVIDER_HPP
 #define _IRCBOT_NETWORK_CONTEXT_PROVIDER_HPP
 
-#include <vector>
-#include <thread>
 #include <memory>
+#include <thread>
+#include <vector>
 
 #include <boost/asio.hpp>
 
@@ -23,6 +23,7 @@ class ContextProvider {
   Context& getContext();
   void run();
   void stop();
+
  private:
   ContextProvider() = default;
 

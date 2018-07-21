@@ -10,7 +10,7 @@ class BasicClient {
  public:
   virtual void connect() = 0;
   virtual void send(const Buffer& buf) = 0;
-  virtual void receive(const Buffer& buf) = 0;
+  virtual void receive() = 0;
 };
 
 }  // namespace network

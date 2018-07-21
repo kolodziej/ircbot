@@ -37,5 +37,5 @@ std::string Buffer::get(size_t num) {
   return ret;
 }
 
-}  // namespace ircbot
 }  // namespace network
+}  // namespace ircbot

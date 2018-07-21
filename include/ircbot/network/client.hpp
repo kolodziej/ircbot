@@ -2,7 +2,9 @@
 #define _IRCBOT_NETWORK_CLIENT_HPP
 
 #include "ircbot/network/basic_client.hpp"
+#include "ircbot/network/buffer.hpp"
 
+#include <array>
 #include <boost/asio.hpp>
 
 namespace asio = boost::asio;
@@ -13,19 +15,39 @@ namespace network {
 template <typename Socket>
 class Client : public BasicClient {
  public:
-  Client(asio::io_service& io, const typename Socket::endpoint_type&);
+  constexpr static const size_t default_buffer_size = 4096;
+  Client(const typename Socket::endpoint_type&);
+  Client(Socket&& socket);
 
   virtual void connect();
-  virtual void send(const Buffer& buf);
-  virtual void receive(const Buffer& buf);
+  virtual void send(const std::string& data);
+  virtual void receive();
 
  private:
-  asio::io_service& m_io;
+  typename Socket::endpoint_type m_endpoint;
   Socket m_socket;
+  std::array<char, default_buffer_size> m_receive_buffer;
+
+  void writeHandler(const boost::system::error_code& ec,
+                    std::size_t bytes_transferred) {
+    if (ec != boost::system::errc::success) {
+      onWrite(bytes_transferred);
+    }
+  }
+
+  void readHandler(const boost::system::error_code& ec,
+                   std::size_t bytes_transferred) {
+    if (ec == boost::system::errc::success) {
+      onRead(std::string{m_receive_buffer.data(), bytes_transferred});
+    }
+  }
+
+  virtual void onWrite() {}
+  virtual void onRead(const std::string& data) {}
 };
 
-} // namespace network
-} // namespace ircbot
+}  // namespace network
+}  // namespace ircbot
 
 #include "ircbot/network/client.impl.hpp"
 
