@@ -13,7 +13,7 @@ class HelloWorld : public ircbot::SoPlugin {
   std::string getName() const override;
   void onMessage(ircbot::IRCMessage cmd) override;
   bool filter(const ircbot::IRCMessage& cmd) override;
-  
+
  private:
   std::deque<std::string> m_names;
 };

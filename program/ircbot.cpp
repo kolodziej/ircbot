@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string>
-#include <vector>
 #include <thread>
+#include <vector>
 
 #include <signal.h>
 
@@ -9,14 +9,14 @@
 #include <boost/program_options.hpp>
 
 #include "ircbot/client.hpp"
+#include "ircbot/helpers.hpp"
+#include "ircbot/logger.hpp"
 #include "ircbot/plugin.hpp"
 #include "ircbot/tcp_plugin_server.hpp"
-#include "ircbot/logger.hpp"
 #include "ircbot/version.hpp"
-#include "ircbot/helpers.hpp"
 
-#include "ircbot/cout_log_output.hpp"
 #include "ircbot/clog_log_output.hpp"
+#include "ircbot/cout_log_output.hpp"
 #include "ircbot/file_log_output.hpp"
 
 namespace asio = boost::asio;
@@ -29,37 +29,31 @@ namespace signal_handling {
 static Client* client = nullptr;
 
 void signal_handler(int signal) {
-  if (client != nullptr)
-    client->signal(signal);
+  if (client != nullptr) client->signal(signal);
 }
 
-}
+}  // namespace signal_handling
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   std::string config_fname, admin_port_socket, tcp_server_host;
   bool daemon;
   uint16_t tcp_server_port;
-  
+
   opt::options_description cmd_opts("IRCBot client");
-  cmd_opts.add_options()
-    ("help,h", "show help message")
-    ("version,v", "show version information")
-    ("daemon,d",
-     opt::bool_switch(&daemon)->default_value(false),
-     "run as a daemon")
-    ("config,c",
-     opt::value<std::string>(&config_fname)->required(),
-     "configuration file")
-    ("admin-port,a",
-     opt::value<std::string>(&admin_port_socket),
-     "path to socket for admin port")
-    ("tcp-server-host",
-     opt::value<std::string>(&tcp_server_host)->default_value("127.0.0.1"),
-     "host on which tcp plugin server should listen")
-    ("tcp-server-port",
-     opt::value<uint16_t>(&tcp_server_port)->default_value(5454),
-     "port on which tcp plugin server should listen")
-  ;
+  cmd_opts.add_options()("help,h", "show help message")(
+      "version,v", "show version information")(
+      "daemon,d", opt::bool_switch(&daemon)->default_value(false),
+      "run as a daemon")("config,c",
+                         opt::value<std::string>(&config_fname)->required(),
+                         "configuration file")(
+      "admin-port,a", opt::value<std::string>(&admin_port_socket),
+      "path to socket for admin port")(
+      "tcp-server-host",
+      opt::value<std::string>(&tcp_server_host)->default_value("127.0.0.1"),
+      "host on which tcp plugin server should listen")(
+      "tcp-server-port",
+      opt::value<uint16_t>(&tcp_server_port)->default_value(5454),
+      "port on which tcp plugin server should listen");
 
   opt::variables_map var_map;
 
@@ -114,17 +108,21 @@ int main(int argc, char **argv) {
     }
 
     if (stdout_logging and daemon) {
-      std::clog << "You have chosen logging to stdout/stderr and daemon mode. "
-                << "It can can cause printing text in terminal which is not running "
-                << "ircbot in foreground!\n";
+      std::clog
+          << "You have chosen logging to stdout/stderr and daemon mode. "
+          << "It can can cause printing text in terminal which is not running "
+          << "ircbot in foreground!\n";
     }
 
     if (daemon) {
       pid_t id = fork();
       if (id == -1) {
-        LOG(ERROR, "Error occurred during forking daemon process. Continuing in foreground!");
+        LOG(ERROR,
+            "Error occurred during forking daemon process. Continuing in "
+            "foreground!");
       } else if (id > 0) {
-        LOG(INFO, "Succesfully forked daemon process (PID ", id, ") to background!");
+        LOG(INFO, "Succesfully forked daemon process (PID ", id,
+            ") to background!");
         return 0;
       }
     }

@@ -4,15 +4,10 @@
 
 using namespace ircbot;
 
-Init::Init(PluginConfig config) :
-    SoPlugin{config},
-    m_stage{0},
-    m_alt_nicks_index{0} {
-}
+Init::Init(PluginConfig config)
+    : SoPlugin{config}, m_stage{0}, m_alt_nicks_index{0} {}
 
-std::string Init::getName() const {
-  return "Init";
-}
+std::string Init::getName() const { return "Init"; }
 
 void Init::onInit() {
   for (auto nick : cfg().get_child("config.alternative_nicks")) {
@@ -36,32 +31,22 @@ void Init::onMessage(IRCMessage cmd) {
 }
 
 bool Init::filter(const IRCMessage& cmd) {
-  return (cmd.command == "431" or // 431 == ERR_NONICKNAMEGIVEN
-          cmd.command == "433" or // 433 == ERR_NICKNAMEINUSE
-          cmd.command == "437" or // 437 == ERR_UNAVAILRESOURCE
-          cmd.command == "432" or // 432 == ERR_ERRONEUSNICKNAME
-          cmd.command == "436" or // 436 == ERR_NICKCOLLISION
-          cmd.command == "484");  // 484 == ERR_RESTRICTED
+  return (cmd.command == "431" or  // 431 == ERR_NONICKNAMEGIVEN
+          cmd.command == "433" or  // 433 == ERR_NICKNAMEINUSE
+          cmd.command == "437" or  // 437 == ERR_UNAVAILRESOURCE
+          cmd.command == "432" or  // 432 == ERR_ERRONEUSNICKNAME
+          cmd.command == "436" or  // 436 == ERR_NICKCOLLISION
+          cmd.command == "484");   // 484 == ERR_RESTRICTED
 }
 
 void Init::sendNickMsg(const std::string& nick) {
-  IRCMessage nickMsg{
-    "NICK",
-    { nick }
-  };
+  IRCMessage nickMsg{"NICK", {nick}};
 
   send(nickMsg);
 }
 
-void Init::sendUserMsg(const std::string& user,
-                       const std::string& realname) {
-  IRCMessage userMsg{
-    "USER",
-    { user,
-      "0", "*", 
-      realname }
-  };
+void Init::sendUserMsg(const std::string& user, const std::string& realname) {
+  IRCMessage userMsg{"USER", {user, "0", "*", realname}};
 
   send(userMsg);
 }
-

@@ -1,23 +1,22 @@
 #include "gtest/gtest.h"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <fstream>
 
-#include "ircbot/logger.hpp"
-#include "ircbot/irc_parser.hpp"
 #include "ircbot/irc_message.hpp"
+#include "ircbot/irc_parser.hpp"
+#include "ircbot/logger.hpp"
 
 using namespace ircbot;
 
 TEST(IRCParserTest, CorrectSimpleMessages) {
   std::vector<std::string> str_messages{
-    ":KolK1!~KolK2@example.com PRIVMSG #cmake :testing message\r\n",
-    "PRIVMSG #agaran :dzień dobry\r\n",
-    ":TestServer PRIVMSG #cmake parameter :testing message\r\n",
-    ":TestServer 123 param1 param2\r\n"
-  };
+      ":KolK1!~KolK2@example.com PRIVMSG #cmake :testing message\r\n",
+      "PRIVMSG #agaran :dzień dobry\r\n",
+      ":TestServer PRIVMSG #cmake parameter :testing message\r\n",
+      ":TestServer 123 param1 param2\r\n"};
 
   IRCParser parser;
 
@@ -74,7 +73,8 @@ TEST(IRCParserTest, CorrectSimpleMessages) {
 
 TEST(IRCParserTest, NoCR) {
   std::string str_cmd =
-      ":User!~TestUser@example.com PRIVMSG #cmake testing message :long message\n";
+      ":User!~TestUser@example.com PRIVMSG #cmake testing message :long "
+      "message\n";
 
   IRCParser parser;
   parser.parse(str_cmd);

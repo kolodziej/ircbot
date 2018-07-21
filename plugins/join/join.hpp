@@ -3,8 +3,8 @@
 
 #include "ircbot/so_plugin.hpp"
 
-#include <unordered_set>
 #include <string>
+#include <unordered_set>
 
 class Join : public ircbot::SoPlugin {
  public:
@@ -15,7 +15,7 @@ class Join : public ircbot::SoPlugin {
   void onMessage(ircbot::IRCMessage cmd) override;
   bool filter(const ircbot::IRCMessage& cmd) override;
   void onNewConfiguration() override;
- 
+
  private:
   std::unordered_set<std::string> m_channels;
 };

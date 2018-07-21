@@ -1,7 +1,7 @@
 #include "ircbot/network/context_provider.hpp"
 
 namespace ircbot {
-  namespace network {
+namespace network {
 
 ContextProvider::~ContextProvider() { stop(); }
 
