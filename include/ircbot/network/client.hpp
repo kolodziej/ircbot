@@ -40,6 +40,8 @@ class Client : public BasicClient {
     if (ec == boost::system::errc::success) {
       onRead(std::string{m_receive_buffer.data(), bytes_transferred});
     }
+
+    receive();
   }
 
   virtual void onWrite() {}
