@@ -29,20 +29,10 @@ class Client : public BasicClient {
   std::array<char, default_buffer_size> m_receive_buffer;
 
   void writeHandler(const boost::system::error_code& ec,
-                    std::size_t bytes_transferred) {
-    if (ec != boost::system::errc::success) {
-      onWrite(bytes_transferred);
-    }
-  }
+                    std::size_t bytes_transferred);
 
   void readHandler(const boost::system::error_code& ec,
-                   std::size_t bytes_transferred) {
-    if (ec == boost::system::errc::success) {
-      onRead(std::string{m_receive_buffer.data(), bytes_transferred});
-    }
-
-    receive();
-  }
+                   std::size_t bytes_transferred);
 
   virtual void onWrite() {}
   virtual void onRead(const std::string& data) {}

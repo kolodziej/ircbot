@@ -47,5 +47,23 @@ void Client<Socket>::receive() {
       asio::buffer(m_receive_buffer.data(), m_receive_buffer.size()), handler);
 }
 
+template <typename Socket>
+void Client<Socket>::writeHandler(const boost::system::error_code& ec,
+                                  std::size_t bytes_transferred) {
+  if (ec == boost::system::errc::success) {
+    onWrite(bytes_transferred);
+  }
+}
+
+template <typename Socket>
+void Client<Socket>::readHandler(const boost::system::error_code& ec,
+                                 std::size_t bytes_transferred) {
+  if (ec == boost::system::errc::success) {
+    onRead(std::string{m_receive_buffer.data(), bytes_transferred});
+  }
+
+  receive();
+}
+
 }  // namespace network
 }  // namespace ircbot
