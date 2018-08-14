@@ -43,11 +43,23 @@ void Client::connect() {
     throw std::runtime_error{"Could not resolve address!"};
   }
 
-  LOG(INFO, "Trying to connect...");
-  asio::connect(m_socket, endp, ec);
-
-  if (ec) {
-    throw std::runtime_error{"Could not connect to host!"};
+  uint32_t trials{};
+  uint32_t interval = 200;  // interval in milliseconds
+  while (true) {
+    LOG(INFO, "Trying to connect...");
+    asio::connect(m_socket, endp, ec);
+    if (ec != boost::system::errc::success) {
+      LOG(ERROR, "Could not connect to host!");
+      LOG(INFO, "Reconnecting in ", interval, " milliseconds.");
+      auto interval_time = std::chrono::milliseconds(interval);
+      std::this_thread::sleep_for(interval_time);
+      interval *= 2;
+      interval = (interval < 15000) ? interval : 15000;
+      // @TODO: Replace this constant values with options from configration
+    } else {
+      LOG(INFO, "Connected successfully!");
+      break;
+    }
   }
 
   startAsyncReceive();
