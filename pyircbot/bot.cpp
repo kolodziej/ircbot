@@ -86,7 +86,7 @@ void Bot::sendIrcMessage(const ircbot::IRCMessage& sourcemsg) {
 void Bot::receive() {
   auto callback = [this](const boost::system::error_code& ec,
                          std::size_t bytes) {
-    if (ec == 0) {
+    if (ec == boost::system::errc::success) {
       parse(bytes);
       receive();
     } else {

@@ -32,7 +32,7 @@ TcpPluginServer::TcpPluginServer(std::shared_ptr<Client> client,
 
 void TcpPluginServer::acceptConnections() {
   auto callback = [this](const boost::system::error_code& error) {
-    if (error == 0) {
+    if (error == boost::system::errc::success) {
       auto endpoint = m_socket.remote_endpoint();
       LOG(INFO, "Accepted new connection: ", endpoint.address().to_string(),
           ":", endpoint.port());

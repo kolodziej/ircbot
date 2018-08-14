@@ -144,7 +144,7 @@ void Client::startAsyncReceive() {
 void Client::stopAsyncReceive() {
   boost::system::error_code ec;
   m_socket.cancel(ec);
-  if (ec != 0) {
+  if (ec != boost::system::errc::success) {
     LOG(ERROR, "Error canceling async operation on boost socket: ", ec);
   }
 }

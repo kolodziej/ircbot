@@ -21,7 +21,7 @@ std::string TcpPlugin::getName() const { return m_name; }
 void TcpPlugin::startReceiving() {
   auto callback = [this](const boost::system::error_code& error,
                          std::size_t bytes) {
-    if (error == 0) {
+    if (error == boost::system::errc::success) {
       std::string data{m_buffer.data(), bytes};
       parseMessage(data);
       startReceiving();
