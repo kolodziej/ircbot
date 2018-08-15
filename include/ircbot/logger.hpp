@@ -32,6 +32,15 @@ class Logger {
    */
   void addOutput(LogOutputPtr&& output);
 
+  /** Get number of outputs */
+  size_t outputsCount() const;
+
+  /** Clear outputs
+   *
+   * Remove all outputs from Logger
+   */
+  void clearOutputs();
+
   /** Template for logging operator
    *
    * \param level level of logged output
