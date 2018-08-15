@@ -1,0 +1,35 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+
+sub getExtension {
+	my $fileName = shift;
+	$fileName =~ s/^.*\.//;
+	return $fileName;
+}
+
+use File::Type;
+use Data::Dumper qw(Dumper);
+
+my $all_files = `git diff --cached --name-only`;
+my @files = split /\s+/, $all_files;
+
+my $f;
+foreach $f (@files) {
+	my $ext = getExtension($f);
+	if ($ext =~ /^(cpp|hpp|cxx|hxx|h|c|cc)$/) {
+        print "Formatting CPP file: $f\n";
+        system("clang-format", "-i", "-style=Google", $f);
+        system("git", "add", $f);
+    }
+}
+
+
+
+# STYLE=Google
+# FILES=$(git diff --cached --name-only)
+# 
+# for f in ${FILES}; do
+#     echo "Apply clang-format with style ${STYLE} to ${f}"
+#     clang-format -i -style=$STYLE $f
+# done
