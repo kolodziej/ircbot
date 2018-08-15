@@ -48,6 +48,18 @@ void Client<Socket>::receive() {
 }
 
 template <typename Socket>
+void Client<Socket>::disconnect() {
+  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+  m_socket.cancel();
+  m_socket.close();
+}
+
+template <typename Socket>
+typename Socket::endpoint_type Client<Socket>::endpoint() const {
+  return m_endpoint;
+}
+
+template <typename Socket>
 void Client<Socket>::writeHandler(const boost::system::error_code& ec,
                                   std::size_t bytes_transferred) {
   if (ec == boost::system::errc::success) {

@@ -12,16 +12,20 @@ namespace asio = boost::asio;
 namespace ircbot {
 namespace network {
 
-template <typename Socket>
+template <typename Protocol>
 class Server : public BasicServer {
  public:
-  Server(const typename Socket::endpoint_type& endpoint);
-  void listen();
-  void accept();
+  Server(const typename Protocol::endpoint& endpoint);
+  void start();
+  void stop();
 
  private:
-  typename Socket::endpoint_type m_endpoint;
-  Socket m_acceptor;
+  using ClientType = Client<typename Protocol::socket>;
+  typename Protocol::endpoint m_endpoint;
+  typename Protocol::acceptor m_acceptor;
+  typename Protocol::socket m_socket;
+
+  std::vector<ClientType> m_clients;
 
   void startAsyncAccepting();
 };

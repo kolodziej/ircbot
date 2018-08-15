@@ -23,6 +23,10 @@ class Client : public BasicClient {
   virtual void send(const std::string& data);
   virtual void receive();
 
+  virtual void disconnect();
+
+  typename Socket::endpoint_type endpoint() const;
+
  private:
   typename Socket::endpoint_type m_endpoint;
   Socket m_socket;
@@ -34,7 +38,7 @@ class Client : public BasicClient {
   void readHandler(const boost::system::error_code& ec,
                    std::size_t bytes_transferred);
 
-  virtual void onWrite() {}
+  virtual void onWrite(const size_t bytes_transferred) {}
   virtual void onRead(const std::string& data) {}
 };
 

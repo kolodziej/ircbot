@@ -6,8 +6,8 @@ namespace network {
 
 class BasicServer {
  public:
-  virtual void listen() = 0;
-  virtual void accept() = 0;
+  virtual void start() = 0;
+  virtual void stop() = 0;
 
  protected:
   virtual void startAsyncAccepting() = 0;

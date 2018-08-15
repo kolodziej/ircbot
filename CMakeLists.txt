@@ -100,6 +100,7 @@ set(SOURCES
     source/network/buffer.cpp
     source/network/client.cpp
     source/network/context_provider.cpp
+    source/network/server.cpp
 )
 
 set(HEADERS

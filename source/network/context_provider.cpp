@@ -15,6 +15,8 @@ void ContextProvider::run() {
   m_context_thread = std::move(std::thread{ctx_run});
 }
 
+void ContextProvider::stopWork() { m_work.reset(nullptr); }
+
 void ContextProvider::stop() {
   if (m_work != nullptr) m_work.reset(nullptr);
 

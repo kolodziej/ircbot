@@ -2,6 +2,7 @@ set(TESTS
     irc_parser_test
     command_parser_test
     network_buffer
+    network_server_client
 )
 
 foreach(TEST ${TESTS})

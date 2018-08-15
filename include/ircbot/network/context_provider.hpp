@@ -22,6 +22,7 @@ class ContextProvider {
 
   Context& getContext();
   void run();
+  void stopWork();
   void stop();
 
  private:
