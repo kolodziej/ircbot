@@ -12,12 +12,16 @@ namespace asio = boost::asio;
 namespace ircbot {
 namespace network {
 
-template <typename Socket>
-class Client : public BasicClient {
+template <typename Protocol>
+class Client {
  public:
+  using ProtocolType = Protocol;
+
   constexpr static const size_t default_buffer_size = 4096;
-  Client(const typename Socket::endpoint_type&);
-  Client(Socket&& socket);
+  Client(const typename ProtocolType::endpoint&);
+  Client(typename ProtocolType::socket&& socket);
+  Client(Client&&) = default;
+  virtual ~Client();
 
   virtual void connect();
   virtual void send(const std::string& data);
@@ -25,11 +29,15 @@ class Client : public BasicClient {
 
   virtual void disconnect();
 
-  typename Socket::endpoint_type endpoint() const;
+  typename ProtocolType::endpoint endpoint() const;
+
+ protected:
+  virtual void onWrite(const size_t bytes_transferred) {}
+  virtual void onRead(const std::string& data) {}
 
  private:
-  typename Socket::endpoint_type m_endpoint;
-  Socket m_socket;
+  typename ProtocolType::endpoint m_endpoint;
+  typename ProtocolType::socket m_socket;
   std::array<char, default_buffer_size> m_receive_buffer;
 
   void writeHandler(const boost::system::error_code& ec,
@@ -37,9 +45,6 @@ class Client : public BasicClient {
 
   void readHandler(const boost::system::error_code& ec,
                    std::size_t bytes_transferred);
-
-  virtual void onWrite(const size_t bytes_transferred) {}
-  virtual void onRead(const std::string& data) {}
 };
 
 }  // namespace network

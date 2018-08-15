@@ -2,20 +2,27 @@
 
 #include <stdexcept>
 
+#include "ircbot/logger.hpp"
+
 namespace ircbot {
 namespace network {
 
-template <typename Socket>
-Client<Socket>::Client(const typename Socket::endpoint_type& endpoint)
+template <typename Protocol>
+Client<Protocol>::Client(const typename Protocol::endpoint& endpoint)
     : m_endpoint{endpoint},
       m_socket{ContextProvider::getInstance().getContext()} {}
 
-template <typename Socket>
-Client<Socket>::Client(Socket&& socket)
+template <typename Protocol>
+Client<Protocol>::Client(typename Protocol::socket&& socket)
     : m_endpoint{socket.remote_endpoint()}, m_socket{std::move(socket)} {}
 
-template <typename Socket>
-void Client<Socket>::connect() {
+template <typename Protocol>
+Client<Protocol>::~Client() {
+  disconnect();
+}
+
+template <typename Protocol>
+void Client<Protocol>::connect() {
   if (m_socket.is_open()) {
     throw std::runtime_error{"Socket is already opened!"};
   }
@@ -28,8 +35,8 @@ void Client<Socket>::connect() {
   }
 }
 
-template <typename Socket>
-void Client<Socket>::send(const std::string& data) {
+template <typename Protocol>
+void Client<Protocol>::send(const std::string& data) {
   auto handler = [this](const boost::system::error_code& ec,
                         std::size_t bytes_transferred) {
     writeHandler(ec, bytes_transferred);
@@ -37,8 +44,8 @@ void Client<Socket>::send(const std::string& data) {
   m_socket.async_send(asio::buffer(data), handler);
 }
 
-template <typename Socket>
-void Client<Socket>::receive() {
+template <typename Protocol>
+void Client<Protocol>::receive() {
   auto handler = [this](const boost::system::error_code& ec,
                         std::size_t bytes_transferred) {
     readHandler(ec, bytes_transferred);
@@ -47,34 +54,42 @@ void Client<Socket>::receive() {
       asio::buffer(m_receive_buffer.data(), m_receive_buffer.size()), handler);
 }
 
-template <typename Socket>
-void Client<Socket>::disconnect() {
-  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-  m_socket.cancel();
-  m_socket.close();
+template <typename Protocol>
+void Client<Protocol>::disconnect() {
+  DEBUG("Trying to disconnect...");
+  if (m_socket.is_open()) {
+    DEBUG("Shutting down socket...");
+    m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
+    DEBUG("Canceling asynchronous operations...");
+    m_socket.cancel();
+    DEBUG("Closing socket...");
+    m_socket.close();
+  }
 }
 
-template <typename Socket>
-typename Socket::endpoint_type Client<Socket>::endpoint() const {
+template <typename Protocol>
+typename Protocol::endpoint Client<Protocol>::endpoint() const {
   return m_endpoint;
 }
 
-template <typename Socket>
-void Client<Socket>::writeHandler(const boost::system::error_code& ec,
-                                  std::size_t bytes_transferred) {
+template <typename Protocol>
+void Client<Protocol>::writeHandler(const boost::system::error_code& ec,
+                                    std::size_t bytes_transferred) {
   if (ec == boost::system::errc::success) {
     onWrite(bytes_transferred);
   }
 }
 
-template <typename Socket>
-void Client<Socket>::readHandler(const boost::system::error_code& ec,
-                                 std::size_t bytes_transferred) {
+template <typename Protocol>
+void Client<Protocol>::readHandler(const boost::system::error_code& ec,
+                                   std::size_t bytes_transferred) {
   if (ec == boost::system::errc::success) {
     onRead(std::string{m_receive_buffer.data(), bytes_transferred});
   }
 
-  receive();
+  if (ec != asio::error::operation_aborted) {
+    receive();
+  }
 }
 
 }  // namespace network

@@ -133,6 +133,7 @@ set(HEADERS
     include/ircbot/network/basic_server.hpp
     include/ircbot/network/client.hpp
     include/ircbot/network/context_provider.hpp
+    include/ircbot/network/server.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )
