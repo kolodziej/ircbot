@@ -13,6 +13,7 @@ ContextProvider::Context& ContextProvider::getContext() { return m_context; }
 
 void ContextProvider::run() {
   DEBUG("Running io_context thread and work");
+  m_context.restart();
   auto ctx_run = [this] { m_context.run(); };
   m_work = std::make_unique<Context::work>(m_context);
   m_context_thread = std::move(std::thread{ctx_run});
