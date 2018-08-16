@@ -102,6 +102,7 @@ set(SOURCES
     source/network/context_provider.cpp
     source/network/tcp_client.cpp
     source/network/tcp_server.cpp
+    source/network/timer.cpp
 )
 
 set(HEADERS
@@ -140,6 +141,7 @@ set(HEADERS
     include/ircbot/network/server.hpp
     include/ircbot/network/tcp_client.hpp
     include/ircbot/network/tcp_server.hpp
+    include/ircbot/network/timer.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )

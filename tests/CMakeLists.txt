@@ -3,6 +3,7 @@ set(TESTS
     command_parser_test
     network_buffer
     network_server_client
+    timer_test
 )
 
 foreach(TEST ${TESTS})
