@@ -2,8 +2,8 @@
 
 #include "ircbot/cerr_log_output.hpp"
 #include "ircbot/logger.hpp"
-#include "ircbot/network/client.hpp"
-#include "ircbot/network/server.hpp"
+#include "ircbot/network/tcp_client.hpp"
+#include "ircbot/network/tcp_server.hpp"
 
 #include <chrono>
 #include <string>
@@ -25,22 +25,33 @@ class NetworkServerClientTest : public ::testing::Test {
   virtual void TearDown() { Logger::getInstance().clearOutputs(); }
 };
 
-class TestClient : public network::Client<asio::ip::tcp> {
+class TestClient : public network::TcpClient {
  public:
-  TestClient(network::Client<asio::ip::tcp>::ProtocolType::endpoint endpoint)
-      : network::Client<asio::ip::tcp>{endpoint} {}
+  TestClient(const asio::ip::tcp::endpoint& endpoint)
+      : network::TcpClient{endpoint} {}
 
-  TestClient(network::Client<asio::ip::tcp>::ProtocolType::socket&& socket)
-      : network::Client<asio::ip::tcp>{std::move(socket)} {}
+  TestClient(asio::ip::tcp::socket&& socket)
+      : network::TcpClient{std::move(socket)} {}
 
  private:
   void onWrite(const size_t bytes_transferred) {
-    LOG(INFO, "Client ", endpoint(), " transferred ", bytes_transferred,
-        " bytes");
+    LOG(INFO, "Client transferred ", bytes_transferred, " bytes");
   }
 
   void onRead(const std::string& data) {
     LOG(INFO, "Client ", endpoint(), " received: ", data);
+  }
+};
+
+class TestServer : public network::TcpServer {
+ public:
+  TestServer(const asio::ip::tcp::endpoint& endpoint)
+      : network::TcpServer{endpoint} {}
+
+ private:
+  std::unique_ptr<network::TcpClient> createClient(
+      asio::ip::tcp::socket&& socket) {
+    return std::make_unique<TestClient>(std::move(socket));
   }
 };
 
@@ -51,11 +62,11 @@ TEST_F(NetworkServerClientTest, MultiConnections) {
   auto& ctx = network::ContextProvider::getInstance();
   ctx.run();
 
-  TestClient::ProtocolType::endpoint server_endpoint{asio::ip::tcp::v4(), port};
-  network::Server<TestClient> server{server_endpoint};
+  asio::ip::tcp::endpoint server_endpoint{asio::ip::tcp::v4(), port};
+  TestServer server{server_endpoint};
   server.start();
 
-  TestClient::ProtocolType::resolver resolver{ctx.getContext()};
+  asio::ip::tcp::resolver resolver{ctx.getContext()};
   auto endpoint_iterator = resolver.resolve({host, std::to_string(port)});
   auto endpoint = endpoint_iterator->endpoint();
 

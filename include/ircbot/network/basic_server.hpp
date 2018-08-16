@@ -6,6 +6,7 @@ namespace network {
 
 class BasicServer {
  public:
+  virtual ~BasicServer() = default;
   virtual void start() = 0;
   virtual void stop() = 0;
 

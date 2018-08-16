@@ -8,6 +8,8 @@ namespace network {
 
 class BasicClient {
  public:
+  virtual ~BasicClient() = default;
+
   virtual void connect() = 0;
   virtual void send(const std::string& buf) = 0;
   virtual void receive() = 0;

@@ -1,8 +1,11 @@
-#ifndef _IRCBOT_NETWORK_CLIENT_HPP
-#define _IRCBOT_NETWORK_CLIENT_HPP
+#ifndef _IRCBOT_NETWORK_TCP_CLIENT_HPP
+#define _IRCBOT_NETWORK_TCP_CLIENT_HPP
 
+#include "ircbot/logger.hpp"
 #include "ircbot/network/basic_client.hpp"
 #include "ircbot/network/buffer.hpp"
+#include "ircbot/network/context_provider.hpp"
+#include "ircbot/network/endpoint.hpp"
 
 #include <array>
 #include <boost/asio.hpp>
@@ -12,16 +15,13 @@ namespace asio = boost::asio;
 namespace ircbot {
 namespace network {
 
-template <typename Protocol>
-class Client {
+class TcpClient : public Endpoint<asio::ip::tcp>, public BasicClient {
  public:
-  using ProtocolType = Protocol;
-
   constexpr static const size_t default_buffer_size = 4096;
-  Client(const typename ProtocolType::endpoint&);
-  Client(typename ProtocolType::socket&& socket);
-  Client(Client&&) = default;
-  virtual ~Client();
+  TcpClient(const asio::ip::tcp::endpoint&);
+  TcpClient(asio::ip::tcp::socket&& socket);
+  TcpClient(TcpClient&&) = default;
+  virtual ~TcpClient();
 
   virtual void connect();
   virtual void send(const std::string& data);
@@ -29,15 +29,12 @@ class Client {
 
   virtual void disconnect();
 
-  typename ProtocolType::endpoint endpoint() const;
-
  protected:
   virtual void onWrite(const size_t bytes_transferred) {}
   virtual void onRead(const std::string& data) {}
 
  private:
-  typename ProtocolType::endpoint m_endpoint;
-  typename ProtocolType::socket m_socket;
+  asio::ip::tcp::socket m_socket;
   std::array<char, default_buffer_size> m_receive_buffer;
 
   void writeHandler(const boost::system::error_code& ec,
@@ -49,7 +46,5 @@ class Client {
 
 }  // namespace network
 }  // namespace ircbot
-
-#include "ircbot/network/client.impl.hpp"
 
 #endif

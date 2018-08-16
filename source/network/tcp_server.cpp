@@ -1,42 +1,35 @@
-#include "ircbot/logger.hpp"
+#include "ircbot/network/tcp_server.hpp"
 
 namespace ircbot {
 namespace network {
 
-template <typename Client>
-Server<Client>::Server(const typename Client::ProtocolType::endpoint& endpoint)
-    : m_endpoint{endpoint},
+TcpServer::TcpServer(const asio::ip::tcp::endpoint& endpoint)
+    : Endpoint<asio::ip::tcp>{endpoint},
       m_acceptor{ContextProvider::getInstance().getContext(), endpoint},
       m_socket{ContextProvider::getInstance().getContext()} {}
 
-template <typename Client>
-Server<Client>::~Server() {
-  stop();
-}
+TcpServer::~TcpServer() { stop(); }
 
-template <typename Client>
-void Server<Client>::start() {
-  DEBUG("Starting server on ", m_endpoint);
+void TcpServer::start() {
+  DEBUG("Starting server on ", endpoint());
   startAsyncAccepting();
 }
 
-template <typename Client>
-void Server<Client>::stop() {
+void TcpServer::stop() {
   if (m_acceptor.is_open()) {
     m_acceptor.cancel();
     m_acceptor.close();
   }
 }
 
-template <typename Client>
-void Server<Client>::startAsyncAccepting() {
+void TcpServer::startAsyncAccepting() {
   auto handler = [this](const boost::system::error_code& ec) {
     DEBUG("Async accept handler. Error code: ", ec);
     if (ec == boost::system::errc::success) {
       auto remote_endpoint = m_socket.remote_endpoint();
       LOG(INFO, "Creating new client: ", remote_endpoint);
-      m_clients.emplace_back(std::move(m_socket));
-      m_clients.back().receive();
+      auto client = createClient(std::move(m_socket));
+      m_clients.push_back(std::move(client));
       startAsyncAccepting();
     } else if (ec == asio::error::operation_aborted) {
       LOG(INFO, "Asynchronous accepting aborted!");
@@ -50,6 +43,11 @@ void Server<Client>::startAsyncAccepting() {
   LOG(INFO, "Waiting for next client...");
   m_acceptor.async_accept(m_socket, handler);
   DEBUG("Ascyn accepting started!");
+}
+
+std::unique_ptr<TcpClient> TcpServer::createClient(
+    asio::ip::tcp::socket&& socket) {
+  return std::make_unique<TcpClient>(std::move(socket));
 }
 
 }  // namespace network
