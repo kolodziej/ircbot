@@ -20,8 +20,10 @@ target_link_libraries(pyircbot PRIVATE
   ${CMAKE_THREAD_LIBS_INIT}
 )
 
+message(STATUS "Python Version: ${PYTHON_VERSION_STRING}")
 if(NOT DEFINED PYTHON_INSTALL_PATH)
-    execute_process(COMMAND /usr/bin/env python ${CMAKE_CURRENT_SOURCE_DIR}/pythonpath.py
+    execute_process(COMMAND /usr/bin/env python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/pythonpath.py ${PYTHON_VERSION_STRING}
         OUTPUT_VARIABLE PYTHON_INSTALL_PATH)
 
     string(STRIP "${PYTHON_INSTALL_PATH}" PYTHON_INSTALL_PATH)
