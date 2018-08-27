@@ -9,6 +9,7 @@ set(PLUGINS
     helloworld
     clipboard
     simple_commands
+    uptime
 )
 
 foreach(PLUGIN ${PLUGINS})

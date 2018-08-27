@@ -22,7 +22,8 @@ Client::Client(asio::io_service& io_service, Config cfg)
       m_cfg{cfg},
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
-      m_running{false} {}
+      m_running{false},
+      m_start_time{std::chrono::steady_clock::now()} {}
 
 void Client::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
@@ -376,5 +377,9 @@ void Client::reloadPlugin(const std::string& pluginId) {
 }
 
 asio::io_service& Client::getIoService() { return m_io_service; }
+
+std::chrono::steady_clock::duration Client::getUptime() const {
+  return std::chrono::steady_clock::now() - m_start_time;
+}
 
 }  // namespace ircbot

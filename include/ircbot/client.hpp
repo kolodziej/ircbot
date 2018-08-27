@@ -192,6 +192,14 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   asio::io_service& getIoService();
 
+  /** Get uptime of this client
+   *
+   * Returns duration from creation of this object's creation
+   *
+   * \return duration from Client creation
+   */
+  std::chrono::steady_clock::duration getUptime() const;
+
  private:
   /** Reference to instance of io_service */
   asio::io_service& m_io_service;
@@ -226,6 +234,9 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Mutex protecting vector of plugins */
   std::mutex m_plugins_mtx;
+
+  /** Time when bot has been started */
+  std::chrono::steady_clock::time_point m_start_time;
 };
 
 }  // namespace ircbot

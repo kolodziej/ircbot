@@ -2,6 +2,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "ircbot/helpers.hpp"
 #include "ircbot/irc_message.hpp"
 #include "pyircbot/bot.hpp"
 #include "pyircbot/helpers.hpp"
@@ -10,9 +11,9 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE(pyircbot, m) {
+  using ircbot::helpers::responseDestination;
   using pyircbot::Bot;
   using pyircbot::Plugin;
-  using pyircbot::helpers::responseDestination;
 
   py::class_<Plugin>(m, "Plugin")
       .def(py::init())
