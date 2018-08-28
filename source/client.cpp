@@ -45,7 +45,8 @@ void Client::connect() {
   }
 
   uint32_t trials{};
-  uint32_t interval = 200;  // interval in milliseconds
+  uint32_t interval{m_cfg.tree().get("reconnect-interval", 200u)};  // interval in milliseconds
+  uint32_t maximum_interval{m_cfg.tree().get("max-reconnect-interval", 15000u)};
   while (true) {
     LOG(INFO, "Trying to connect...");
     asio::connect(m_socket, endp, ec);
@@ -55,8 +56,8 @@ void Client::connect() {
       auto interval_time = std::chrono::milliseconds(interval);
       std::this_thread::sleep_for(interval_time);
       interval *= 2;
-      interval = (interval < 15000) ? interval : 15000;
-      // @TODO: Replace this constant values with options from configration
+      interval = (interval < maximum_interval) ? interval : maximum_interval;
+      ++trials;
     } else {
       LOG(INFO, "Connected successfully!");
       break;
