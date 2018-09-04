@@ -120,7 +120,7 @@ plugin.name = 'kernel info'
 plugin.token = load_token('~/ircbot_token')
 plugin.onMessage = message
 
-bot = pyircbot.Bot('127.0.0.1', 5454, plugin)
+bot = pyircbot.Bot('127.0.0.1', PORT, plugin)
 bot.start()
 
 while bot.isRunning():
