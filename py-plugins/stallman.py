@@ -38,6 +38,7 @@ LINKS = {
     'ubuntu': 'https://www.youtube.com/watch?v=CP8CNp-vksc',
     'linux': 'https://www.youtube.com/watch?v=b89fKsT1i7s',
     'torvalds': 'https://www.youtube.com/watch?v=b89fKsT1i7s',
+    'sudosatirical': 'https://www.sudosatirical.com/articles/richard-stallman-interjects-local-mans-funeral/',
 }
 
 def load_token(fname):
