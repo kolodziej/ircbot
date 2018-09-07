@@ -170,7 +170,7 @@ void TcpPlugin::parseMessage(const std::string& data) {
 
 void TcpPlugin::sendToPlugin(const std::string& msg) {
   try {
-    LOG(INFO, "TcpPlugin ", getId(), ": Sending ", msg.size(),
+    LOG(INFO, "TcpPlugin ", getName(), ": Sending ", msg.size(),
         " bytes to tcp plugin");
     m_socket.send(asio::buffer(msg.data(), msg.size()));
   } catch (const boost::system::system_error& error) {
