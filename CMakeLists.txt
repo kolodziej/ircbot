@@ -1,5 +1,24 @@
 cmake_minimum_required(VERSION 3.1.0)
 
+if (EXISTS .git)
+  include(${CMAKE_SOURCE_DIR}/cmake/version.cmake)
+
+  if (RESET_VERSION_INFO)
+      file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+  endif()
+
+  configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
+                 "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+  configure_file("${CMAKE_SOURCE_DIR}/cmake/version-info.in"
+                 "${CMAKE_BINARY_DIR}/version-info")
+elseif (NOT EXISTS "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
+  message(FATAL_ERROR "${CMAKE_BINARY_DIR}/include/version_configuration.hpp dosen't exist and cannot be generated!")
+endif()
+
+if(ONLY_VERSION_INFO)
+  return()
+endif()
+
 find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 find_package(Threads REQUIRED)
@@ -40,16 +59,6 @@ option(RESET_VERSION_INFO
     OFF
 )
 
-include(${CMAKE_SOURCE_DIR}/cmake/version.cmake)
-
-if (RESET_VERSION_INFO)
-    file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
-endif()
-
-configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
-               "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
-configure_file("${CMAKE_SOURCE_DIR}/cmake/version-info.in"
-               "${CMAKE_BINARY_DIR}/version-info")
 
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
