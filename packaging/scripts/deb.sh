@@ -2,8 +2,15 @@
 set -x
 set -e
 
+TARGET_OS=$1
+
 if [ "${IRCBOT_VERSION}x" = "x" ]; then
     echo "IRCBOT_VERSION env must be set!"
+    exit 1
+fi
+
+if [ "${TARGET_OS}x" = "x" ]; then
+    echo "TARGET_OS (first arg) must be set!"
     exit 1
 fi
 
@@ -25,5 +32,5 @@ export DEB_BUILD_OPTIONS="parallel=$(nproc)"
 debuild -uc -us
 cd ../../..
 
-mkdir -p packages/debian
-cp packaging/deb/*.deb packages/debian
+mkdir -p packages/${TARGET_OS}
+cp packaging/deb/*.deb packages/${TARGET_OS}

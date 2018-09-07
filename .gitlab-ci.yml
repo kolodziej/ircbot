@@ -133,7 +133,7 @@ deb:ubuntu:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - ./packaging/scripts/deb.sh
+    - ./packaging/scripts/deb.sh ubuntu
   artifacts:
     paths:
       - "packages/ubuntu/*.deb"
@@ -149,7 +149,7 @@ deb:debian:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - ./packaging/scripts/deb.sh
+    - ./packaging/scripts/deb.sh debian
   artifacts:
     paths:
       - "packages/debian/*.deb"
@@ -165,7 +165,7 @@ deb:ubuntu-arm:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - ./packaging/scripts/deb.sh
+    - ./packaging/scripts/deb.sh ubuntu
   artifacts:
     paths:
       - "packages/ubuntu/*.deb"
@@ -181,7 +181,7 @@ deb:debian-arm:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - ./packaging/scripts/deb.sh
+    - ./packaging/scripts/deb.sh debian
   artifacts:
     paths:
       - "packages/debian/*.deb"
