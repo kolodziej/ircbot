@@ -1,8 +1,11 @@
 #!/usr/bin/make -f
-dh_auto_configure:
+build:
+	dh_testdir
+	dh_update_autotools_config
 	cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_VERBOSE_MAKEFILE=ON -DCMAKE_BUILD_TYPE=Release \
 		-DCMAKE_INSTALL_SYSCONFDIR=/etc -DCMAKE_INSTALL_LOCALSTATEDIR=/var \
 		-DGIT_COMMIT=$(GIT_COMMIT) -DGIT_REF=$(GIT_REF)
+	dh_auto_build
 
 %:
 	dh $@ --parallel
