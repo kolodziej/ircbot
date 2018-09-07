@@ -96,7 +96,6 @@ docs:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - mkdir build
     - cd build
@@ -114,7 +113,6 @@ test:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - tar xf ubuntu1604-build.tar.xz
     - ls -la .
@@ -129,7 +127,6 @@ deb:ubuntu:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -145,7 +142,6 @@ deb:debian:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -161,7 +157,6 @@ deb:ubuntu-arm:
     - docker
     - ircbot
     - arm
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -177,7 +172,6 @@ deb:debian-arm:
     - docker
     - ircbot
     - arm
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -208,7 +202,6 @@ deploy:ubuntu:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -223,7 +216,6 @@ deploy:debian:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -238,7 +230,6 @@ deploy:fedora:
     - docker
     - ircbot
     - x86_64
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -252,7 +243,6 @@ deploy:ubuntu-arm:
     - docker
     - ircbot
     - arm
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
@@ -267,7 +257,6 @@ deploy:debian-arm:
     - docker
     - ircbot
     - arm
-    - docker
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
