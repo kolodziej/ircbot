@@ -129,7 +129,9 @@ deb:ubuntu:
     - x86_64
   script:
     - export IRCBOT_VERSION=$(cat version-info)
-    - echo ${IRCBOT_VERSION}
+    - export GIT_COMMIT=${CI_COMMIT_SHA}
+    - export GIT_REF=${CI_COMMIT_REF_NAME}
+    - env
     - ./packaging/scripts/deb.sh ubuntu
   artifacts:
     paths:
@@ -144,7 +146,9 @@ deb:debian:
     - x86_64
   script:
     - export IRCBOT_VERSION=$(cat version-info)
-    - echo ${IRCBOT_VERSION}
+    - export GIT_COMMIT=${CI_COMMIT_SHA}
+    - export GIT_REF=${CI_COMMIT_REF_NAME}
+    - env
     - ./packaging/scripts/deb.sh debian
   artifacts:
     paths:
@@ -159,7 +163,9 @@ deb:ubuntu-arm:
     - arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
-    - echo ${IRCBOT_VERSION}
+    - export GIT_COMMIT=${CI_COMMIT_SHA}
+    - export GIT_REF=${CI_COMMIT_REF_NAME}
+    - env
     - ./packaging/scripts/deb.sh ubuntu
   artifacts:
     paths:
@@ -174,7 +180,9 @@ deb:debian-arm:
     - arm
   script:
     - export IRCBOT_VERSION=$(cat version-info)
-    - echo ${IRCBOT_VERSION}
+    - export GIT_COMMIT=${CI_COMMIT_SHA}
+    - export GIT_REF=${CI_COMMIT_REF_NAME}
+    - env
     - ./packaging/scripts/deb.sh debian
   artifacts:
     paths:
