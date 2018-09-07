@@ -27,7 +27,6 @@ cd ircbot-${IRCBOT_VERSION}
 
 tar xf ../${ARCHIVE_NAME}
 cp -r ../debian .
-cp -r ../../../.git .
 
 export DEB_BUILD_OPTIONS="parallel=$(nproc)"
 debuild -uc -us
