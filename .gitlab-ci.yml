@@ -1,6 +1,5 @@
 stages:
   - "Docker images"
-  - Source
   - Build
   - Test
   - Package
@@ -64,21 +63,6 @@ ubuntu-arm-image:
     - cd docker/ubuntu-arm
     - docker build -t docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID .
     - docker push docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID
-
-source:
-  stage: Source
-  tags:
-    - ircbot
-    - x86_64
-  script:
-    - mkdir build
-    - cd build
-    - cmake -DONLY_VERSION_INFO=True ..
-    - cd ..
-    - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs protobuf pybind11 pyircbot build/include/version_configuration.hpp build/version-info
-  artifacts:
-    paths:
-      - ircbot-source.tar.gz
 
 build:
   image: docker.kolk.cc/ircbot-debian:$IMAGE_ID
