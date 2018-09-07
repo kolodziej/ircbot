@@ -133,17 +133,7 @@ deb:ubuntu:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cd packaging/deb
-    - mkdir ircbot-${IRCBOT_VERSION}
-    - cd ircbot-${IRCBOT_VERSION}
-    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cp -r ../debian .
-    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
-    - debuild -uc -us
-    - cd ../../..
-    - mkdir -p packages/ubuntu
-    - cp packaging/deb/*.deb packages/ubuntu
+    - ./packaging/scripts/deb.sh
   artifacts:
     paths:
       - "packages/ubuntu/*.deb"
@@ -159,41 +149,10 @@ deb:debian:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cd packaging/deb
-    - mkdir ircbot-${IRCBOT_VERSION}
-    - cd ircbot-${IRCBOT_VERSION}
-    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cp -r ../debian .
-    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
-    - debuild -uc -us
-    - cd ../../..
-    - mkdir -p packages/debian
-    - cp packaging/deb/*.deb packages/debian
+    - ./packaging/scripts/deb.sh
   artifacts:
     paths:
       - "packages/debian/*.deb"
-
-rpm:
-  image: docker.kolk.cc/ircbot-fedora:$IMAGE_ID
-  stage: Package
-  tags:
-    - docker
-    - ircbot
-    - x86_64
-    - docker
-  script:
-    - mkdir -p rpmbuild/BUILD
-    - cd rpmbuild/BUILD
-    - tar xf ../../ircbot-source.tar.gz
-    - cd ../..
-    - rpmbuild --define "_topdir $(realpath ./rpmbuild)" -ba packaging/rpm/ircbot.spec
-    - mkdir -p packages/fedora
-    - cp ./rpmbuild/SRPMS/*.rpm packages/fedora
-    - cp ./rpmbuild/RPMS/**/*.rpm packages/fedora
-  artifacts:
-    paths:
-      - "packages/fedora/*.rpm"
 
 deb:ubuntu-arm:
   image: docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID
@@ -206,17 +165,7 @@ deb:ubuntu-arm:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cd packaging/deb
-    - mkdir ircbot-${IRCBOT_VERSION}
-    - cd ircbot-${IRCBOT_VERSION}
-    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cp -r ../debian .
-    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
-    - debuild -uc -us
-    - cd ../../..
-    - mkdir -p packages/ubuntu/
-    - cp packaging/deb/*.deb packages/ubuntu/
+    - ./packaging/scripts/deb.sh
   artifacts:
     paths:
       - "packages/ubuntu/*.deb"
@@ -232,17 +181,7 @@ deb:debian-arm:
   script:
     - export IRCBOT_VERSION=$(cat version-info)
     - echo ${IRCBOT_VERSION}
-    - cp ircbot-source.tar.gz packaging/deb/ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cd packaging/deb
-    - mkdir ircbot-${IRCBOT_VERSION}
-    - cd ircbot-${IRCBOT_VERSION}
-    - tar xf ../ircbot_${IRCBOT_VERSION}.orig.tar.gz
-    - cp -r ../debian .
-    - export DEB_BUILD_OPTIONS="parallel=$(nproc)"
-    - debuild -uc -us
-    - cd ../../..
-    - mkdir -p packages/debian/
-    - cp packaging/deb/*.deb packages/debian/
+    - ./packaging/scripts/deb.sh
   artifacts:
     paths:
       - "packages/debian/*.deb"
