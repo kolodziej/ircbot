@@ -18,7 +18,7 @@ fi
 ARCHIVE_NAME="ircbot_${IRCBOT_VERSION}.orig.tar.gz"
 
 mkdir -p rpmbuild/BUILD
-cp -r cmake CMakeLists.txt config gtest include packaging \
+cp -r .git cmake CMakeLists.txt config gtest include packaging \
       plugins program *.md source tests docs protobuf pybind11 pyircbot \
       rpmbuild/BUILD/
 
