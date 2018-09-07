@@ -186,6 +186,21 @@ deb:debian-arm:
     paths:
       - "packages/debian/*.deb"
 
+rpm:fedora:
+  image: docker.kolk.cc/ircbot-fedora:$IMAGE_ID
+  stage: Package
+  tags:
+    - docker
+    - ircbot
+    - x86_64
+  script:
+    - export IRCBOT_VERSION=$(cat version-info)
+    - echo ${IRCBOT_VERSION}
+    - ./packaging/scripts/rpm.sh fedora
+  artifacts:
+    paths:
+      - "packages/fedora/*.rpm"
+
 deploy:ubuntu:
   image: ubuntu:16.04
   stage: Deploy
