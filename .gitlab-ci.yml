@@ -71,6 +71,10 @@ source:
     - ircbot
     - x86_64
   script:
+    - mkdir build
+    - cd build
+    - cmake -DONLY_VERSION_INFO=True ..
+    - cd ..
     - tar czf ircbot-source.tar.gz cmake CMakeLists.txt config gtest include packaging plugins program *.md source tests docs protobuf pybind11 pyircbot build/include/version_configuration.hpp build/version-info
   artifacts:
     paths:
