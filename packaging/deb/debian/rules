@@ -1,4 +1,4 @@
-#!/usr/bin/make -f
+#!/usr/bin/make -f -e
 build:
 	dh_testdir
 	dh_update_autotools_config
