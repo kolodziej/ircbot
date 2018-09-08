@@ -22,7 +22,10 @@ cp -r cmake CMakeLists.txt config gtest include packaging \
       plugins program *.md source tests docs protobuf pybind11 pyircbot \
       rpmbuild/BUILD/
 
-rpmbuild --define "_topdir $(realpath ./rpmbuild)" -ba packaging/rpm/ircbot.spec
+rpmbuild --define "_topdir $(realpath ./rpmbuild)" \
+    --define "GIT_COMMIT ${GIT_COMMIT}" \
+    --define "GIT_REF ${GIT_REF}" \
+    -ba packaging/rpm/ircbot.spec
 
 mkdir -p packages/${TARGET_OS}
 cp ./rpmbuild/SRPMS/*.rpm packages/${TARGET_OS}

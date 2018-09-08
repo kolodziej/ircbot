@@ -197,7 +197,9 @@ rpm:fedora:
     - x86_64
   script:
     - export IRCBOT_VERSION=$(cat version-info)
-    - echo ${IRCBOT_VERSION}
+    - export GIT_COMMIT=${CI_COMMIT_SHA}
+    - export GIT_REF=${CI_COMMIT_REF_NAME}
+    - env
     - ./packaging/scripts/rpm.sh fedora
   artifacts:
     paths:
