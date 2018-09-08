@@ -24,7 +24,7 @@ cp -r cmake CMakeLists.txt config gtest include packaging \
 
 rpmbuild --define "_topdir $(realpath ./rpmbuild)" \
     --define "GIT_COMMIT ${GIT_COMMIT}" \
-    --define "GIT_RFE ${GIT_REF}" \
+    --define "GIT_REF ${GIT_REF}" \
     -ba packaging/rpm/ircbot.spec
 
 mkdir -p packages/${TARGET_OS}
