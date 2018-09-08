@@ -53,8 +53,20 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Initializes all plugins from configuration */
   void initializePlugins();
 
-  /** Gently disconnects from server */
-  void disconnect();
+  /** Disconnects from server
+   *
+   * \param forced indicates if disconnection was forced, by default not
+   */
+  void disconnect(bool forced = false);
+
+  /** Should application reconnect to server?
+   *
+   * This functions will return true when client's connection will be closed
+   * unexpectedly. This means that application should try to reconnect.
+   *
+   * \return bool indicating if application should try to reconnect
+   */
+  bool shouldReconnect() const;
 
   /** Initializes receiving messages asynchronously */
   void startAsyncReceive();
@@ -222,6 +234,9 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Indicates if instance is running */
   std::atomic_bool m_running;
+
+  /** Indicates if application should try to reconnect to server */
+  bool m_should_reconnect;
 
   /** Vector of unique pointers to plugins */
   PluginVector m_plugins;

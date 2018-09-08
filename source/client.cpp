@@ -23,11 +23,15 @@ Client::Client(asio::io_service& io_service, Config cfg)
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
       m_running{false},
+      m_should_reconnect{false},
       m_start_time{std::chrono::steady_clock::now()} {}
 
 void Client::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
   boost::system::error_code ec;
+
+  // during connection this flag should be set to false
+  m_should_reconnect = false;
 
   std::string host = m_cfg.tree().get("server", std::string{});
   uint16_t port = m_cfg.tree().get("port", 0u);
@@ -45,10 +49,11 @@ void Client::connect() {
   }
 
   uint32_t trials{};
-  uint32_t interval{m_cfg.tree().get("reconnect-interval", 200u)};  // interval in milliseconds
+  uint32_t interval{m_cfg.tree().get("reconnect-interval",
+                                     200u)};  // interval in milliseconds
   uint32_t maximum_interval{m_cfg.tree().get("max-reconnect-interval", 15000u)};
   while (true) {
-    LOG(INFO, "Trying to connect...");
+    LOG(INFO, "(", trials, ") Trying to connect...");
     asio::connect(m_socket, endp, ec);
     if (ec != boost::system::errc::success) {
       LOG(ERROR, "Could not connect to host!");
@@ -203,11 +208,15 @@ void Client::stopTcpPluginServer() {
   m_tcp_plugin_server->stop();
 }
 
-void Client::disconnect() {
+void Client::disconnect(bool forced) {
+  m_should_reconnect =
+      forced;  // if disconnection was forced, client should reconnect
   m_running = false;
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   m_socket.close();
 }
+
+bool Client::shouldReconnect() const { return m_should_reconnect; }
 
 void Client::send(IRCMessage cmd) { send(cmd.toString()); }
 

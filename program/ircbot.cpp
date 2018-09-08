@@ -130,28 +130,30 @@ int main(int argc, char** argv) {
     std::shared_ptr<Client> client = std::make_shared<Client>(io, config);
     signal_handling::client = client.get();
 
-    client->connect();
+    do {
+      client->connect();
 
-    if (not admin_port_socket.empty()) {
-      LOG(INFO, "Trying to initialize admin port at: ", admin_port_socket);
-      client->startAdminPort(admin_port_socket);
-    }
+      if (not admin_port_socket.empty()) {
+        LOG(INFO, "Trying to initialize admin port at: ", admin_port_socket);
+        client->startAdminPort(admin_port_socket);
+      }
 
-    client->initializePlugins();
+      client->initializePlugins();
 
-    signal(SIGINT, signal_handling::signal_handler);
-    signal(SIGTERM, signal_handling::signal_handler);
+      signal(SIGINT, signal_handling::signal_handler);
+      signal(SIGTERM, signal_handling::signal_handler);
 
-    client->startPlugins();
+      client->startPlugins();
 
-    // start tcp plugin server
-    client->startTcpPluginServer(tcp_server_host, tcp_server_port);
+      // start tcp plugin server
+      client->startTcpPluginServer(tcp_server_host, tcp_server_port);
 
-    LOG(INFO, "Spawning io_thread");
-    std::thread io_thread([&io] { io.run(); });
+      LOG(INFO, "Spawning io_thread");
+      std::thread io_thread([&io] { io.run(); });
 
-    LOG(INFO, "Waiting for io_thread...");
-    io_thread.join();
+      LOG(INFO, "Waiting for io_thread...");
+      io_thread.join();
+    } while (client->shouldReconnect());
 
   } catch (std::runtime_error& exc) {
     std::cerr << "Runtime error: " << exc.what() << '\n';
