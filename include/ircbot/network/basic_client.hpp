@@ -8,8 +8,11 @@ namespace network {
 
 /** \class BasicClient
  *
+ * \brief Interface for all clients
+ *
  * Client abstraction - interface for all clients' types
  */
+
 class BasicClient {
  public:
   /** virtual destructor */
