@@ -8,7 +8,7 @@
 #cmakedefine RELEASE_TYPE "${RELEASE_TYPE}"
 #cmakedefine RELEASE_NAME "${RELEASE_NAME}"
 
-#define GIT_BRANCH "${GIT_BRANCH}"
+#define GIT_REF "${GIT_REF}"
 #define GIT_COMMIT "${GIT_COMMIT}"
 
 #endif
