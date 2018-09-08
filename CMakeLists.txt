@@ -114,6 +114,7 @@ set(HEADERS
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
     include/default_paths.hpp
+    include/version_configuration.hpp
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
