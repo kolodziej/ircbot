@@ -3,8 +3,8 @@
 
 #include "ircbot/so_plugin.hpp"
 
-#include <vector>
 #include <string>
+#include <vector>
 
 class Init : public ircbot::SoPlugin {
  public:
@@ -17,8 +17,7 @@ class Init : public ircbot::SoPlugin {
 
  private:
   void sendNickMsg(const std::string& nick);
-  void sendUserMsg(const std::string& user,
-                   const std::string& realname);
+  void sendUserMsg(const std::string& user, const std::string& realname);
 
  private:
   uint32_t m_stage;

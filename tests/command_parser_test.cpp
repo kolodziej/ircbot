@@ -1,13 +1,13 @@
 #include "gtest/gtest.h"
 
+#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
-#include <fstream>
 
-#include "ircbot/logger.hpp"
-#include "ircbot/command_parser.hpp"
 #include "ircbot/cerr_log_output.hpp"
+#include "ircbot/command_parser.hpp"
+#include "ircbot/logger.hpp"
 #include "ircbot/unexpected_character.hpp"
 
 using namespace ircbot;
@@ -18,16 +18,14 @@ TEST(CommandParserTest, CorrectCommands) {
 
   ParserConfig config{'/', false};
 
-  std::vector<std::string> str_commands{
-    "/test arg1 arg2",
-    "/test arg1",
-    "/CoM2 \"arg1\" \"arg'2\"",
-    "/2Com 'arg1' arg2'arg3 arg4'",
-    "/x",
-    "/x",
-    "/x arg\\ with\\ spaces' !'",
-    "/x \"\\\"arg1\\\" arg2\""
-  };
+  std::vector<std::string> str_commands{"/test arg1 arg2",
+                                        "/test arg1",
+                                        "/CoM2 \"arg1\" \"arg'2\"",
+                                        "/2Com 'arg1' arg2'arg3 arg4'",
+                                        "/x",
+                                        "/x",
+                                        "/x arg\\ with\\ spaces' !'",
+                                        "/x \"\\\"arg1\\\" arg2\""};
 
   CommandParser parser{config};
   CommandParser::Command command;
@@ -65,7 +63,7 @@ TEST(CommandParserTest, CorrectCommands) {
   EXPECT_EQ(command.command, "x");
   EXPECT_TRUE(command.arguments.empty());
 
-  // /x arg\ with\ spaces' !' 
+  // /x arg\ with\ spaces' !'
   command = parser.parse(str_commands[6]);
   EXPECT_EQ(command.command, "x");
   EXPECT_EQ(command.arguments[0], "arg with spaces !");
@@ -80,10 +78,10 @@ TEST(CommandParserTest, IncorrectCommands) {
   ParserConfig config{'/', false};
 
   std::vector<std::string> str_commands{
-    "/x! arg\n",
-    "/x_ 1arg\n",
-    "x arg\n",
-    "!a\n",
+      "/x! arg\n",
+      "/x_ 1arg\n",
+      "x arg\n",
+      "!a\n",
   };
 
   CommandParser parser{config};

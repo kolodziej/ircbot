@@ -97,6 +97,12 @@ set(SOURCES
     source/admin_port.cpp
     source/tcp_plugin.cpp
     source/tcp_plugin_server.cpp
+    source/network/endpoint.cpp
+    source/network/buffer.cpp
+    source/network/context_provider.cpp
+    source/network/tcp_client.cpp
+    source/network/tcp_server.cpp
+    source/network/timer.cpp
 )
 
 set(HEADERS
@@ -124,6 +130,16 @@ set(HEADERS
     include/ircbot/admin_port.hpp
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
+    include/ircbot/network/endpoint.hpp
+    include/ircbot/network/endpoint.impl.hpp
+    include/ircbot/network/buffer.hpp
+    include/ircbot/network/context_provider.hpp
+    include/ircbot/network/basic_client.hpp
+    include/ircbot/network/basic_server.hpp
+    include/ircbot/network/context_provider.hpp
+    include/ircbot/network/tcp_client.hpp
+    include/ircbot/network/tcp_server.hpp
+    include/ircbot/network/timer.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )
@@ -154,6 +170,7 @@ if(${BUILD_TESTS})
 endif()
 
 if(DOXYGEN_FOUND)
+    message(STATUS "Doxygen documentation will be generated!")
     add_subdirectory(docs)
 endif()
 
