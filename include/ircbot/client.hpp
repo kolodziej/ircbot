@@ -53,11 +53,8 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Initializes all plugins from configuration */
   void initializePlugins();
 
-  /** Disconnects from server
-   *
-   * \param forced indicates if disconnection was forced, by default not
-   */
-  void disconnect(bool forced = false);
+  /** Disconnects from server */
+  void disconnect();
 
   /** Should application reconnect to server?
    *
@@ -107,8 +104,16 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Start client */
   void run();
-  /** Stop client */
-  void stop();
+
+  /** Stop client
+   *
+   * If client must be stopped due to some error, this function will log this
+   * fact and set shouldReconnect flag.
+   *
+   * \param error indicates if stop was forced by some error
+   */
+  void stop(bool error = false);
+
   /** Signal handler */
   void signal(int);
 

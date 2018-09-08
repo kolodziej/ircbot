@@ -130,7 +130,8 @@ void Client::startAsyncReceive() {
 
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
     if (ec) {
-      stopAsyncReceive();
+      LOG(ERROR, "An error occurred during asynchronous receiving: ", ec);
+      stop(true);  // stopping due to error
       return;
     }
     m_parser.parse(std::string(m_buffer.data(), bytes));
@@ -161,6 +162,7 @@ void Client::startAsyncReceive() {
 }
 
 void Client::stopAsyncReceive() {
+  DEBUG("Cancelling asynchronous operations.");
   boost::system::error_code ec;
   m_socket.cancel(ec);
   if (ec != boost::system::errc::success) {
@@ -208,9 +210,7 @@ void Client::stopTcpPluginServer() {
   m_tcp_plugin_server->stop();
 }
 
-void Client::disconnect(bool forced) {
-  m_should_reconnect =
-      forced;  // if disconnection was forced, client should reconnect
+void Client::disconnect() {
   m_running = false;
   m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   m_socket.close();
@@ -239,7 +239,14 @@ void Client::run() {
   m_running = true;
 }
 
-void Client::stop() {
+void Client::stop(bool error) {
+  if (error) {
+    LOG(INFO,
+        "Client will be stopped due to some error. shouldReconnect flag will "
+        "be set");
+    m_should_reconnect = true;
+  }
+
   LOG(INFO, "Stopping Client...");
   stopAsyncReceive();
   disconnect();
