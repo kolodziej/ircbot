@@ -29,7 +29,7 @@ tar xf ../${ARCHIVE_NAME}
 cp -r ../debian .
 
 export DEB_BUILD_OPTIONS="parallel=$(nproc)"
-debuild -uc -us --set-envvar=GIT_COMMIT=${GIT_COMMIT} --set-envvar=GIT_REF=${GIT_REF}
+debuild --set-envvar=GIT_COMMIT=${GIT_COMMIT} --set-envvar=GIT_REF=${GIT_REF} -uc -us 
 cd ../../..
 
 mkdir -p packages/${TARGET_OS}
