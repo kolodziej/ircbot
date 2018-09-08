@@ -1,3 +1,10 @@
 #!/usr/bin/make -f
+build:
+	env
+	dh_testdir
+	dh_update_autotools_config
+	dh_auto_configure -- -DGIT_COMMIT=$(GIT_COMMIT) -DGIT_REF=$(GIT_REF) -DCMAKE_BUILD_TYPE=Release
+	dh_auto_build
+
 %:
 	dh $@ --parallel

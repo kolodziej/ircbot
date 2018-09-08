@@ -44,6 +44,17 @@ option(RESET_VERSION_INFO
 
 include(${CMAKE_SOURCE_DIR}/cmake/version.cmake)
 
+if (NOT GIT_COMMIT AND NOT GIT_REF)
+    include(${CMAKE_SOURCE_DIR}/cmake/git-info.cmake)
+endif()
+
+if (NOT GIT_COMMIT AND NOT GIT_REF)
+    message(WARNING "Could not fetch GIT_COMMIT and GIT_REF!")
+else()
+    message(STATUS "Using git-commit ${GIT_COMMIT}, git ref ${GIT_REF}")
+endif()
+
+
 if (RESET_VERSION_INFO)
     file(REMOVE "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 endif()
@@ -114,6 +125,7 @@ set(HEADERS
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
     include/default_paths.hpp
+    include/version_configuration.hpp
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})
