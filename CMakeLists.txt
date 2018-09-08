@@ -137,8 +137,6 @@ set(HEADERS
     include/ircbot/network/basic_client.hpp
     include/ircbot/network/basic_server.hpp
     include/ircbot/network/context_provider.hpp
-    include/ircbot/network/client.hpp
-    include/ircbot/network/server.hpp
     include/ircbot/network/tcp_client.hpp
     include/ircbot/network/tcp_server.hpp
     include/ircbot/network/timer.hpp
@@ -172,6 +170,7 @@ if(${BUILD_TESTS})
 endif()
 
 if(DOXYGEN_FOUND)
+    message(STATUS "Doxygen documentation will be generated!")
     add_subdirectory(docs)
 endif()
 
