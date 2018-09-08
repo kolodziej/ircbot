@@ -123,6 +123,9 @@ test:
 deb:ubuntu:
   image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Package
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -140,6 +143,9 @@ deb:ubuntu:
 deb:debian:
   image: docker.kolk.cc/ircbot-debian:$IMAGE_ID
   stage: Package
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -157,6 +163,9 @@ deb:debian:
 deb:ubuntu-arm:
   image: docker.kolk.cc/ircbot-arm-ubuntu:$IMAGE_ID
   stage: Package
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -174,6 +183,9 @@ deb:ubuntu-arm:
 deb:debian-arm:
   image: docker.kolk.cc/ircbot-arm-debian:$IMAGE_ID
   stage: Package
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -191,6 +203,9 @@ deb:debian-arm:
 rpm:fedora:
   image: docker.kolk.cc/ircbot-fedora:$IMAGE_ID
   stage: Package
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -208,6 +223,9 @@ rpm:fedora:
 deploy:ubuntu:
   image: ubuntu:16.04
   stage: Deploy
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -222,6 +240,9 @@ deploy:ubuntu:
 deploy:debian:
   image: debian:9.3
   stage: Deploy
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -236,6 +257,9 @@ deploy:debian:
 deploy:fedora:
   image: fedora:27
   stage: Deploy
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -249,6 +273,9 @@ deploy:fedora:
 deploy:ubuntu-arm:
   image: arm32v7/ubuntu:16.04
   stage: Deploy
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
@@ -263,6 +290,9 @@ deploy:ubuntu-arm:
 deploy:debian-arm:
   image: arm32v7/debian:9.3
   stage: Deploy
+  only:
+    - develop
+    - tags
   tags:
     - docker
     - ircbot
