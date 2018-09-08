@@ -15,6 +15,8 @@ if(NOT DEFINED Protobuf_LIBRARIES)
 endif()
 
 include(GNUInstallDirs)
+include("${CMAKE_SOURCE_DIR}/cmake/settings.cmake")
+message(STATUS "Using default path for SO plugins: ${SO_PLUGIN_INSTALL_PATH}")
 
 add_subdirectory(pybind11)
 include_directories("${CMAKE_SOURCE_DIR}/pybind11/include")
@@ -50,6 +52,8 @@ configure_file("${CMAKE_SOURCE_DIR}/cmake/version_configuration.hpp.in"
                "${CMAKE_BINARY_DIR}/include/version_configuration.hpp")
 configure_file("${CMAKE_SOURCE_DIR}/cmake/version-info.in"
                "${CMAKE_BINARY_DIR}/version-info")
+configure_file("${CMAKE_SOURCE_DIR}/cmake/default_paths.hpp.in"
+               "${CMAKE_BINARY_DIR}/include/default_paths.hpp")
 
 option(BUILD_TESTS "Build tests" ON)
 option(BUILD_PLUGINS "Build plugins from plugins directory" ON)
@@ -109,6 +113,7 @@ set(HEADERS
     include/ircbot/admin_port.hpp
     include/ircbot/tcp_plugin.hpp
     include/ircbot/tcp_plugin_server.hpp
+    include/default_paths.hpp
 )
 
 protobuf_generate_cpp(PROTO_SRC PROTO_HDR ${PROTOBUF_FILES})

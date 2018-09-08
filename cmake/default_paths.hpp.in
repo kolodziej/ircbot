@@ -1,0 +1,6 @@
+#ifndef _DEFAULT_PATHS_HPP
+#define _DEFAULT_PATHS_HPP
+
+#define DEFAULT_SO_PATH "${SO_PLUGIN_INSTALL_PATH}"
+
+#endif

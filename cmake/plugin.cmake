@@ -3,6 +3,6 @@ function(compile_plugin name files)
     set_target_properties(plugin-${name}
         PROPERTIES OUTPUT_NAME "${name}" PREFIX "")
     install(TARGETS plugin-${name}
-        DESTINATION "${CMAKE_INSTALL_LIBDIR}/ircbot/plugins/"
+        DESTINATION "${SO_PLUGIN_INSTALL_PATH}"
     )
 endfunction(compile_plugin)
