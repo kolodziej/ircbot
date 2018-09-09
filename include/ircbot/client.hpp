@@ -111,9 +111,9 @@ class Client : public std::enable_shared_from_this<Client> {
    * If client must be stopped due to some error, this function will log this
    * fact and set shouldReconnect flag.
    *
-   * \param error indicates if stop was forced by some error
+   * \param result RunResult indicating if stop was
    */
-  void stop(bool error = false);
+  void stop();
 
   /** Wait for client stop
    *

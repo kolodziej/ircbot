@@ -135,7 +135,7 @@ void Client::startAsyncReceive() {
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
     if (ec and ec != asio::error::operation_aborted) {
       LOG(ERROR, "An error occurred during asynchronous receiving: ", ec);
-      stop(true);  // stopping due to error
+      stop();
       return;
     } else if (ec == asio::error::operation_aborted) {
       LOG(INFO, "Asynchronous receiving cancelled!");
@@ -211,7 +211,8 @@ void Client::startTcpPluginServer(const std::string& host, uint16_t port) {
 
 void Client::stopTcpPluginServer() {
   if (m_tcp_plugin_server == nullptr) {
-    LOG(ERROR, "TcpPluginServer hasn't been initialized so cannot be stopped!");
+    LOG(WARNING,
+        "TcpPluginServer hasn't been initialized so cannot be stopped!");
     return;
   }
 
@@ -271,32 +272,25 @@ void Client::run() {
   // startAdminPort
 }
 
-void Client::stop(bool error) {
-  if (error) {
-    LOG(INFO, "Client will be stopped due to some error.");
-  }
+void Client::stop() {
+  LOG(INFO, "Stopping Client");
 
-  LOG(INFO, "Stopping Client...");
   stopAsyncReceive();
   disconnect();
-  for (auto& plugin : m_plugins) {
-    plugin->stop();
-  }
 
-  LOG(INFO, "Stopping admin port (if exists)...");
-  stopAdminPort();
+  stopPlugins();
+
   LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
 
   deinitializePlugins();
 
+  LOG(INFO, "Stopping admin port (if exists)...");
+  stopAdminPort();
+
   LOG(INFO, "Client is stopped. Ready to exit.");
 
-  if (not error) {
-    m_stop_promise.set_value(RunResult::OK);
-  } else {
-    m_stop_promise.set_value(RunResult::ERROR);
-  }
+  m_stop_promise.set_value(RunResult::OK);
 }
 
 Client::RunResult Client::waitForStop() {
