@@ -124,7 +124,6 @@ deb:ubuntu:
   image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Package
   only:
-    - develop
     - tags
   tags:
     - docker
