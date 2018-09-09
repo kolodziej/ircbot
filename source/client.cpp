@@ -94,7 +94,8 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
                                             Config config) {
   std::string path = config.tree().get("path", std::string());
   if (path.empty()) {
-    LOG(WARNING, "Some plugin has no path field in configuration! Omitting.");
+    LOG(WARNING, "Plugin (id): ", pluginId,
+        " has no path field in configuration! Omitting.");
     return m_plugins.end();
   }
 
