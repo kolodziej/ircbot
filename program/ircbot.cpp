@@ -141,16 +141,23 @@ int main(int argc, char** argv) {
     Client::RunResult result{};
     do {
       client->run();
-
-      // if (not admin_port_socket.empty()) {
-      //   LOG(INFO, "Trying to initialize admin port at: ", admin_port_socket);
-      //   client->startAdminPort(admin_port_socket);
-      // }
-
-      // start tcp plugin server
-      // client->startTcpPluginServer(tcp_server_host, tcp_server_port);
-
       result = client->waitForStop();
+
+      switch (result) {
+        case Client::RunResult::OK:
+          LOG(INFO,
+              "Client returned from run() successfully. Leaving application.");
+          break;
+        case Client::RunResult::CONNECTION_ERROR:
+          LOG(ERROR, "Connection error. Restarting client...");
+          break;
+        case Client::RunResult::ERROR:
+          LOG(CRITICAL, "Unknown error. Restarting client...");
+          break;
+        default:
+          LOG(CRITICAL, "Unsupported result code!!!");
+          break;
+      }
     } while (result != Client::RunResult::OK);
 
     ctx.stop();

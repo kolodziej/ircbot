@@ -26,6 +26,7 @@ Client::Client(Config cfg)
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
       m_running{false},
+      m_result{RunResult::OK},
       m_start_time{std::chrono::steady_clock::now()} {}
 
 void Client::connect() {
@@ -136,6 +137,7 @@ void Client::startAsyncReceive() {
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
     if (ec and ec != asio::error::operation_aborted) {
       LOG(ERROR, "An error occurred during asynchronous receiving: ", ec);
+      m_result = RunResult::CONNECTION_ERROR;
       stop();
       return;
     } else if (ec == asio::error::operation_aborted) {
@@ -291,7 +293,7 @@ void Client::stop() {
 
   LOG(INFO, "Client is stopped. Ready to exit.");
 
-  m_stop_promise.set_value(RunResult::OK);
+  m_stop_promise.set_value(m_result);
 }
 
 Client::RunResult Client::waitForStop() {

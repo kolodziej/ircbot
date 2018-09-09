@@ -44,8 +44,9 @@ class Client : public std::enable_shared_from_this<Client> {
  public:
   /** Result of run function */
   enum class RunResult : uint8_t {
-    OK = 0x00u,   /**< exit code 0, disconnected normally */
-    ERROR = 0xffu /**< exit code 0xff, unknown error */
+    OK = 0x00u,       /**< exit code 0, disconnected normally */
+    CONNECTION_ERROR, /**< some connection error */
+    ERROR = 0xffu     /**< exit code 0xff, unknown error */
   };
 
   /** Default constructor
@@ -249,6 +250,9 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Indicates if instance is running */
   std::atomic_bool m_running;
+
+  /** result of run function, will be returned with waitForStop */
+  RunResult m_result;
 
   /** promise that will be set when client will be stopped */
   std::promise<RunResult> m_stop_promise;
