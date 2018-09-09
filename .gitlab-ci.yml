@@ -101,7 +101,8 @@ docs:
     - cd build
     - cmake ..
     - make docs
-    - tar cJf ../docs.tar.xz docs
+    - cd docs/html
+    - tar cJf ../../../docs.tar.xz *
   artifacts:
     paths:
       - docs.tar.xz
