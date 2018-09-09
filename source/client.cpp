@@ -16,22 +16,21 @@
 
 namespace ircbot {
 
-Client::Client(asio::io_service& io_service, Config cfg)
-    : m_io_service{io_service},
-      m_socket{io_service},
+using network::ContextProvider;
+
+Client::Client(Config cfg)
+    : m_context_provider{ContextProvider::getInstance()},
+      m_io_service{m_context_provider.getContext()},
+      m_socket{m_io_service},
       m_cfg{cfg},
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
       m_running{false},
-      m_should_reconnect{false},
       m_start_time{std::chrono::steady_clock::now()} {}
 
 void Client::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
   boost::system::error_code ec;
-
-  // during connection this flag should be set to false
-  m_should_reconnect = false;
 
   std::string host = m_cfg.tree().get("server", std::string{});
   uint16_t port = m_cfg.tree().get("port", 0u);
@@ -216,8 +215,6 @@ void Client::disconnect() {
   m_socket.close();
 }
 
-bool Client::shouldReconnect() const { return m_should_reconnect; }
-
 void Client::send(IRCMessage cmd) { send(cmd.toString()); }
 
 void Client::send(std::string msg) {
@@ -235,8 +232,23 @@ void Client::send(std::string msg) {
 }
 
 void Client::run() {
-  LOG(INFO, "Spawning Client threads...");
   m_running = true;
+  m_stop_promise = std::promise<RunResult>{};
+
+  // connect to server
+  // @TODO: place here reconnect loop from Client::connect
+  connect();
+
+  // initialize plugins
+  initializePlugins();
+
+  // start plugins
+  startPlugins();
+
+  // @TODO: add configuration parameters
+  // startTcpPluginServer();
+  //
+  // @TODO: start admin port
 }
 
 void Client::stop(bool error) {
@@ -244,7 +256,6 @@ void Client::stop(bool error) {
     LOG(INFO,
         "Client will be stopped due to some error. shouldReconnect flag will "
         "be set");
-    m_should_reconnect = true;
   }
 
   LOG(INFO, "Stopping Client...");
@@ -254,12 +265,26 @@ void Client::stop(bool error) {
     plugin->stop();
   }
 
+  // @TODO: deinitialize plugins
+
   LOG(INFO, "Stopping admin port (if exists)...");
   stopAdminPort();
   LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
 
   LOG(INFO, "Client is stopped. Ready to exit.");
+
+  if (not error) {
+    m_stop_promise.set_value(RunResult::OK);
+  } else {
+    m_stop_promise.set_value(RunResult::ERROR);
+  }
+}
+
+Client::RunResult Client::waitForStop() {
+  std::future<RunResult> f{m_stop_promise.get_future()};
+  f.wait();
+  return f.get();
 }
 
 void Client::signal(int signum) {

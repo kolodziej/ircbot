@@ -11,6 +11,7 @@
 #include "ircbot/client.hpp"
 #include "ircbot/helpers.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/network/context_provider.hpp"
 #include "ircbot/plugin.hpp"
 #include "ircbot/tcp_plugin_server.hpp"
 #include "ircbot/version.hpp"
@@ -79,8 +80,11 @@ int main(int argc, char** argv) {
       return 1;
     }
 
-    asio::io_service io;
     Config config{config_fname};
+
+    using network::ContextProvider;
+    ContextProvider& ctx = ContextProvider::getInstance();
+    ctx.run();
 
     bool stdout_logging = false;
     // add logger outputs
@@ -127,34 +131,29 @@ int main(int argc, char** argv) {
       }
     }
 
-    std::shared_ptr<Client> client = std::make_shared<Client>(io, config);
+    std::shared_ptr<Client> client = std::make_shared<Client>(config);
     signal_handling::client = client.get();
 
+    // setting signal handlers
+    signal(SIGINT, signal_handling::signal_handler);
+    signal(SIGTERM, signal_handling::signal_handler);
+
+    Client::RunResult result{};
     do {
-      client->connect();
+      client->run();
 
-      if (not admin_port_socket.empty()) {
-        LOG(INFO, "Trying to initialize admin port at: ", admin_port_socket);
-        client->startAdminPort(admin_port_socket);
-      }
-
-      client->initializePlugins();
-
-      signal(SIGINT, signal_handling::signal_handler);
-      signal(SIGTERM, signal_handling::signal_handler);
-
-      client->startPlugins();
+      // if (not admin_port_socket.empty()) {
+      //   LOG(INFO, "Trying to initialize admin port at: ", admin_port_socket);
+      //   client->startAdminPort(admin_port_socket);
+      // }
 
       // start tcp plugin server
-      client->startTcpPluginServer(tcp_server_host, tcp_server_port);
+      // client->startTcpPluginServer(tcp_server_host, tcp_server_port);
 
-      LOG(INFO, "Spawning io_thread");
-      std::thread io_thread([&io] { io.run(); });
+      result = client->waitForStop();
+    } while (result != Client::RunResult::OK);
 
-      LOG(INFO, "Waiting for io_thread...");
-      io_thread.join();
-    } while (client->shouldReconnect());
-
+    ctx.stop();
   } catch (std::runtime_error& exc) {
     std::cerr << "Runtime error: " << exc.what() << '\n';
     return 2;

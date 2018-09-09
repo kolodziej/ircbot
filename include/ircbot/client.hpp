@@ -5,6 +5,7 @@
 #include <atomic>
 #include <boost/asio.hpp>
 #include <condition_variable>
+#include <future>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -16,6 +17,7 @@
 #include "ircbot/irc_message.hpp"
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/network/context_provider.hpp"
 #include "ircbot/plugin_config.hpp"
 
 namespace asio = boost::asio;
@@ -40,12 +42,17 @@ class Client : public std::enable_shared_from_this<Client> {
   using PluginVectorIter = PluginVector::iterator;
 
  public:
+  /** Result of run function */
+  enum class RunResult : uint8_t {
+    OK = 0x00u,   /**< exit code 0, disconnected normally */
+    ERROR = 0xffu /**< exit code 0xff, unknown error */
+  };
+
   /** Default constructor
    *
-   * \param io_service reference to boost::asio::io_service object
    * \param cfg configuration of bot
    */
-  Client(asio::io_service& io_service, Config cfg);
+  Client(Config cfg);
 
   /** Connects to server given in configuration */
   void connect();
@@ -55,15 +62,6 @@ class Client : public std::enable_shared_from_this<Client> {
 
   /** Disconnects from server */
   void disconnect();
-
-  /** Should application reconnect to server?
-   *
-   * This functions will return true when client's connection will be closed
-   * unexpectedly. This means that application should try to reconnect.
-   *
-   * \return bool indicating if application should try to reconnect
-   */
-  bool shouldReconnect() const;
 
   /** Initializes receiving messages asynchronously */
   void startAsyncReceive();
@@ -113,6 +111,12 @@ class Client : public std::enable_shared_from_this<Client> {
    * \param error indicates if stop was forced by some error
    */
   void stop(bool error = false);
+
+  /** Wait for client stop
+   *
+   * \return returns RunResult value indicating if client was stopped normally
+   */
+  RunResult waitForStop();
 
   /** Signal handler */
   void signal(int);
@@ -218,6 +222,9 @@ class Client : public std::enable_shared_from_this<Client> {
   std::chrono::steady_clock::duration getUptime() const;
 
  private:
+  /** Reference to network::ContextProvider */
+  network::ContextProvider& m_context_provider;
+
   /** Reference to instance of io_service */
   asio::io_service& m_io_service;
 
@@ -240,8 +247,8 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Indicates if instance is running */
   std::atomic_bool m_running;
 
-  /** Indicates if application should try to reconnect to server */
-  bool m_should_reconnect;
+  /** promise that will be set when client will be stopped */
+  std::promise<RunResult> m_stop_promise;
 
   /** Vector of unique pointers to plugins */
   PluginVector m_plugins;
