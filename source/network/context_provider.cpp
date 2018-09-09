@@ -21,7 +21,11 @@ void ContextProvider::run() {
 
 void ContextProvider::stopWork() {
   DEBUG("Stopping work");
-  m_work.reset(nullptr);
+  if (m_work != nullptr) {
+    m_work.reset(nullptr);
+  } else {
+    DEBUG("Work has already been stopped!");
+  }
 }
 
 void ContextProvider::stop() {

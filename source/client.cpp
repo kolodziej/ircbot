@@ -16,13 +16,17 @@
 
 namespace ircbot {
 
-Client::Client(asio::io_service& io_service, Config cfg)
-    : m_io_service{io_service},
-      m_socket{io_service},
+using network::ContextProvider;
+
+Client::Client(Config cfg)
+    : m_context_provider{ContextProvider::getInstance()},
+      m_io_service{m_context_provider.getContext()},
+      m_socket{m_io_service},
       m_cfg{cfg},
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
       m_running{false},
+      m_result{RunResult::OK},
       m_start_time{std::chrono::steady_clock::now()} {}
 
 void Client::connect() {
@@ -45,10 +49,11 @@ void Client::connect() {
   }
 
   uint32_t trials{};
-  uint32_t interval{m_cfg.tree().get("reconnect-interval", 200u)};  // interval in milliseconds
+  uint32_t interval{m_cfg.tree().get("reconnect-interval",
+                                     200u)};  // interval in milliseconds
   uint32_t maximum_interval{m_cfg.tree().get("max-reconnect-interval", 15000u)};
   while (true) {
-    LOG(INFO, "Trying to connect...");
+    LOG(INFO, "(", trials, ") Trying to connect...");
     asio::connect(m_socket, endp, ec);
     if (ec != boost::system::errc::success) {
       LOG(ERROR, "Could not connect to host!");
@@ -76,6 +81,11 @@ void Client::initializePlugins() {
   }
 }
 
+void Client::deinitializePlugins() {
+  LOG(INFO, "Deinitializing all plugins");
+  m_plugins.clear();
+}
+
 Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId) {
   auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + pluginId);
   return loadPlugin(pluginId, cfg);
@@ -85,7 +95,8 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
                                             Config config) {
   std::string path = config.tree().get("path", std::string());
   if (path.empty()) {
-    LOG(WARNING, "Some plugin has no path field in configuration! Omitting.");
+    LOG(WARNING, "Plugin (id): ", pluginId,
+        " has no path field in configuration! Omitting.");
     return m_plugins.end();
   }
 
@@ -124,10 +135,16 @@ void Client::startAsyncReceive() {
   using asio::mutable_buffers_1;
 
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
-    if (ec) {
-      stopAsyncReceive();
+    if (ec and ec != asio::error::operation_aborted) {
+      LOG(ERROR, "An error occurred during asynchronous receiving: ", ec);
+      m_result = RunResult::CONNECTION_ERROR;
+      stop();
+      return;
+    } else if (ec == asio::error::operation_aborted) {
+      LOG(INFO, "Asynchronous receiving cancelled!");
       return;
     }
+
     m_parser.parse(std::string(m_buffer.data(), bytes));
     LOG(INFO, "Parsed commands: ", m_parser.messagesCount());
     while (m_parser.messagesCount() > 0) {
@@ -156,6 +173,7 @@ void Client::startAsyncReceive() {
 }
 
 void Client::stopAsyncReceive() {
+  DEBUG("Cancelling asynchronous operations.");
   boost::system::error_code ec;
   m_socket.cancel(ec);
   if (ec != boost::system::errc::success) {
@@ -196,7 +214,8 @@ void Client::startTcpPluginServer(const std::string& host, uint16_t port) {
 
 void Client::stopTcpPluginServer() {
   if (m_tcp_plugin_server == nullptr) {
-    LOG(ERROR, "TcpPluginServer hasn't been initialized so cannot be stopped!");
+    LOG(WARNING,
+        "TcpPluginServer hasn't been initialized so cannot be stopped!");
     return;
   }
 
@@ -205,8 +224,19 @@ void Client::stopTcpPluginServer() {
 
 void Client::disconnect() {
   m_running = false;
-  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-  m_socket.close();
+  boost::system::error_code ec;
+
+  LOG(INFO, "Shutting down socket");
+  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+  if (ec) {
+    LOG(ERROR, "An error occurred during socket shutdown: ", ec);
+  }
+
+  LOG(INFO, "Closing socket");
+  m_socket.close(ec);
+  if (ec) {
+    LOG(ERROR, "An error occurred during socket close operation: ", ec);
+  }
 }
 
 void Client::send(IRCMessage cmd) { send(cmd.toString()); }
@@ -226,24 +256,50 @@ void Client::send(std::string msg) {
 }
 
 void Client::run() {
-  LOG(INFO, "Spawning Client threads...");
   m_running = true;
+  m_stop_promise = std::promise<RunResult>{};
+
+  // connect to server
+  connect();
+
+  // initialize plugins
+  initializePlugins();
+
+  // start plugins
+  startPlugins();
+
+  // @TODO: add configuration parameters
+  // startTcpPluginServer();
+  //
+  // @TODO: start admin port
+  // startAdminPort
 }
 
 void Client::stop() {
-  LOG(INFO, "Stopping Client...");
+  LOG(INFO, "Stopping Client");
+
   stopAsyncReceive();
   disconnect();
-  for (auto& plugin : m_plugins) {
-    plugin->stop();
-  }
 
-  LOG(INFO, "Stopping admin port (if exists)...");
-  stopAdminPort();
+  stopPlugins();
+
   LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
 
+  deinitializePlugins();
+
+  LOG(INFO, "Stopping admin port (if exists)...");
+  stopAdminPort();
+
   LOG(INFO, "Client is stopped. Ready to exit.");
+
+  m_stop_promise.set_value(m_result);
+}
+
+Client::RunResult Client::waitForStop() {
+  std::future<RunResult> f{m_stop_promise.get_future()};
+  f.wait();
+  return f.get();
 }
 
 void Client::signal(int signum) {
