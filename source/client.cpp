@@ -211,8 +211,19 @@ void Client::stopTcpPluginServer() {
 
 void Client::disconnect() {
   m_running = false;
-  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
-  m_socket.close();
+  boost::system::error_code ec;
+
+  LOG(INFO, "Shutting down socket");
+  m_socket.shutdown(asio::ip::tcp::socket::shutdown_both, ec);
+  if (ec) {
+    LOG(ERROR, "An error occurred during socket shutdown: ", ec);
+  }
+
+  LOG(INFO, "Closing socket");
+  m_socket.close(ec);
+  if (ec) {
+    LOG(ERROR, "An error occurred during socket close operation: ", ec);
+  }
 }
 
 void Client::send(IRCMessage cmd) { send(cmd.toString()); }
@@ -253,9 +264,7 @@ void Client::run() {
 
 void Client::stop(bool error) {
   if (error) {
-    LOG(INFO,
-        "Client will be stopped due to some error. shouldReconnect flag will "
-        "be set");
+    LOG(INFO, "Client will be stopped due to some error.");
   }
 
   LOG(INFO, "Stopping Client...");
