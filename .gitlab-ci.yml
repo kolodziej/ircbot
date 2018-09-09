@@ -293,3 +293,18 @@ deploy:debian-arm:
     - apt update
     - apt install -y ./packages/debian/ircbot_${IRCBOT_VERSION}*armhf.deb
     - ircbot -v
+
+deploy:docs:
+  stage: Deploy
+  tags:
+    - kolk.net.pl
+    - deploy
+  only:
+    - tags
+  script:
+    - export DOCS_DIR=/home/ircbot/www/doxygen/$CI_COMMIT_REF_NAME
+    - mkdir -p $DOCS_DIR
+    - cp docs.tar.xz $DOCS_DIR
+    - cd $DOCS_DIR
+    - tar xf docs.tar.xz
+    - rm docs.tar.xz
