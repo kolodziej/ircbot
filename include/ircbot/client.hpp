@@ -60,6 +60,9 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Initializes all plugins from configuration */
   void initializePlugins();
 
+  /** Deinitializes all plugins */
+  void deinitializePlugins();
+
   /** Disconnects from server */
   void disconnect();
 

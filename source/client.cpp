@@ -80,6 +80,11 @@ void Client::initializePlugins() {
   }
 }
 
+void Client::deinitializePlugins() {
+  LOG(INFO, "Deinitializing all plugins");
+  m_plugins.clear();
+}
+
 Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId) {
   auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + pluginId);
   return loadPlugin(pluginId, cfg);
@@ -128,11 +133,15 @@ void Client::startAsyncReceive() {
   using asio::mutable_buffers_1;
 
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
-    if (ec) {
+    if (ec and ec != asio::error::operation_aborted) {
       LOG(ERROR, "An error occurred during asynchronous receiving: ", ec);
       stop(true);  // stopping due to error
       return;
+    } else if (ec == asio::error::operation_aborted) {
+      LOG(INFO, "Asynchronous receiving cancelled!");
+      return;
     }
+
     m_parser.parse(std::string(m_buffer.data(), bytes));
     LOG(INFO, "Parsed commands: ", m_parser.messagesCount());
     while (m_parser.messagesCount() > 0) {
@@ -247,7 +256,6 @@ void Client::run() {
   m_stop_promise = std::promise<RunResult>{};
 
   // connect to server
-  // @TODO: place here reconnect loop from Client::connect
   connect();
 
   // initialize plugins
@@ -260,6 +268,7 @@ void Client::run() {
   // startTcpPluginServer();
   //
   // @TODO: start admin port
+  // startAdminPort
 }
 
 void Client::stop(bool error) {
@@ -274,12 +283,12 @@ void Client::stop(bool error) {
     plugin->stop();
   }
 
-  // @TODO: deinitialize plugins
-
   LOG(INFO, "Stopping admin port (if exists)...");
   stopAdminPort();
   LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
+
+  deinitializePlugins();
 
   LOG(INFO, "Client is stopped. Ready to exit.");
 
