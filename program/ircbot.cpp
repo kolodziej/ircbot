@@ -36,9 +36,8 @@ void signal_handler(int signal) {
 }  // namespace signal_handling
 
 int main(int argc, char** argv) {
-  std::string config_fname, admin_port_socket, tcp_server_host;
+  std::string config_fname;
   bool daemon;
-  uint16_t tcp_server_port;
 
   opt::options_description cmd_opts("IRCBot client");
   cmd_opts.add_options()("help,h", "show help message")(
@@ -46,15 +45,7 @@ int main(int argc, char** argv) {
       "daemon,d", opt::bool_switch(&daemon)->default_value(false),
       "run as a daemon")("config,c",
                          opt::value<std::string>(&config_fname)->required(),
-                         "configuration file")(
-      "admin-port,a", opt::value<std::string>(&admin_port_socket),
-      "path to socket for admin port")(
-      "tcp-server-host",
-      opt::value<std::string>(&tcp_server_host)->default_value("127.0.0.1"),
-      "host on which tcp plugin server should listen")(
-      "tcp-server-port",
-      opt::value<uint16_t>(&tcp_server_port)->default_value(5454),
-      "port on which tcp plugin server should listen");
+                         "configuration file");
 
   opt::variables_map var_map;
 

@@ -181,7 +181,12 @@ void Client::stopAsyncReceive() {
   }
 }
 
-void Client::startAdminPort(const std::string& socket_path) {
+void Client::startAdminPort() {
+  std::string socket_path{
+      m_cfg.tree().get("admin_port.path", "/var/run/ircbot_admin.sock")};
+
+  LOG(INFO, "Starting admin port on ", socket_path);
+
   if (m_admin_port != nullptr) {
     LOG(ERROR, "Cannot start another admin port!");
     return;
@@ -201,7 +206,13 @@ void Client::stopAdminPort() {
   }
 }
 
-void Client::startTcpPluginServer(const std::string& host, uint16_t port) {
+void Client::startTcpPluginServer() {
+  std::string host{m_cfg.tree().get("tcp_plugin_server.host", "localhost")};
+  uint16_t port{
+      m_cfg.tree().get("tcp_plugin_server.port", static_cast<uint16_t>(5454))};
+
+  LOG(INFO, "Starting tcp plugin server on ", host, ":", port);
+
   if (m_tcp_plugin_server != nullptr) {
     LOG(ERROR, "TcpPluginServer has already been initialized!");
     return;
@@ -268,11 +279,8 @@ void Client::run() {
   // start plugins
   startPlugins();
 
-  // @TODO: add configuration parameters
-  // startTcpPluginServer();
-  //
-  // @TODO: start admin port
-  // startAdminPort
+  startTcpPluginServer();
+  startAdminPort();
 }
 
 void Client::stop() {
