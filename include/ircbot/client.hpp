@@ -73,22 +73,14 @@ class Client : public std::enable_shared_from_this<Client> {
   /** Cancels receiving messages */
   void stopAsyncReceive();
 
-  /** Initializes admin port using unix socket
-   *
-   * \param socket_path path to unix socket file on which administration port
-   * will be available
-   */
-  void startAdminPort(const std::string& socket_path);
+  /** Initializes admin port using unix socket */
+  void startAdminPort();
 
   /** Deinitializes admin port */
   void stopAdminPort();
 
-  /** Initializes tcp plugin server
-   *
-   * \param host host on which server should listen
-   * \param port tcp port on which server should listen
-   */
-  void startTcpPluginServer(const std::string& host, uint16_t port);
+  /** Initializes tcp plugin server */
+  void startTcpPluginServer();
 
   /** Stops tcp plugin server */
   void stopTcpPluginServer();
