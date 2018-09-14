@@ -1,0 +1,41 @@
+syntax = "proto2";
+
+package AdminPortProtocol;
+
+message PluginParameters {
+    repeated string plugins = 1;
+}
+
+message ShutdownParameters {
+    optional string reason = 1;
+}
+
+message Request {
+    enum RequestType {
+        ADD_PLUGIN = 1;
+        REMOVE_PLUGIN = 2;
+        START_PLUGIN = 3;
+        STOP_PLUGIN = 4;
+        RESTART_PLUGIN = 5;
+        RELOAD_PLUGIN = 6;
+        SHUTDOWN = 255;
+    }
+
+    required RequestType type = 1;
+    oneof data {
+        PluginParameters plugin_params = 2;
+        ShutdownParameters shutdown_params = 3;
+    }
+}
+
+message Response {
+    enum ResponseType {
+        OK = 1;
+        ERROR = 2;
+    }
+
+    required ResponseType type = 1;
+    optional string msg = 2;
+    optional int32 code = 3;
+    required bool end = 4;
+}
