@@ -9,6 +9,10 @@
 
 #include <boost/asio.hpp>
 
+#include "admin.pb.h"
+#include "ircbot/network/tcp_client.hpp"
+#include "ircbot/network/tcp_server.hpp"
+
 namespace asio = boost::asio;
 
 namespace ircbot {
@@ -23,39 +27,65 @@ class Client;
  * users/applications interface for ircbot management.
  */
 
-class AdminPort {
+class AdminPort : public network::TcpServer,
+                  public std::enable_shared_from_this<AdminPort> {
  public:
   /** Default constructor
    *
    * \param client shared pointer to Client instance which will be managed with
    * this AdminPort
-   * \param socket_path path to unix socket file which will be used to manage
-   * client instance
+   * \param endpoint endpoint on which AdminPort should listen
    */
-  AdminPort(std::shared_ptr<Client> client, const std::string& socket_path);
+  AdminPort(std::shared_ptr<Client> client,
+            const asio::ip::tcp::endpoint& endpoint);
+
   /** Destructor
    *
    * Removes created socket
    */
-  ~AdminPort();
+  virtual ~AdminPort() {}
 
-  /** Start accepting connections to unix socket */
-  void acceptConnections();
-
-  /** Stops listening for connections */
-  void stop();
-
-  /** Adds AdminPortClient instance
+  /** process ADD_PLUGIN request
    *
-   * m_socket represents remote socket for client connected to admin port
+   *  \param req request received by AdminPort
    */
-  void addClient();
+  void addPlugin(const AdminPortProtocol::Request& req);
 
-  /** Process given command
+  /** process REMOVE_PLUGIN request
    *
-   * \param command command received from administration socket
+   *  \param req request received by AdminPort
    */
-  void processCommand(const std::string& command);
+  void removePlugin(const AdminPortProtocol::Request& req);
+
+  /** process START_PLUGIN request
+   *
+   *  \param req request received by AdminPort
+   */
+  void startPlugin(const AdminPortProtocol::Request& req);
+
+  /** process STOP_PLUGIN request
+   *
+   *  \param req request received by AdminPort
+   */
+  void stopPlugin(const AdminPortProtocol::Request& req);
+
+  /** process RESTART_PLUGIN request
+   *
+   *  \param req request received by AdminPort
+   */
+  void restartPlugin(const AdminPortProtocol::Request& req);
+
+  /** process RELOAD_PLUGIN request
+   *
+   *  \param req request received by AdminPort
+   */
+  void reloadPlugin(const AdminPortProtocol::Request& req);
+
+  /** process SHUTDOWN request
+   *
+   *  \param req request received by AdminPort
+   */
+  void shutdown(const AdminPortProtocol::Request& req);
 
  private:
   /** \class AdminPortClient
@@ -65,31 +95,24 @@ class AdminPort {
    * Representation of client connecting to AdminPort. Provides socket and
    * buffer for received messages.
    */
-  struct AdminPortClient {
-    AdminPort* adminPort;
-    asio::local::stream_protocol::socket socket;
-    std::array<char, 8192> buffer;
+  struct AdminPortClient : public network::TcpClient {
+    /** default constructor */
+    AdminPortClient(asio::ip::tcp::socket&& socket)
+        : network::TcpClient{std::move(socket)} {}
 
-    /** Start asynchronous receiving data from administration port */
-    void startReceiving();
+    /** pointer for parent admin port */
+    std::shared_ptr<AdminPort> m_admin_port;
+
+    /** callback for incoming data */
+    virtual void onRead(const std::string& data);
   };
 
   /** Pointer to client which is managed with this AdminPort */
   std::shared_ptr<Client> m_client;
 
-  /** Endpoint - unix socket file */
-  asio::local::stream_protocol::endpoint m_endpoint;
-
-  /** Acceptor - listening unix socket */
-  asio::local::stream_protocol::acceptor m_acceptor;
-
-  /** Temporary socket for incoming connections */
-  asio::local::stream_protocol::socket m_socket;
-
-  CommandParser m_command_parser;
-
-  /** Connected clients */
-  std::vector<AdminPortClient> m_clients;
+  /** creates client of AdminPortClient type */
+  virtual std::unique_ptr<network::TcpClient> createClient(
+      asio::ip::tcp::socket&& socket);
 };
 
 }  // namespace ircbot

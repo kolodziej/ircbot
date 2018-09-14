@@ -182,19 +182,20 @@ void Client::stopAsyncReceive() {
 }
 
 void Client::startAdminPort() {
-  std::string socket_path{
-      m_cfg.tree().get("admin_port.path", "/var/run/ircbot_admin.sock")};
-
-  LOG(INFO, "Starting admin port on ", socket_path);
-
+  // @TODO: log info about starting admin port
   if (m_admin_port != nullptr) {
     LOG(ERROR, "Cannot start another admin port!");
     return;
   }
 
-  m_admin_port = std::make_unique<AdminPort>(shared_from_this(), socket_path);
+  // @TODO: Add more elegant resolving and reading host and port from
+  // configuration
+  asio::ip::tcp::resolver resolver{m_context_provider.getContext()};
+  auto endpoints = resolver.resolve({"localhost", "5466"});
+  m_admin_port =
+      std::make_unique<AdminPort>(shared_from_this(), endpoints->endpoint());
 
-  m_admin_port->acceptConnections();
+  m_admin_port->start();
 }
 
 void Client::stopAdminPort() {

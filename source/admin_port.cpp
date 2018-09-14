@@ -8,94 +8,74 @@
 namespace ircbot {
 
 AdminPort::AdminPort(std::shared_ptr<Client> client,
-                     const std::string& socket_path)
-    : m_client{client},
-      m_endpoint{socket_path},
-      m_acceptor{client->getIoService(), m_endpoint},
-      m_socket{client->getIoService()},
-      m_command_parser{ParserConfig{'\0', true}} {
-  LOG(INFO, "Started admin port at: ", socket_path);
+                     const asio::ip::tcp::endpoint& endpoint)
+    : network::TcpServer{endpoint}, m_client{client} {
+  LOG(INFO, "Started admin port at: ");
 }
 
-AdminPort::~AdminPort() { ::unlink(m_endpoint.path().data()); }
+void AdminPort::addPlugin(const AdminPortProtocol::Request& req) {}
 
-void AdminPort::acceptConnections() {
-  using boost::system::error_code;
+void AdminPort::removePlugin(const AdminPortProtocol::Request& req) {}
 
-  auto handler = [this](const error_code& ec) {
-    if (ec) {
-      if (ec == asio::error::operation_aborted) {
-        LOG(INFO, "Canceling asynchronous connection accepting.");
-        return;
-      }
-      LOG(ERROR, "Could not accept connection to admin port! Error: ", ec);
-    } else {
-      addClient();
-    }
+void AdminPort::startPlugin(const AdminPortProtocol::Request& req) {}
 
-    acceptConnections();
-  };
+void AdminPort::stopPlugin(const AdminPortProtocol::Request& req) {}
 
-  m_acceptor.async_accept(m_socket, handler);
-}
+void AdminPort::restartPlugin(const AdminPortProtocol::Request& req) {}
 
-void AdminPort::stop() {
-  m_acceptor.cancel();
-  m_acceptor.close();
-}
+void AdminPort::reloadPlugin(const AdminPortProtocol::Request& req) {}
 
-void AdminPort::addClient() {
-  AdminPortClient client{this, std::move(m_socket), {}};
-  m_clients.push_back(std::move(client));
-  m_clients.back().startReceiving();
-}
+void AdminPort::shutdown(const AdminPortProtocol::Request& req) {}
 
-void AdminPort::processCommand(const std::string& command) {
-  LOG(INFO, "Processing command in AdminPort: ", command);
+void AdminPort::AdminPortClient::onRead(const std::string& data) {
+  using namespace AdminPortProtocol;
 
-  CommandParser::Command cmd = m_command_parser.parse(command);
-  LOG(INFO, "Command: ", cmd.command);
+  Request req;
+  if (not req.ParseFromString(data)) {
+    LOG(ERROR, "Could not parse received Request!");
+    return;
+  }
 
-  if (cmd.command == "restartPlugin") {
-    if (cmd.arguments.size() < 1) {
-      LOG(ERROR, "You have to give at least one plugin id!");
-    }
-    for (const auto& plugin : cmd.arguments) {
-      m_client->restartPlugin(plugin);
-    }
-  } else if (cmd.command == "reloadPlugin") {
-    if (cmd.arguments.size() < 1) {
-      LOG(ERROR, "You have to give at least one plugin id!");
-    }
-    for (const auto& plugin : cmd.arguments) {
-      m_client->reloadPlugin(plugin);
-    }
-  } else if (cmd.command == "shutdown") {
-    m_client->stop();
+  switch (req.type()) {
+    case Request::ADD_PLUGIN:
+      m_admin_port->addPlugin(req);
+      break;
+
+    case Request::REMOVE_PLUGIN:
+      m_admin_port->removePlugin(req);
+      break;
+
+    case Request::START_PLUGIN:
+      m_admin_port->startPlugin(req);
+      break;
+
+    case Request::STOP_PLUGIN:
+      m_admin_port->stopPlugin(req);
+      break;
+
+    case Request::RESTART_PLUGIN:
+      m_admin_port->restartPlugin(req);
+      break;
+
+    case Request::RELOAD_PLUGIN:
+      m_admin_port->reloadPlugin(req);
+      break;
+
+    case Request::SHUTDOWN:
+      m_admin_port->shutdown(req);
+      break;
+
+    default:
+      LOG(WARNING, "Unsupported action: ", static_cast<int>(req.type()));
+      break;
   }
 }
 
-void AdminPort::AdminPortClient::startReceiving() {
-  using boost::system::error_code;
-
-  auto handler = [this](const error_code& ec, std::size_t bytes) {
-    if (ec) {
-      if (ec == boost::asio::error::operation_aborted) {
-        LOG(INFO, "Canceling asynchronous receiving.");
-        return;
-      }
-      LOG(ERROR, "Error occurred: ", ec);
-      return;
-    }
-
-    std::string msg{buffer.data(), bytes};
-    adminPort->processCommand(msg);
-    startReceiving();
-  };
-
-  using asio::mutable_buffers_1;
-  socket.async_receive(mutable_buffers_1(buffer.data(), buffer.size()),
-                       handler);
+std::unique_ptr<network::TcpClient> AdminPort::createClient(
+    asio::ip::tcp::socket&& socket) {
+  auto client = std::make_unique<AdminPortClient>(std::move(socket));
+  client->m_admin_port = shared_from_this();
+  return client;
 }
 
 }  // namespace ircbot

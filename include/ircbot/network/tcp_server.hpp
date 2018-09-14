@@ -26,6 +26,13 @@ class TcpServer : public Endpoint<asio::ip::tcp>, public BasicServer {
  public:
   /** constructor
    *
+   * \param host hostname/ip of interface on which server will listen
+   * \param port tcp port on which server will listen
+   */
+  TcpServer(const std::string& host, uint16_t port);
+
+  /** constructor
+   *
    * \param endpoint endpoint on which server will listen
    */
   TcpServer(const asio::ip::tcp::endpoint& endpoint);
