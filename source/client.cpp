@@ -182,16 +182,20 @@ void Client::stopAsyncReceive() {
 }
 
 void Client::startAdminPort() {
-  // @TODO: log info about starting admin port
+  const std::string& host{m_cfg.tree().get("admin_port.host", "localhost")};
+  const uint16_t port{
+      m_cfg.tree().get("admin_port.port", static_cast<uint16_t>(5460))};
+
+  LOG(INFO, "Starting AdminPort on ", host, ":", port);
+
   if (m_admin_port != nullptr) {
     LOG(ERROR, "Cannot start another admin port!");
     return;
   }
 
-  // @TODO: Add more elegant resolving and reading host and port from
-  // configuration
+  // TODO: Use more general resolver (issue #56)
   asio::ip::tcp::resolver resolver{m_context_provider.getContext()};
-  auto endpoints = resolver.resolve({"localhost", "5466"});
+  auto endpoints = resolver.resolve({host, std::to_string(port)});
   m_admin_port =
       std::make_unique<AdminPort>(shared_from_this(), endpoints->endpoint());
 
