@@ -62,13 +62,13 @@ class TcpClient : public Endpoint<asio::ip::tcp>, public BasicClient {
    *
    * \param bytes_transferred number of bytes written to m_socket
    */
-  virtual void onWrite(const size_t bytes_transferred) {}
+  virtual void onWrite(const size_t /* bytes_transferred */) {}
 
   /** Handler called when data is received
    *
    * \param data that was received
    */
-  virtual void onRead(const std::string& data) {}
+  virtual void onRead(const std::string& /* data */) {}
 
  private:
   /** socket for this client */

@@ -13,19 +13,19 @@ AdminPort::AdminPort(std::shared_ptr<Client> client,
   LOG(INFO, "Started admin port at: ");
 }
 
-void AdminPort::addPlugin(const AdminPortProtocol::Request& req) {}
+void AdminPort::addPlugin(const AdminPortProtocol::Request& /* req */) {}
 
-void AdminPort::removePlugin(const AdminPortProtocol::Request& req) {}
+void AdminPort::removePlugin(const AdminPortProtocol::Request& /* req */) {}
 
-void AdminPort::startPlugin(const AdminPortProtocol::Request& req) {}
+void AdminPort::startPlugin(const AdminPortProtocol::Request& /* req */) {}
 
-void AdminPort::stopPlugin(const AdminPortProtocol::Request& req) {}
+void AdminPort::stopPlugin(const AdminPortProtocol::Request& /* req */) {}
 
-void AdminPort::restartPlugin(const AdminPortProtocol::Request& req) {}
+void AdminPort::restartPlugin(const AdminPortProtocol::Request& /* req */) {}
 
-void AdminPort::reloadPlugin(const AdminPortProtocol::Request& req) {}
+void AdminPort::reloadPlugin(const AdminPortProtocol::Request& /* req */) {}
 
-void AdminPort::shutdown(const AdminPortProtocol::Request& req) {}
+void AdminPort::shutdown(const AdminPortProtocol::Request& /* req */) {}
 
 void AdminPort::AdminPortClient::onRead(const std::string& data) {
   using namespace AdminPortProtocol;
