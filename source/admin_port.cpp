@@ -1,6 +1,7 @@
 #include "ircbot/admin_port.hpp"
 
 #include "ircbot/client.hpp"
+#include "ircbot/config.hpp"
 #include "ircbot/logger.hpp"
 
 #include <unistd.h>
@@ -13,19 +14,91 @@ AdminPort::AdminPort(std::shared_ptr<Client> client,
   LOG(INFO, "Started admin port at: ");
 }
 
-void AdminPort::addPlugin(const AdminPortProtocol::Request& /* req */) {}
+void AdminPort::addPlugin(const AdminPortProtocol::Request& req) {
+  if (not req.has_add_plugin_params()) {
+    // TODO: error
+  }
 
-void AdminPort::removePlugin(const AdminPortProtocol::Request& /* req */) {}
+  const std::string id{req.add_plugin_params().id()};
+  const std::string path{req.add_plugin_params().path()};
 
-void AdminPort::startPlugin(const AdminPortProtocol::Request& /* req */) {}
+  if (req.add_plugin_params().config_size() > 0)
+    LOG(WARNING, "Plugin configuration from AdminPort is not supported yet!");
 
-void AdminPort::stopPlugin(const AdminPortProtocol::Request& /* req */) {}
+  Config cfg;
+  cfg.tree().put(id + std::string{".path"}, path);
 
-void AdminPort::restartPlugin(const AdminPortProtocol::Request& /* req */) {}
+  auto plugin_iter = m_client->loadPlugin(id, cfg);
+  LOG(WARNING,
+      "Error support is not fully implemented yet! Make sure that plugin has "
+      "been loaded!");
+  // TODO: finish: add to client and check if plugin could be added
+}
 
-void AdminPort::reloadPlugin(const AdminPortProtocol::Request& /* req */) {}
+void AdminPort::removePlugin(const AdminPortProtocol::Request& req) {
+  if (not req.has_plugin_params()) {
+    // TODO: error
+  }
 
-void AdminPort::shutdown(const AdminPortProtocol::Request& /* req */) {}
+  for (int i = 0; i < req.plugin_params().plugins_size(); ++i) {
+    const std::string id{req.plugin_params().plugins(i)};
+    try {
+      m_client->removePlugin(id);
+      LOG(INFO, "Plugin ", id, " has been removed!");
+    } catch (const std::runtime_error& err) {
+      LOG(ERROR, "Could not remove plugin ", id, ": ", err.what());
+      // TODO: Response
+    }
+  }
+}
+
+void AdminPort::startPlugin(const AdminPortProtocol::Request& req) {
+  if (not req.has_plugin_params()) {
+    // TODO: error
+  }
+
+  for (int i = 0; i < req.plugin_params().plugins_size(); ++i) {
+    const std::string id{req.plugin_params().plugins(i)};
+    m_client->startPlugin(id);
+  }
+}
+
+void AdminPort::stopPlugin(const AdminPortProtocol::Request& req) {
+  if (not req.has_plugin_params()) {
+    // TODO: error
+  }
+
+  for (int i = 0; i < req.plugin_params().plugins_size(); ++i) {
+    const std::string id{req.plugin_params().plugins(i)};
+    m_client->stopPlugin(id);
+  }
+}
+
+void AdminPort::restartPlugin(const AdminPortProtocol::Request& req) {
+  if (not req.has_plugin_params()) {
+    // TODO: error
+  }
+
+  for (int i = 0; i < req.plugin_params().plugins_size(); ++i) {
+    const std::string id{req.plugin_params().plugins(i)};
+    m_client->restartPlugin(id);
+  }
+}
+
+void AdminPort::reloadPlugin(const AdminPortProtocol::Request& req) {
+  if (not req.has_plugin_params()) {
+    // TODO: error
+  }
+
+  for (int i = 0; i < req.plugin_params().plugins_size(); ++i) {
+    const std::string id{req.plugin_params().plugins(i)};
+    m_client->reloadPlugin(id);
+  }
+}
+
+void AdminPort::shutdown(const AdminPortProtocol::Request& req) {
+  m_client->stop();
+}
 
 void AdminPort::AdminPortClient::onRead(const std::string& data) {
   using namespace AdminPortProtocol;

@@ -203,6 +203,18 @@ class Client : public std::enable_shared_from_this<Client> {
    */
   void reloadPlugin(const std::string& pluginId);
 
+  /** Stops plugin with given id
+   *
+   * \param pluginId plugin's id given in configuration file
+   */
+  void stopPlugin(const std::string& pluginId);
+
+  /** Starts plugin with given id
+   *
+   * \param pluginId plugin's id given in configuration file
+   */
+  void startPlugin(const std::string& pluginId);
+
   /** Get boost::asio::io_service instance by reference
    *
    * \return reference to boost::asio::io_service

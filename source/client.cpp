@@ -416,6 +416,26 @@ void Client::stopPlugins() {
   }
 }
 
+void Client::startPlugin(const std::string& pluginId) {
+  auto it = findPlugin(pluginId);
+  if (it == m_plugins.end()) {
+    LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
+    return;
+  }
+
+  (*it)->spawn();
+}
+
+void Client::stopPlugin(const std::string& pluginId) {
+  auto it = findPlugin(pluginId);
+  if (it == m_plugins.end()) {
+    LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
+    return;
+  }
+
+  (*it)->stop();
+}
+
 void Client::restartPlugin(const std::string& pluginId) {
   auto it = findPlugin(pluginId);
   if (it == m_plugins.end()) {

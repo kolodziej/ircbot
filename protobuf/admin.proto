@@ -2,6 +2,12 @@ syntax = "proto2";
 
 package AdminPortProtocol;
 
+message AddPluginParameters {
+    required string id = 1;
+    required string path = 2;
+    repeated string config = 3;
+}
+
 message PluginParameters {
     repeated string plugins = 1;
 }
@@ -23,8 +29,9 @@ message Request {
 
     required RequestType type = 1;
     oneof data {
-        PluginParameters plugin_params = 2;
-        ShutdownParameters shutdown_params = 3;
+        AddPluginParameters add_plugin_params = 2;
+        PluginParameters plugin_params = 3;
+        ShutdownParameters shutdown_params = 4;
     }
 }
 
