@@ -144,6 +144,19 @@ void AdminPort::AdminPortClient::onRead(const std::string& data) {
   }
 }
 
+void AdminPort::AdminPortClient::respond(
+    AdminPortProtocol::Response::ResponseType type, bool end, int32_t code,
+    const std::string& msg) {
+  using AdminPortProtocol::Response;
+  Response resp;
+  resp.set_type(type);
+  resp.set_end(end);
+  resp.set_code(code);
+  if (not msg.empty()) resp.set_msg(msg);
+
+  // TODO: send message
+}
+
 std::unique_ptr<network::TcpClient> AdminPort::createClient(
     asio::ip::tcp::socket&& socket) {
   auto client = std::make_unique<AdminPortClient>(std::move(socket));

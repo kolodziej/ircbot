@@ -42,7 +42,7 @@ message Response {
     }
 
     required ResponseType type = 1;
-    optional string msg = 2;
+    required bool end = 2;
     optional int32 code = 3;
-    required bool end = 4;
+    optional string msg = 4;
 }

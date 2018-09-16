@@ -105,6 +105,16 @@ class AdminPort : public network::TcpServer,
 
     /** callback for incoming data */
     virtual void onRead(const std::string& data);
+
+    /** Respond to Request
+     *
+     * \param type response type
+     * \param end boolean indicating if processing requested command has been
+     * finished \param code optional return code \param msg optional message
+     */
+    void respond(AdminPortProtocol::Response::ResponseType type,
+                 bool end = true, int32_t code = 0,
+                 const std::string& msg = std::string{});
   };
 
   /** Pointer to client which is managed with this AdminPort */
