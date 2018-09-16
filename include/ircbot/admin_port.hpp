@@ -88,34 +88,7 @@ class AdminPort : public network::TcpServer,
   void shutdown(const AdminPortProtocol::Request& req);
 
  private:
-  /** \class AdminPortClient
-   *
-   * \brief Client connecting to AdminPort
-   *
-   * Representation of client connecting to AdminPort. Provides socket and
-   * buffer for received messages.
-   */
-  struct AdminPortClient : public network::TcpClient {
-    /** default constructor */
-    AdminPortClient(asio::ip::tcp::socket&& socket)
-        : network::TcpClient{std::move(socket)} {}
-
-    /** pointer for parent admin port */
-    std::shared_ptr<AdminPort> m_admin_port;
-
-    /** callback for incoming data */
-    virtual void onRead(const std::string& data);
-
-    /** Respond to Request
-     *
-     * \param type response type
-     * \param end boolean indicating if processing requested command has been
-     * finished \param code optional return code \param msg optional message
-     */
-    void respond(AdminPortProtocol::Response::ResponseType type,
-                 bool end = true, int32_t code = 0,
-                 const std::string& msg = std::string{});
-  };
+  struct AdminPortClient;
 
   /** Pointer to client which is managed with this AdminPort */
   std::shared_ptr<Client> m_client;
@@ -123,6 +96,34 @@ class AdminPort : public network::TcpServer,
   /** creates client of AdminPortClient type */
   virtual std::unique_ptr<network::TcpClient> createClient(
       asio::ip::tcp::socket&& socket);
+};
+
+/** \class AdminPortClient
+ *
+ * \brief Client connecting to AdminPort
+ *
+ * Representation of client connecting to AdminPort. Provides socket and
+ * buffer for received messages.
+ */
+struct AdminPort::AdminPortClient : public network::TcpClient {
+  /** default constructor */
+  AdminPortClient(asio::ip::tcp::socket&& socket)
+      : network::TcpClient{std::move(socket)} {}
+
+  /** pointer for parent admin port */
+  std::shared_ptr<AdminPort> m_admin_port;
+
+  /** callback for incoming data */
+  virtual void onRead(const std::string& data);
+
+  /** Respond to Request
+   *
+   * \param type response type
+   * \param end boolean indicating if processing requested command has been
+   * finished \param code optional return code \param msg optional message
+   */
+  void respond(AdminPortProtocol::Response::ResponseType type, bool end = true,
+               int32_t code = 0, const std::string& msg = std::string{});
 };
 
 }  // namespace ircbot
