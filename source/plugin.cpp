@@ -114,6 +114,11 @@ Config& Plugin::getConfig() { return m_cfg; }
 const Config& Plugin::getConfig() const { return m_cfg; }
 
 void Plugin::spawn() {
+  if (isRunning()) {
+    LOG(WARNING, "Plugin has already been started!");
+    return;
+  }
+
   auto plugin_call = [this] {
     try {
       run();
