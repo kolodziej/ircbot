@@ -1,13 +1,13 @@
 #include "ircbot/admin_port.hpp"
 
-#include "ircbot/client.hpp"
+#include "ircbot/core.hpp"
 #include "ircbot/logger.hpp"
 
 #include <unistd.h>
 
 namespace ircbot {
 
-AdminPort::AdminPort(std::shared_ptr<Client> client,
+AdminPort::AdminPort(std::shared_ptr<Core> client,
                      const std::string& socket_path)
     : m_client{client},
       m_endpoint{socket_path},

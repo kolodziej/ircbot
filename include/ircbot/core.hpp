@@ -1,5 +1,5 @@
-#ifndef _CLIENT_HPP
-#define _CLIENT_HPP
+#ifndef _CORE_HPP
+#define _CORE_HPP
 
 #include <array>
 #include <atomic>
@@ -28,7 +28,7 @@ class Plugin;
 class SoPlugin;
 class TcpPluginServer;
 
-/** \class Client
+/** \class Core
  *
  * \brief Maintains a connection to server and manages plugins.
  *
@@ -37,7 +37,7 @@ class TcpPluginServer;
  * messages from plugins and delivers them back to server.
  */
 
-class Client : public std::enable_shared_from_this<Client> {
+class Core : public std::enable_shared_from_this<Core> {
   using PluginVector = std::vector<std::unique_ptr<Plugin>>;
   using PluginVectorIter = PluginVector::iterator;
 
@@ -53,7 +53,7 @@ class Client : public std::enable_shared_from_this<Client> {
    *
    * \param cfg configuration of bot
    */
-  Client(Config cfg);
+  Core(Config cfg);
 
   /** Connects to server given in configuration */
   void connect();

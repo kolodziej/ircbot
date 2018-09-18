@@ -7,7 +7,7 @@
 
 #include <boost/asio.hpp>
 
-#include "ircbot/client.hpp"
+#include "ircbot/core.hpp"
 #include "ircbot/tcp_plugin.hpp"
 
 #include "init.pb.h"
@@ -25,7 +25,7 @@ class TcpPluginServer {
    * \param host hostname/ip addr on which server should listen for connections
    * \pararm port tcp port on which server should listen
    */
-  TcpPluginServer(std::shared_ptr<Client> client, const std::string& host,
+  TcpPluginServer(std::shared_ptr<Core> client, const std::string& host,
                   uint16_t port);
 
   /** start accepting connections from plugins */
@@ -36,7 +36,7 @@ class TcpPluginServer {
 
  private:
   /** pointer to client which owns plugins registered by this server */
-  std::shared_ptr<Client> m_client;
+  std::shared_ptr<Core> m_client;
 
   /** endpoint on which server is listening for plugins connections */
   asio::ip::tcp::endpoint m_endpoint;
