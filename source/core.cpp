@@ -1,4 +1,4 @@
-#include "ircbot/client.hpp"
+#include "ircbot/core.hpp"
 
 #include <chrono>
 #include <stdexcept>
@@ -18,7 +18,7 @@ namespace ircbot {
 
 using network::ContextProvider;
 
-Client::Client(Config cfg)
+Core::Core(Config cfg)
     : m_context_provider{ContextProvider::getInstance()},
       m_io_service{m_context_provider.getContext()},
       m_socket{m_io_service},
@@ -29,7 +29,7 @@ Client::Client(Config cfg)
       m_result{RunResult::OK},
       m_start_time{std::chrono::steady_clock::now()} {}
 
-void Client::connect() {
+void Core::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
   boost::system::error_code ec;
 
@@ -72,7 +72,7 @@ void Client::connect() {
   startAsyncReceive();
 }
 
-void Client::initializePlugins() {
+void Core::initializePlugins() {
   for (auto p : m_cfg.tree().get_child("plugins")) {
     const auto& pluginId = p.first;
     const auto& pluginConfig = p.second;
@@ -81,18 +81,18 @@ void Client::initializePlugins() {
   }
 }
 
-void Client::deinitializePlugins() {
+void Core::deinitializePlugins() {
   LOG(INFO, "Deinitializing all plugins");
   m_plugins.clear();
 }
 
-Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId) {
+Core::PluginVectorIter Core::loadPlugin(const std::string& pluginId) {
   auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + pluginId);
   return loadPlugin(pluginId, cfg);
 }
 
-Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
-                                            Config config) {
+Core::PluginVectorIter Core::loadPlugin(const std::string& pluginId,
+                                        Config config) {
   std::string path = config.tree().get("path", std::string());
   if (path.empty()) {
     LOG(WARNING, "Plugin (id): ", pluginId,
@@ -131,7 +131,7 @@ Client::PluginVectorIter Client::loadPlugin(const std::string& pluginId,
   return m_plugins.end();
 }
 
-void Client::startAsyncReceive() {
+void Core::startAsyncReceive() {
   using asio::mutable_buffers_1;
 
   auto handler = [this](const boost::system::error_code& ec, size_t bytes) {
@@ -172,7 +172,7 @@ void Client::startAsyncReceive() {
                          handler);
 }
 
-void Client::stopAsyncReceive() {
+void Core::stopAsyncReceive() {
   DEBUG("Cancelling asynchronous operations.");
   boost::system::error_code ec;
   m_socket.cancel(ec);
@@ -181,7 +181,7 @@ void Client::stopAsyncReceive() {
   }
 }
 
-void Client::startAdminPort() {
+void Core::startAdminPort() {
   std::string socket_path{
       m_cfg.tree().get("admin_port.path", "/var/run/ircbot_admin.sock")};
 
@@ -197,7 +197,7 @@ void Client::startAdminPort() {
   m_admin_port->acceptConnections();
 }
 
-void Client::stopAdminPort() {
+void Core::stopAdminPort() {
   if (m_admin_port != nullptr) {
     m_admin_port->stop();
     m_admin_port = nullptr;
@@ -206,7 +206,7 @@ void Client::stopAdminPort() {
   }
 }
 
-void Client::startTcpPluginServer() {
+void Core::startTcpPluginServer() {
   std::string host{m_cfg.tree().get("tcp_plugin_server.host", "localhost")};
   uint16_t port{
       m_cfg.tree().get("tcp_plugin_server.port", static_cast<uint16_t>(5454))};
@@ -223,7 +223,7 @@ void Client::startTcpPluginServer() {
   m_tcp_plugin_server->acceptConnections();
 }
 
-void Client::stopTcpPluginServer() {
+void Core::stopTcpPluginServer() {
   if (m_tcp_plugin_server == nullptr) {
     LOG(WARNING,
         "TcpPluginServer hasn't been initialized so cannot be stopped!");
@@ -233,7 +233,7 @@ void Client::stopTcpPluginServer() {
   m_tcp_plugin_server->stop();
 }
 
-void Client::disconnect() {
+void Core::disconnect() {
   m_running = false;
   boost::system::error_code ec;
 
@@ -250,9 +250,9 @@ void Client::disconnect() {
   }
 }
 
-void Client::send(IRCMessage cmd) { send(cmd.toString()); }
+void Core::send(IRCMessage cmd) { send(cmd.toString()); }
 
-void Client::send(std::string msg) {
+void Core::send(std::string msg) {
   auto write_handler = [this](boost::system::error_code ec,
                               size_t transferred) {
     if (not ec) {
@@ -266,7 +266,7 @@ void Client::send(std::string msg) {
   m_socket.async_send(const_buf, write_handler);
 }
 
-void Client::run() {
+void Core::run() {
   m_running = true;
   m_stop_promise = std::promise<RunResult>{};
 
@@ -283,7 +283,7 @@ void Client::run() {
   startAdminPort();
 }
 
-void Client::stop() {
+void Core::stop() {
   LOG(INFO, "Stopping Client");
 
   stopAsyncReceive();
@@ -304,13 +304,13 @@ void Client::stop() {
   m_stop_promise.set_value(m_result);
 }
 
-Client::RunResult Client::waitForStop() {
+Core::RunResult Core::waitForStop() {
   std::future<RunResult> f{m_stop_promise.get_future()};
   f.wait();
   return f.get();
 }
 
-void Client::signal(int signum) {
+void Core::signal(int signum) {
   switch (signum) {
     case SIGTERM:
     case SIGINT:
@@ -320,19 +320,19 @@ void Client::signal(int signum) {
   }
 }
 
-Client::PluginVectorIter Client::findPlugin(const std::string& pluginId) {
+Core::PluginVectorIter Core::findPlugin(const std::string& pluginId) {
   auto pred = [pluginId](const std::unique_ptr<Plugin>& plugin) {
     return plugin->getId() == pluginId;
   };
   return std::find_if(m_plugins.begin(), m_plugins.end(), pred);
 }
 
-Client::PluginVectorIter Client::addPlugin(std::unique_ptr<Plugin>&& plugin) {
+Core::PluginVectorIter Core::addPlugin(std::unique_ptr<Plugin>&& plugin) {
   LOG(INFO, "Adding plugin ", plugin->getName());
   return m_plugins.insert(m_plugins.end(), std::move(plugin));
 }
 
-void Client::removePlugin(PluginVectorIter it) {
+void Core::removePlugin(PluginVectorIter it) {
   LOG(INFO, "Removing plugin ", (*it)->getId());
   if (it == m_plugins.end()) {
     throw std::runtime_error{"There is no such plugin!"};
@@ -340,7 +340,7 @@ void Client::removePlugin(PluginVectorIter it) {
   m_plugins.erase(it);
 }
 
-void Client::removePlugin(const std::string& pluginId) {
+void Core::removePlugin(const std::string& pluginId) {
   auto plugin = findPlugin(pluginId);
   if (plugin != m_plugins.end()) {
     removePlugin(plugin);
@@ -349,7 +349,7 @@ void Client::removePlugin(const std::string& pluginId) {
   }
 }
 
-std::vector<std::string> Client::listPlugins() const {
+std::vector<std::string> Core::listPlugins() const {
   std::vector<std::string> names;
   for (const auto& plugin : m_plugins) {
     names.push_back(plugin->getName());
@@ -358,7 +358,7 @@ std::vector<std::string> Client::listPlugins() const {
   return names;
 }
 
-bool Client::authenticatePlugin(const std::string& token) {
+bool Core::authenticatePlugin(const std::string& token) {
   const std::string real_token =
       m_cfg.tree().get("plugin_token", std::string{});
   if (real_token.empty()) {
@@ -373,8 +373,8 @@ bool Client::authenticatePlugin(const std::string& token) {
   return false;
 }
 
-std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
-                                               PluginConfig config) {
+std::unique_ptr<SoPlugin> Core::loadSoPlugin(const std::string& fname,
+                                             PluginConfig config) {
   void* pluginLibrary = dlopen(fname.data(), RTLD_NOW);
   if (pluginLibrary == nullptr) {
     LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
@@ -397,21 +397,21 @@ std::unique_ptr<SoPlugin> Client::loadSoPlugin(const std::string& fname,
   return plugin;
 }
 
-void Client::startPlugins() {
+void Core::startPlugins() {
   for (auto& plugin : m_plugins) {
     LOG(INFO, "Starting plugin ", plugin->getName());
     plugin->spawn();
   }
 }
 
-void Client::stopPlugins() {
+void Core::stopPlugins() {
   for (auto& plugin : m_plugins) {
     LOG(INFO, "Stopping plugin ", plugin->getName());
     plugin->stop();
   }
 }
 
-void Client::restartPlugin(const std::string& pluginId) {
+void Core::restartPlugin(const std::string& pluginId) {
   auto it = findPlugin(pluginId);
   if (it == m_plugins.end()) {
     LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
@@ -422,7 +422,7 @@ void Client::restartPlugin(const std::string& pluginId) {
   (*it)->spawn();
 }
 
-void Client::reloadPlugin(const std::string& pluginId) {
+void Core::reloadPlugin(const std::string& pluginId) {
   auto it = findPlugin(pluginId);
   if (it == m_plugins.end()) {
     LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
@@ -441,9 +441,9 @@ void Client::reloadPlugin(const std::string& pluginId) {
   (*plugin)->spawn();
 }
 
-asio::io_service& Client::getIoService() { return m_io_service; }
+asio::io_service& Core::getIoService() { return m_io_service; }
 
-std::chrono::steady_clock::duration Client::getUptime() const {
+std::chrono::steady_clock::duration Core::getUptime() const {
   return std::chrono::steady_clock::now() - m_start_time;
 }
 

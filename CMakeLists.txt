@@ -82,7 +82,7 @@ set(SOURCES
     source/logger.cpp
     source/irc_parser.cpp
     source/irc_message.cpp
-    source/client.cpp
+    source/core.cpp
     source/plugin.cpp
     source/helpers.cpp
     source/config.cpp
@@ -113,7 +113,7 @@ set(HEADERS
     include/ircbot/logger_macros.hpp
     include/ircbot/irc_parser.hpp
     include/ircbot/irc_message.hpp
-    include/ircbot/client.hpp
+    include/ircbot/core.hpp
     include/ircbot/plugin.hpp
     include/ircbot/helpers.hpp
     include/ircbot/config.hpp

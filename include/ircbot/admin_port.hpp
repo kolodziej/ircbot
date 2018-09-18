@@ -13,7 +13,7 @@ namespace asio = boost::asio;
 
 namespace ircbot {
 
-class Client;
+class Core;
 
 /** \class AdminPort
  *
@@ -32,7 +32,7 @@ class AdminPort {
    * \param socket_path path to unix socket file which will be used to manage
    * client instance
    */
-  AdminPort(std::shared_ptr<Client> client, const std::string& socket_path);
+  AdminPort(std::shared_ptr<Core> client, const std::string& socket_path);
   /** Destructor
    *
    * Removes created socket
@@ -75,7 +75,7 @@ class AdminPort {
   };
 
   /** Pointer to client which is managed with this AdminPort */
-  std::shared_ptr<Client> m_client;
+  std::shared_ptr<Core> m_client;
 
   /** Endpoint - unix socket file */
   asio::local::stream_protocol::endpoint m_endpoint;

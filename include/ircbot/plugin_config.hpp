@@ -8,7 +8,7 @@
 
 namespace ircbot {
 
-class Client;
+class Core;
 
 /** \class PluginConfig
  *
@@ -22,7 +22,7 @@ class Client;
 
 struct PluginConfig {
   /** pointer to Client instance */
-  std::shared_ptr<Client> client;
+  std::shared_ptr<Core> client;
 
   /** plugin id - unique in Client's scope */
   std::string id;

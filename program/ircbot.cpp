@@ -8,7 +8,7 @@
 #include <boost/asio.hpp>
 #include <boost/program_options.hpp>
 
-#include "ircbot/client.hpp"
+#include "ircbot/core.hpp"
 #include "ircbot/helpers.hpp"
 #include "ircbot/logger.hpp"
 #include "ircbot/network/context_provider.hpp"
@@ -27,7 +27,7 @@ using namespace ircbot;
 
 namespace signal_handling {
 
-static Client* client = nullptr;
+static Core* client = nullptr;
 
 void signal_handler(int signal) {
   if (client != nullptr) client->signal(signal);
@@ -122,34 +122,34 @@ int main(int argc, char** argv) {
       }
     }
 
-    std::shared_ptr<Client> client = std::make_shared<Client>(config);
+    std::shared_ptr<Core> client = std::make_shared<Core>(config);
     signal_handling::client = client.get();
 
     // setting signal handlers
     signal(SIGINT, signal_handling::signal_handler);
     signal(SIGTERM, signal_handling::signal_handler);
 
-    Client::RunResult result{};
+    Core::RunResult result{};
     do {
       client->run();
       result = client->waitForStop();
 
       switch (result) {
-        case Client::RunResult::OK:
+        case Core::RunResult::OK:
           LOG(INFO,
               "Client returned from run() successfully. Leaving application.");
           break;
-        case Client::RunResult::CONNECTION_ERROR:
+        case Core::RunResult::CONNECTION_ERROR:
           LOG(ERROR, "Connection error. Restarting client...");
           break;
-        case Client::RunResult::ERROR:
+        case Core::RunResult::ERROR:
           LOG(CRITICAL, "Unknown error. Restarting client...");
           break;
         default:
           LOG(CRITICAL, "Unsupported result code!!!");
           break;
       }
-    } while (result != Client::RunResult::OK);
+    } while (result != Core::RunResult::OK);
 
     ctx.stop();
   } catch (std::runtime_error& exc) {

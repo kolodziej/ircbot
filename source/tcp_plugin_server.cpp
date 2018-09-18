@@ -13,7 +13,7 @@ namespace ptime = boost::posix_time;
 
 namespace ircbot {
 
-TcpPluginServer::TcpPluginServer(std::shared_ptr<Client> client,
+TcpPluginServer::TcpPluginServer(std::shared_ptr<Core> client,
                                  const std::string& host, uint16_t port)
     : m_client{client},
       m_acceptor{client->getIoService()},

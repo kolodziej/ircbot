@@ -9,9 +9,9 @@
 #include <thread>
 #include <unordered_map>
 
-#include "ircbot/client.hpp"
 #include "ircbot/command_parser.hpp"
 #include "ircbot/config.hpp"
+#include "ircbot/core.hpp"
 #include "ircbot/irc_message.hpp"
 #include "ircbot/logger.hpp"
 #include "ircbot/plugin_config.hpp"
@@ -44,7 +44,7 @@ class Plugin {
   virtual ~Plugin(){};
 
   /** Get pointer to client */
-  std::shared_ptr<Client> client();
+  std::shared_ptr<Core> client();
 
   /** Returns plugin id
    *
@@ -183,7 +183,7 @@ class Plugin {
 
  private:
   /** instance of Client that owns this plugin instance */
-  std::shared_ptr<Client> m_client;
+  std::shared_ptr<Core> m_client;
 
   /** plugin id */
   const std::string m_id;
