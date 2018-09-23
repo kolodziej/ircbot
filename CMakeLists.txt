@@ -109,6 +109,7 @@ set(SOURCES
     source/network/tcp_client.cpp
     source/network/tcp_server.cpp
     source/network/timer.cpp
+    source/plugin_graph.cpp
 )
 
 set(HEADERS
@@ -146,6 +147,7 @@ set(HEADERS
     include/ircbot/network/tcp_client.hpp
     include/ircbot/network/tcp_server.hpp
     include/ircbot/network/timer.hpp
+    include/ircbot/plugin_graph.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )
