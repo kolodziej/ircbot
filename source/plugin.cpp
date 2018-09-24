@@ -16,7 +16,7 @@ Plugin::Plugin(PluginConfig config)
   LOG(INFO, "Initialized plugin with ID: '", getId(), "'.");
 }
 
-std::shared_ptr<Core> Plugin::client() { return m_client; }
+std::shared_ptr<Core> Plugin::core() { return m_client; }
 
 std::string Plugin::getId() const { return m_id; }
 

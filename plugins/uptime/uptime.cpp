@@ -13,7 +13,7 @@ void Uptime::onMessage(IRCMessage cmd) {
   using namespace std::chrono;
   using helpers::responseDestination;
 
-  auto uptime = client()->getUptime();
+  auto uptime = core()->getUptime();
 
   uint32_t d =
       duration_cast<duration<uint32_t, std::ratio<86400>>>(uptime).count();

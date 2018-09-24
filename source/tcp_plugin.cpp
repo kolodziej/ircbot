@@ -128,7 +128,7 @@ void TcpPlugin::onShutdown() {
   m_socket.close();
 
   LOG(INFO, "Removing plugin from Client");
-  client()->removePlugin(getId());
+  core()->removePlugin(getId());
 }
 
 std::string TcpPlugin::defaultName(asio::ip::tcp::socket& socket) {
@@ -186,7 +186,7 @@ void TcpPlugin::processInitRequest(const PluginProtocol::InitRequest& req) {
 
   LOG(INFO, "Trying to authenticate plugin ", getName(), " as: ", name,
       " with token: ", token);
-  if (client()->authenticatePlugin(token)) {
+  if (core()->authenticatePlugin(token)) {
     LOG(INFO, "TcpPlugin ", getName(), " has been successfully authenticated!");
     m_name = name;
     m_init_timer.cancel();

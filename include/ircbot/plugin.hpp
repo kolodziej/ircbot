@@ -44,7 +44,7 @@ class Plugin {
   virtual ~Plugin(){};
 
   /** Get pointer to client */
-  std::shared_ptr<Core> client();
+  std::shared_ptr<Core> core();
 
   /** Returns plugin id
    *
