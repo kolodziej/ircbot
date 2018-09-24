@@ -18,6 +18,9 @@ class PluginGraph : private std::enable_shared_from_this<PluginGraph> {
  public:
   PluginGraph(std::shared_ptr<Core> core, Config config);
 
+  /** Returns pointer to Core that own this PluginGraph */
+  std::shared_ptr<Core> core();
+
   /** Loads plugin from file and adds it to PluginGraph
    *
    * Uses id to load plugin. Where plugin is not accessible, throws an exception
