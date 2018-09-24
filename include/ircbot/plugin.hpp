@@ -35,7 +35,7 @@ class Plugin {
    *
    * \param config PluginConfig instance with prefix for command configured
    */
-  Plugin(PluginConfig config);
+  Plugin(std::shared_ptr<Core> core);
 
   /** Destructor
    *
@@ -45,12 +45,6 @@ class Plugin {
 
   /** Get pointer to client */
   std::shared_ptr<Core> core();
-
-  /** Returns plugin id
-   *
-   * \return Unique string identifier in Client scope
-   */
-  std::string getId() const;
 
   /** Returns plugin name
    *
@@ -180,10 +174,7 @@ class Plugin {
 
  private:
   /** instance of Client that owns this plugin instance */
-  std::shared_ptr<Core> m_client;
-
-  /** plugin id */
-  const std::string m_id;
+  std::shared_ptr<Core> m_core;
 
   /** plugin configuration */
   Config m_cfg;

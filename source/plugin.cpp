@@ -7,18 +7,10 @@
 
 namespace ircbot {
 
-Plugin::Plugin(PluginConfig config)
-    : m_client{config.client},
-      m_id{config.id},
-      m_cfg{config.config},
-      m_command_parser{nullptr},
-      m_running{true} {
-  LOG(INFO, "Initialized plugin with ID: '", getId(), "'.");
-}
+Plugin::Plugin(std::shared_ptr<Core> core)
+    : m_core{core}, m_command_parser{nullptr}, m_running{true} {}
 
-std::shared_ptr<Core> Plugin::core() { return m_client; }
-
-std::string Plugin::getId() const { return m_id; }
+std::shared_ptr<Core> Plugin::core() { return m_core; }
 
 void Plugin::stop() {
   if (not m_running) return;
@@ -88,7 +80,7 @@ IRCMessage Plugin::getCommand() {
   return cmd;
 }
 
-void Plugin::send(const IRCMessage& cmd) { m_client->send(cmd); }
+void Plugin::send(const IRCMessage& cmd) { m_core->send(cmd); }
 
 bool Plugin::filter(const IRCMessage& /*cmd*/) { return true; }
 

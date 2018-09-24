@@ -8,7 +8,7 @@
 
 class Init : public ircbot::SoPlugin {
  public:
-  Init(ircbot::PluginConfig config);
+  Init(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
   void onInit() override;

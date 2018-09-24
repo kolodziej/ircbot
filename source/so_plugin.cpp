@@ -4,8 +4,8 @@
 
 namespace ircbot {
 
-SoPlugin::SoPlugin(PluginConfig config)
-    : Plugin{config}, m_so_library{nullptr} {}
+SoPlugin::SoPlugin(std::shared_ptr<Core> core)
+    : Plugin{core}, m_so_library{nullptr} {}
 
 void SoPlugin::setSoLibrary(void* library) { m_so_library = library; }
 

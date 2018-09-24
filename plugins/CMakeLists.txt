@@ -4,12 +4,12 @@ include("${CMAKE_SOURCE_DIR}/cmake/plugin.cmake")
 
 set(PLUGINS
     init
-    ping
-    join
-    helloworld
+    # ping
+    # join
+    # helloworld
     clipboard
-    simple_commands
-    uptime
+    # simple_commands
+    # uptime
 )
 
 foreach(PLUGIN ${PLUGINS})

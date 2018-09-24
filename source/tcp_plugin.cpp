@@ -7,8 +7,8 @@
 
 namespace ircbot {
 
-TcpPlugin::TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket)
-    : Plugin{config},
+TcpPlugin::TcpPlugin(std::shared_ptr<Core> core, asio::ip::tcp::socket&& socket)
+    : Plugin{core},
       m_socket{std::move(socket)},
       m_init_timer{m_socket.get_io_service()},
       m_name{TcpPlugin::defaultName(m_socket)} {

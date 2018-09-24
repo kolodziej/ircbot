@@ -36,7 +36,7 @@ class TcpPluginServer {
 
  private:
   /** pointer to client which owns plugins registered by this server */
-  std::shared_ptr<Core> m_client;
+  std::shared_ptr<Core> m_core;
 
   /** endpoint on which server is listening for plugins connections */
   asio::ip::tcp::endpoint m_endpoint;

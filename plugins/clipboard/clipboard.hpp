@@ -5,7 +5,7 @@
 
 class Clipboard : public ircbot::SoPlugin {
  public:
-  Clipboard(ircbot::PluginConfig config);
+  Clipboard(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
   void onMessage(ircbot::IRCMessage cmd) override;

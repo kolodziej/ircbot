@@ -4,8 +4,8 @@
 
 using namespace ircbot;
 
-Init::Init(PluginConfig config)
-    : SoPlugin{config}, m_stage{0}, m_alt_nicks_index{0} {}
+Init::Init(std::shared_ptr<Core> core)
+    : SoPlugin{core}, m_stage{0}, m_alt_nicks_index{0} {}
 
 std::string Init::getName() const { return "Init"; }
 

@@ -4,16 +4,16 @@
 #include "ircbot/plugin.hpp"
 
 #define IRCBOT_PLUGIN(PluginName)                         \
-  extern "C" std::unique_ptr<ircbot::SoPlugin> getPlugin( \
-      ircbot::PluginConfig config) {                      \
-    return std::make_unique<PluginName>(config);          \
+  extern "C" std::shared_ptr<ircbot::SoPlugin> getPlugin( \
+      std::shared_ptr<ircbot::Core> core) {               \
+    return std::make_shared<PluginName>(core);            \
   }
 
 namespace ircbot {
 
 class SoPlugin : public Plugin {
  public:
-  SoPlugin(PluginConfig config);
+  SoPlugin(std::shared_ptr<Core> core);
 
   void setSoLibrary(void*);
   void* getSoLibrary() const;

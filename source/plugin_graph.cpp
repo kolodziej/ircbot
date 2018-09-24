@@ -58,26 +58,7 @@ std::shared_ptr<Plugin> PluginGraph::loadPyPlugin(const std::string& path) {
 }
 
 std::shared_ptr<Plugin> PluginGraph::loadSoPlugin(const std::string& path) {
-  void* pluginLibrary = dlopen(path, RTLD_NOW);
-  if (pluginLibrary == nullptr) {
-    LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
-    return nullptr;
-  }
-
-  void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
-  std::function<std::unique_ptr<SoPlugin>(PluginConfig)> func =
-      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(PluginConfig)>(
-          getPluginFunc);
-
-  if (func == nullptr) {
-    LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
-    return nullptr;
-  }
-
-  std::unique_ptr<SoPlugin> plugin = func(config);
-  m_dl_plugins[plugin->getId()] = pluginLibrary;
-
-  return plugin;
+  return nullptr;
 }
 
 }  // namespace ircbot

@@ -6,8 +6,8 @@
 
 using namespace ircbot;
 
-Clipboard::Clipboard(PluginConfig config)
-    : SoPlugin{config}, m_size{10}, m_message_size{512} {}
+Clipboard::Clipboard(std::shared_ptr<ircbot::Core> core)
+    : SoPlugin{core}, m_size{10}, m_message_size{512} {}
 
 std::string Clipboard::getName() const { return "Clipboard"; }
 

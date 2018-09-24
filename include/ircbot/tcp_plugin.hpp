@@ -21,7 +21,7 @@ class TcpPlugin : public Plugin {
    * \param socket rvalue reference to asio tcp socket on which communication
    * with plugin will be performed
    */
-  TcpPlugin(PluginConfig config, asio::ip::tcp::socket&& socket);
+  TcpPlugin(std::shared_ptr<Core> core, asio::ip::tcp::socket&& socket);
 
   std::string getName() const;
 

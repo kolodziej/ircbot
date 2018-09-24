@@ -13,13 +13,13 @@ namespace ptime = boost::posix_time;
 
 namespace ircbot {
 
-TcpPluginServer::TcpPluginServer(std::shared_ptr<Core> client,
+TcpPluginServer::TcpPluginServer(std::shared_ptr<Core> core,
                                  const std::string& host, uint16_t port)
-    : m_client{client},
-      m_acceptor{client->getIoService()},
-      m_socket{client->getIoService()},
-      m_deadline_timer{client->getIoService()} {
-  asio::ip::tcp::resolver resolver{client->getIoService()};
+    : m_core{core},
+      m_acceptor{core->getIoService()},
+      m_socket{core->getIoService()},
+      m_deadline_timer{core->getIoService()} {
+  asio::ip::tcp::resolver resolver{core->getIoService()};
   auto endpoints = resolver.resolve({host, std::to_string(port)});
 
   LOG(INFO, "Resolved ", host, ":", port, ".");
@@ -59,12 +59,9 @@ void TcpPluginServer::stop() {
 void TcpPluginServer::initializePlugin() {
   std::string host = m_socket.remote_endpoint().address().to_string();
   uint16_t port = m_socket.remote_endpoint().port();
-  std::string plugin_id{"tcp_plugin_" + host + ":" + std::to_string(port)};
 
-  PluginConfig config{m_client, plugin_id, Config{}};
-
-  auto plugin = std::make_unique<TcpPlugin>(config, std::move(m_socket));
-  m_client->addPlugin(std::move(plugin));
+  auto plugin = std::make_unique<TcpPlugin>(m_core, std::move(m_socket));
+  m_core->addPlugin(std::move(plugin));
 }
 
 }  // namespace ircbot
