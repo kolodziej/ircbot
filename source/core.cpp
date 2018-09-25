@@ -321,44 +321,6 @@ void Core::signal(int signum) {
   }
 }
 
-Core::PluginVectorIter Core::findPlugin(const std::string& pluginId) {
-  auto pred = [pluginId](const std::unique_ptr<Plugin>& plugin) {
-    return plugin->getId() == pluginId;
-  };
-  return std::find_if(m_plugins.begin(), m_plugins.end(), pred);
-}
-
-Core::PluginVectorIter Core::addPlugin(std::unique_ptr<Plugin>&& plugin) {
-  LOG(INFO, "Adding plugin ", plugin->getName());
-  return m_plugins.insert(m_plugins.end(), std::move(plugin));
-}
-
-void Core::removePlugin(PluginVectorIter it) {
-  LOG(INFO, "Removing plugin ", (*it)->getId());
-  if (it == m_plugins.end()) {
-    throw std::runtime_error{"There is no such plugin!"};
-  }
-  m_plugins.erase(it);
-}
-
-void Core::removePlugin(const std::string& pluginId) {
-  auto plugin = findPlugin(pluginId);
-  if (plugin != m_plugins.end()) {
-    removePlugin(plugin);
-  } else {
-    LOG(ERROR, "Could not found plugin with id ", pluginId);
-  }
-}
-
-std::vector<std::string> Core::listPlugins() const {
-  std::vector<std::string> names;
-  for (const auto& plugin : m_plugins) {
-    names.push_back(plugin->getName());
-  }
-
-  return names;
-}
-
 bool Core::authenticatePlugin(const std::string& token) {
   const std::string real_token = m_cfg["plugin_token"].as<std::string>();
   if (real_token.empty()) {

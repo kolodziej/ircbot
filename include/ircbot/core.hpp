@@ -117,68 +117,6 @@ class Core : public std::enable_shared_from_this<Core> {
   /** Signal handler */
   void signal(int);
 
-  /** Load plugin marked in configuration with given id
-   *
-   * \param pluginId plugin identification string
-   */
-  PluginVectorIter loadPlugin(const std::string& pluginId);
-
-  /** Load plugin marked in configuration with given id
-   *
-   * \param pluginId plugin identification string
-   * \param config configuration (may be loaded from configuration file or given
-   * by user)
-   *
-   * \return Iterator to vector of plugins (each plugin is represented by
-   * `std::unique_ptr<Plugin>`)
-   */
-  PluginVectorIter loadPlugin(const std::string& pluginId, Config config);
-
-  /** Load plugin from shared object file
-   *
-   * \param fname shared object filename
-   * \param config plugin configuration
-   *
-   * \return unique pointer to SoPlugin object
-   */
-  std::unique_ptr<SoPlugin> loadSoPlugin(const std::string& fname,
-                                         PluginConfig config);
-
-  /** Find plugin by id
-   *
-   * \param pluginId plugin id matching one given in configuration file
-   *
-   * \return iterator to element in vector of unique pointers to plugins
-   */
-  PluginVectorIter findPlugin(const std::string& pluginId);
-
-  /** Add plugin to client instance
-   *
-   * \param plugin r-value reference to unique pointer to Plugin instance
-   *
-   * \return iterator to inserted plugin
-   */
-  PluginVectorIter addPlugin(std::unique_ptr<Plugin>&& plugin);
-
-  /** Removes plugin from client instance
-   *
-   * \param it iterator to plugin in vector (may be obtained using findPlugin
-   * function
-   */
-  void removePlugin(PluginVectorIter it);
-
-  /** Removes plugin from client instance
-   *
-   * \param pluginId string containing plugin id to remove
-   */
-  void removePlugin(const std::string& pluginId);
-
-  /** Return list of all plugins' names added to this instance
-   *
-   * \return vector of plugins' names
-   */
-  std::vector<std::string> listPlugins() const;
-
   /** Authenticate plugin using token
    *
    * \param token secret token
