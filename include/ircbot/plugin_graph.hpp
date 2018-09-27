@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ircbot/core.hpp"
+#include "ircbot/output_plugin.hpp"
 
 namespace ircbot {
 
@@ -14,7 +15,8 @@ namespace ircbot {
  * Container for all plugins in ircbot.
  */
 
-class PluginGraph : private std::enable_shared_from_this<PluginGraph> {
+class PluginGraph : private std::enable_shared_from_this<PluginGraph>,
+                    public OutputPlugin {
  public:
   PluginGraph(std::shared_ptr<Core> core, Config config);
 
@@ -54,11 +56,8 @@ class PluginGraph : private std::enable_shared_from_this<PluginGraph> {
   /** pointer to Core */
   std::shared_ptr<Core> m_core;
 
-  /** graph roots - inputs to plugins' graph */
-  std::vector<std::shared_ptr<Plugin>> m_roots;
-
   /** all plugins registered in graph */
-  std::vector<std::shared_ptr<Plugin>> m_plugins;
+  std::map<std::string, std::shared_ptr<Plugin>> m_plugins;
 
  private:
   /** splits plugin's ID into type and path part */
@@ -74,7 +73,7 @@ class PluginGraph : private std::enable_shared_from_this<PluginGraph> {
    *
    * \param path path of file with plugin
    */
-  std::shared_ptr<Plugin> loadSoPlugin(const std::string& path);
+  std::shared_ptr<SoPlugin> loadSoPlugin(const std::string& path);
 };
 
 }  // namespace ircbot

@@ -60,16 +60,16 @@ void AdminPort::processCommand(const std::string& command) {
     if (cmd.arguments.size() < 1) {
       LOG(ERROR, "You have to give at least one plugin id!");
     }
-    for (const auto& plugin : cmd.arguments) {
-      m_client->restartPlugin(plugin);
-    }
+    // for (const auto& plugin : cmd.arguments) {
+    //   m_client->restartPlugin(plugin);
+    // }
   } else if (cmd.command == "reloadPlugin") {
     if (cmd.arguments.size() < 1) {
       LOG(ERROR, "You have to give at least one plugin id!");
     }
-    for (const auto& plugin : cmd.arguments) {
-      m_client->reloadPlugin(plugin);
-    }
+    // for (const auto& plugin : cmd.arguments) {
+    //   m_client->reloadPlugin(plugin);
+    // }
   } else if (cmd.command == "shutdown") {
     m_client->stop();
   }

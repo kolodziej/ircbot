@@ -74,62 +74,11 @@ void Core::connect() {
 }
 
 void Core::initializePlugins() {
-  for (auto p : m_cfg["plugins"]) {
-    const auto& pluginId = p.first;
-    const auto& pluginConfig = p.second;
-
-    loadPlugin(pluginId.as<std::string>(), Config(pluginConfig));
-  }
+  // @TODO: initializePlugins
 }
 
 void Core::deinitializePlugins() {
-  LOG(INFO, "Deinitializing all plugins");
-  m_plugins.clear();
-}
-
-Core::PluginVectorIter Core::loadPlugin(const std::string& pluginId) {
-  auto cfg = m_cfg["plugins"][pluginId];
-  return loadPlugin(pluginId, cfg);
-}
-
-Core::PluginVectorIter Core::loadPlugin(const std::string& pluginId,
-                                        Config config) {
-  std::string path = config["path"].as<std::string>();
-  if (path.empty()) {
-    LOG(WARNING, "Plugin (id): ", pluginId,
-        " has no path field in configuration! Omitting.");
-    return m_plugins.end();
-  }
-
-  LOG(INFO, "Processing plugin: ", path);
-
-  namespace fs = boost::filesystem;
-  std::string ext = fs::path(path).extension().string();
-  if (ext.empty()) {
-    LOG(WARNING, "No extension in plugin's path: ", path, ". Omitting.");
-    return m_plugins.end();
-  }
-
-  if (ext == ".so") {
-    LOG(INFO, "Loading plugin from shared library: ", path, " with ID: '",
-        pluginId, "'.");
-
-    PluginConfig cfg{shared_from_this(), pluginId, config};
-    auto plugin = loadSoPlugin(path, cfg);
-
-    if (plugin == nullptr) {
-      LOG(ERROR, "Could not load plugin from file: ", path);
-    } else {
-      LOG(INFO, "Plugin ", plugin->getName(), " loaded!");
-      return addPlugin(std::move(plugin));
-    }
-  } else if (ext == ".builtin") {
-    LOG(WARNING, "Support for builtin plugins is in development! Omitting.");
-  } else {
-    LOG(WARNING, "Unsupported plugin type: ", ext, ". Omitting!");
-  }
-
-  return m_plugins.end();
+  // @TODO: deinitializePlugins
 }
 
 void Core::startAsyncReceive() {
@@ -278,7 +227,7 @@ void Core::run() {
   initializePlugins();
 
   // start plugins
-  startPlugins();
+  // startPlugins();
 
   startTcpPluginServer();
   startAdminPort();
@@ -290,7 +239,7 @@ void Core::stop() {
   stopAsyncReceive();
   disconnect();
 
-  stopPlugins();
+  // stopPlugins();
 
   LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
@@ -333,74 +282,6 @@ bool Core::authenticatePlugin(const std::string& token) {
   }
 
   return false;
-}
-
-std::unique_ptr<SoPlugin> Core::loadSoPlugin(const std::string& fname,
-                                             PluginConfig config) {
-  void* pluginLibrary = dlopen(fname.data(), RTLD_NOW);
-  if (pluginLibrary == nullptr) {
-    LOG(ERROR, "Could not load file ", fname, ": ", dlerror());
-    return nullptr;
-  }
-
-  void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
-  std::function<std::unique_ptr<SoPlugin>(PluginConfig)> func =
-      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(PluginConfig)>(
-          getPluginFunc);
-
-  if (func == nullptr) {
-    LOG(ERROR, "Could not load plugin from ", fname, ": ", dlerror());
-    return nullptr;
-  }
-
-  std::unique_ptr<SoPlugin> plugin = func(config);
-  m_dl_plugins[plugin->getId()] = pluginLibrary;
-
-  return plugin;
-}
-
-void Core::startPlugins() {
-  for (auto& plugin : m_plugins) {
-    LOG(INFO, "Starting plugin ", plugin->getName());
-    plugin->spawn();
-  }
-}
-
-void Core::stopPlugins() {
-  for (auto& plugin : m_plugins) {
-    LOG(INFO, "Stopping plugin ", plugin->getName());
-    plugin->stop();
-  }
-}
-
-void Core::restartPlugin(const std::string& pluginId) {
-  auto it = findPlugin(pluginId);
-  if (it == m_plugins.end()) {
-    LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
-    return;
-  }
-
-  (*it)->stop();
-  (*it)->spawn();
-}
-
-void Core::reloadPlugin(const std::string& pluginId) {
-  auto it = findPlugin(pluginId);
-  if (it == m_plugins.end()) {
-    LOG(ERROR, "There is no plugin with ID: '", pluginId, "'.");
-    return;
-  }
-
-  LOG(INFO, "Reloading plugin ", pluginId);
-  (*it)->stop();
-  void* so_lib = m_dl_plugins[pluginId];
-  removePlugin(it);
-  if (dlclose(so_lib) != 0) {
-    LOG(ERROR, "Could not unload so library!");
-  }
-
-  auto plugin = loadPlugin(pluginId);
-  (*plugin)->spawn();
 }
 
 asio::io_service& Core::getIoService() { return m_io_service; }

@@ -15,7 +15,7 @@ std::shared_ptr<Core> Plugin::core() { return m_core; }
 void Plugin::stop() {
   if (not m_running) return;
 
-  LOG(INFO, "Stopping plugin: ", getId());
+  LOG(INFO, "Stopping plugin: ", getName());
   m_running = false;
 
   if (m_thread.joinable()) m_thread.join();
@@ -117,14 +117,14 @@ void Plugin::spawn() {
 }
 
 void Plugin::installCommandParser(std::shared_ptr<CommandParser> parser) {
-  LOG(INFO, "Installing new command parser in plugin ", getId());
+  LOG(INFO, "Installing new command parser in plugin ", getName());
   m_command_parser = parser;
 }
 
 bool Plugin::hasCommandParser() const { return m_command_parser != nullptr; }
 
 void Plugin::deinstallCommandParser() {
-  LOG(INFO, "Removing command parser from plugin ", getId());
+  LOG(INFO, "Removing command parser from plugin ", getName());
   m_command_parser = nullptr;
 }
 

@@ -110,6 +110,7 @@ set(SOURCES
     source/network/tcp_server.cpp
     source/network/timer.cpp
     source/plugin_graph.cpp
+    source/output_plugin.cpp
 )
 
 set(HEADERS
@@ -148,6 +149,7 @@ set(HEADERS
     include/ircbot/network/tcp_server.hpp
     include/ircbot/network/timer.hpp
     include/ircbot/plugin_graph.hpp
+    include/ircbot/output_plugin.hpp
     include/default_paths.hpp
     include/version_configuration.hpp
 )

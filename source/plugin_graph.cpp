@@ -1,6 +1,9 @@
 #include "ircbot/plugin_graph.hpp"
 
+#include <dlfcn.h>
 #include <regex>
+
+#include "ircbot/so_plugin.hpp"
 
 namespace ircbot {
 
@@ -38,7 +41,9 @@ std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id) {
 }
 
 void PluginGraph::addPlugin(const std::string& id,
-                            std::shared_ptr<Plugin> plugin) {}
+                            std::shared_ptr<Plugin> plugin) {
+  m_plugins.emplace(id, plugin);
+}
 
 std::pair<std::string, std::string> PluginGraph::splitId(
     const std::string& id) {
@@ -57,8 +62,25 @@ std::shared_ptr<Plugin> PluginGraph::loadPyPlugin(const std::string& path) {
   return nullptr;
 }
 
-std::shared_ptr<Plugin> PluginGraph::loadSoPlugin(const std::string& path) {
-  return nullptr;
+std::shared_ptr<SoPlugin> PluginGraph::loadSoPlugin(const std::string& path) {
+  void* pluginLibrary = dlopen(path.data(), RTLD_NOW);
+  if (pluginLibrary == nullptr) {
+    LOG(ERROR, "Could not load file ", path, ": ", dlerror());
+    return nullptr;
+  }
+
+  void* getPluginFunc = dlsym(pluginLibrary, "getPlugin");
+  std::function<std::unique_ptr<SoPlugin>(std::shared_ptr<Core>)> func =
+      reinterpret_cast<std::unique_ptr<SoPlugin> (*)(std::shared_ptr<Core>)>(
+          getPluginFunc);
+
+  if (func == nullptr) {
+    LOG(ERROR, "Could not load plugin from ", path, ": ", dlerror());
+    return nullptr;
+  }
+
+  std::unique_ptr<SoPlugin> plugin = func(m_core);
+  return plugin;
 }
 
 }  // namespace ircbot

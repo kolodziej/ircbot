@@ -61,7 +61,8 @@ void TcpPluginServer::initializePlugin() {
   uint16_t port = m_socket.remote_endpoint().port();
 
   auto plugin = std::make_unique<TcpPlugin>(m_core, std::move(m_socket));
-  m_core->addPlugin(std::move(plugin));
+  // TODO: add plugin
+  // m_core->addPlugin(std::move(plugin));
 }
 
 }  // namespace ircbot

@@ -123,24 +123,6 @@ class Core : public std::enable_shared_from_this<Core> {
    */
   bool authenticatePlugin(const std::string& token);
 
-  /** Start all plugins */
-  void startPlugins();
-
-  /** Stops all plugins */
-  void stopPlugins();
-
-  /** Restart plugin with given id
-   *
-   * \param pluginId plugin's id given in configuration file
-   */
-  void restartPlugin(const std::string& pluginId);
-
-  /** Reload plugin with given id
-   *
-   * \param pluginId plugin's id given in configuration file
-   */
-  void reloadPlugin(const std::string& pluginId);
-
   /** Get boost::asio::io_service instance by reference
    *
    * \return reference to boost::asio::io_service

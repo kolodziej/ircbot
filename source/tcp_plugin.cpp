@@ -27,8 +27,8 @@ void TcpPlugin::startReceiving() {
       startReceiving();
     } else {
       if (error == asio::error::operation_aborted) {
-        LOG(INFO,
-            "Asynchronous receiving messages cancelled for plugin: ", getId());
+        LOG(INFO, "Asynchronous receiving messages cancelled for plugin: ",
+            getName());
       } else {
         LOG(ERROR, "TcpPlugin ", getName(),
             ": error during receiving message! Stopping!");
@@ -104,31 +104,31 @@ void TcpPlugin::onShutdown() {
   m_init_timer.cancel();
 
   if (not m_socket.is_open()) {
-    LOG(INFO, "TcpPlugin ", getId(),
+    LOG(INFO, "TcpPlugin ", getName(),
         ": socket is not open. Closing without shutdown sequence!");
     return;
   }
 
-  DEBUG("Sending SHUTDOWN message to TcpPlugin ", getId());
+  DEBUG("Sending SHUTDOWN message to TcpPlugin ", getName());
   sendControlRequest(PluginProtocol::ControlRequest::SHUTDOWN);
 
-  LOG(INFO, "Waiting until TcpPlugin ", getId(), " is ready for shutdown...");
+  LOG(INFO, "Waiting until TcpPlugin ", getName(), " is ready for shutdown...");
   m_ready_for_shutdown.get_future().get();
 
   try {
-    DEBUG("Shutting down socket for Tcp Plugin ", getId());
+    DEBUG("Shutting down socket for Tcp Plugin ", getName());
     m_socket.shutdown(asio::ip::tcp::socket::shutdown_both);
   } catch (const boost::system::system_error& error) {
-    LOG(ERROR, "Could not shutdown connection to Tcp Plugin ", getId());
+    LOG(ERROR, "Could not shutdown connection to Tcp Plugin ", getName());
   }
 
-  DEBUG("Canceling all asynchronous operations for Tcp Plugin ", getId());
+  DEBUG("Canceling all asynchronous operations for Tcp Plugin ", getName());
   m_socket.cancel();
-  DEBUG("Closing socket for Tcp Plugin ", getId());
+  DEBUG("Closing socket for Tcp Plugin ", getName());
   m_socket.close();
 
   LOG(INFO, "Removing plugin from Client");
-  core()->removePlugin(getId());
+  // core()->removePlugin(getName());
 }
 
 std::string TcpPlugin::defaultName(asio::ip::tcp::socket& socket) {
@@ -174,7 +174,7 @@ void TcpPlugin::sendToPlugin(const std::string& msg) {
         " bytes to tcp plugin");
     m_socket.send(asio::buffer(msg.data(), msg.size()));
   } catch (const boost::system::system_error& error) {
-    LOG(ERROR, "Could not send data to TcpPlugin ", getId(), ": ",
+    LOG(ERROR, "Could not send data to TcpPlugin ", getName(), ": ",
         error.what());
   }
 }
