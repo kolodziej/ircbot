@@ -10,13 +10,13 @@ Init::Init(PluginConfig config)
 std::string Init::getName() const { return "Init"; }
 
 void Init::onInit() {
-  for (auto nick : cfg().get_child("config.alternative_nicks")) {
-    m_alt_nicks.push_back(nick.second.data());
+  for (auto nick : getConfig()["config"]["alternative_nicks"]) {
+    m_alt_nicks.push_back(nick.as<std::string>());
   }
 
-  sendNickMsg(cfg().get<std::string>("config.nick"));
-  sendUserMsg(cfg().get<std::string>("config.user"),
-              cfg().get<std::string>("config.real_name"));
+  sendNickMsg(getConfig()["config"]["nick"].as<std::string>());
+  sendUserMsg(getConfig()["config"]["user"].as<std::string>(),
+              getConfig()["config"]["real_name"].as<std::string>());
 }
 
 void Init::onMessage(IRCMessage cmd) {

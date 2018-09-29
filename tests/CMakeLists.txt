@@ -8,6 +8,7 @@ set(TESTS
 
 foreach(TEST ${TESTS})
     add_executable(${TEST} "${TEST}.cpp")
-    target_link_libraries(${TEST} ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} ${Protobuf_LIBRARIES} gtest gtest_main ircbot dl)
+    target_link_libraries(${TEST} ${Boost_LIBRARIES} ${PYTHON_LIBRARIES}
+        ${Protobuf_LIBRARIES} gtest gtest_main ircbot dl yaml-cpp)
     add_test(${TEST} ${TEST})
 endforeach()

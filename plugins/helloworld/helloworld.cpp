@@ -15,9 +15,10 @@ void HelloWorld::onMessage(IRCMessage cmd) {
     throw std::runtime_error{"Hello World plugin error caused by user!"};
   }
 
-  IRCMessage response{"PRIVMSG",
-                      {cmd.nick, cfg().get("config.message",
-                                           std::string("HelloWorld plugin"))}};
+  IRCMessage response{
+      "PRIVMSG",
+      {cmd.nick,
+       getConfig()["config"]["message"].as<std::string>("HelloWorld plugin")}};
 
   send(response);
 }

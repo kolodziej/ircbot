@@ -33,8 +33,8 @@ void Core::connect() {
   asio::ip::tcp::resolver resolver{m_io_service};
   boost::system::error_code ec;
 
-  std::string host = m_cfg.tree().get("server", std::string{});
-  uint16_t port = m_cfg.tree().get("port", 0u);
+  std::string host = m_cfg["server"].as<std::string>();
+  uint16_t port = m_cfg["port"].as<uint16_t>();
 
   if (port == 0u or host.empty()) {
     throw std::runtime_error{"Incorrect host or port!"};
@@ -49,9 +49,10 @@ void Core::connect() {
   }
 
   uint32_t trials{};
-  uint32_t interval{m_cfg.tree().get("reconnect-interval",
-                                     200u)};  // interval in milliseconds
-  uint32_t maximum_interval{m_cfg.tree().get("max-reconnect-interval", 15000u)};
+  uint32_t interval{m_cfg["reconnect-interval"].as<uint32_t>(
+      200u)};  // interval in milliseconds
+  uint32_t maximum_interval{
+      m_cfg["max-reconnect-interval"].as<uint32_t>(15000u)};
   while (true) {
     LOG(INFO, "(", trials, ") Trying to connect...");
     asio::connect(m_socket, endp, ec);
@@ -73,11 +74,11 @@ void Core::connect() {
 }
 
 void Core::initializePlugins() {
-  for (auto p : m_cfg.tree().get_child("plugins")) {
+  for (auto p : m_cfg["plugins"]) {
     const auto& pluginId = p.first;
     const auto& pluginConfig = p.second;
 
-    loadPlugin(pluginId, pluginConfig);
+    loadPlugin(pluginId.as<std::string>(), Config(pluginConfig));
   }
 }
 
@@ -87,13 +88,13 @@ void Core::deinitializePlugins() {
 }
 
 Core::PluginVectorIter Core::loadPlugin(const std::string& pluginId) {
-  auto cfg = m_cfg.tree().get_child(std::string{"plugins."} + pluginId);
+  auto cfg = m_cfg["plugins"][pluginId];
   return loadPlugin(pluginId, cfg);
 }
 
 Core::PluginVectorIter Core::loadPlugin(const std::string& pluginId,
                                         Config config) {
-  std::string path = config.tree().get("path", std::string());
+  std::string path = config["path"].as<std::string>();
   if (path.empty()) {
     LOG(WARNING, "Plugin (id): ", pluginId,
         " has no path field in configuration! Omitting.");
@@ -182,8 +183,8 @@ void Core::stopAsyncReceive() {
 }
 
 void Core::startAdminPort() {
-  std::string socket_path{
-      m_cfg.tree().get("admin_port.path", "/var/run/ircbot_admin.sock")};
+  std::string socket_path{m_cfg["admin_port"]["path"].as<std::string>(
+      "/var/run/ircbot_admin.sock")};
 
   LOG(INFO, "Starting admin port on ", socket_path);
 
@@ -207,9 +208,9 @@ void Core::stopAdminPort() {
 }
 
 void Core::startTcpPluginServer() {
-  std::string host{m_cfg.tree().get("tcp_plugin_server.host", "localhost")};
-  uint16_t port{
-      m_cfg.tree().get("tcp_plugin_server.port", static_cast<uint16_t>(5454))};
+  std::string host{
+      m_cfg["tcp_plugin_server"]["host"].as<std::string>("localhost")};
+  uint16_t port{m_cfg["tcp_plugin_server"]["port"].as<uint16_t>(5454u)};
 
   LOG(INFO, "Starting tcp plugin server on ", host, ":", port);
 
@@ -359,8 +360,7 @@ std::vector<std::string> Core::listPlugins() const {
 }
 
 bool Core::authenticatePlugin(const std::string& token) {
-  const std::string real_token =
-      m_cfg.tree().get("plugin_token", std::string{});
+  const std::string real_token = m_cfg["plugin_token"].as<std::string>();
   if (real_token.empty()) {
     LOG(ERROR, "Token for TCP plugins has not been set or is empty!");
     return false;

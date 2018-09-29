@@ -21,6 +21,12 @@ message(STATUS "Using default path for SO plugins: ${SO_PLUGIN_INSTALL_PATH}")
 add_subdirectory(pybind11)
 include_directories("${CMAKE_SOURCE_DIR}/pybind11/include")
 
+set(YAML_CPP_BUILD_TESTS OFF)
+set(YAML_CPP_BUILD_TOOLS OFF)
+set(YAML_CPP_BUILD_CONTRIB OFF)
+add_subdirectory(yaml-cpp)
+include_directories("${CMAKE_SOURCE_DIR}/yaml-cpp/include")
+
 include_directories("${CMAKE_SOURCE_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}/include")
 include_directories("${CMAKE_BINARY_DIR}")

@@ -80,9 +80,9 @@ int main(int argc, char** argv) {
     bool stdout_logging = false;
     // add logger outputs
     Logger& logger = Logger::getInstance();
-    for (auto log : config.tree().get_child("log")) {
-      std::string level_str = log.second.get<std::string>("level");
-      std::string log_fname = log.second.get<std::string>("file");
+    for (auto log : config["log"]) {
+      std::string level_str = log["level"].as<std::string>();
+      std::string log_fname = log["file"].as<std::string>();
       LogLevel level = GetLogLevel(level_str);
 #ifndef LOG_DEBUG
       if (level == LogLevel::DEBUG) {

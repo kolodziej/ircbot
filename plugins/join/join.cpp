@@ -10,8 +10,8 @@ Join::Join(PluginConfig config) : SoPlugin{config} {}
 std::string Join::getName() const { return "Join"; }
 
 void Join::onInit() {
-  for (auto p : cfg().get_child("config.channels")) {
-    auto channel = p.second.data();
+  for (auto p : getConfig()["config"]["channels"]) {
+    auto channel = p.as<std::string>();
     if (not m_channels.count(channel)) {
       LOG(INFO, "Trying to join ", channel);
       m_channels.insert(channel);
