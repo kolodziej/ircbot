@@ -276,6 +276,8 @@ void Core::signal(int signum) {
 
 std::shared_ptr<PluginGraph> Core::getPluginGraph() { return m_plugin_graph; }
 
+Config Core::getConfig() const { return m_cfg; }
+
 bool Core::authenticatePlugin(const std::string& token) {
   const std::string real_token = m_cfg["plugin_token"].as<std::string>();
   if (real_token.empty()) {

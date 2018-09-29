@@ -2,6 +2,7 @@
 
 #include <dlfcn.h>
 #include <regex>
+#include <stack>
 
 #include "ircbot/so_plugin.hpp"
 
@@ -10,6 +11,25 @@ namespace ircbot {
 PluginGraph::PluginGraph(std::shared_ptr<Core> core) : m_core{core} {}
 
 std::shared_ptr<Core> PluginGraph::core() { return m_core; }
+
+void PluginGraph::loadPluginsFromConfig() {
+  Config cfg{core()->getConfig()};
+
+  auto plugins_tree = cfg.tree().get_child("plugins");
+
+  std::stack<Config> trees;
+  trees.push(plugins_tree);
+
+  while (not trees.empty()) {
+    auto tree = trees.top();
+    trees.pop();
+
+    // for (auto plugin : tree) {
+    // add dependencies to trees
+    // load this plugin
+    // }
+  }
+}
 
 std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id) {
   std::string type{}, path{};

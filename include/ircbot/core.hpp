@@ -120,6 +120,9 @@ class Core : public std::enable_shared_from_this<Core> {
   /** Get pointer to PluginGraph instance */
   std::shared_ptr<PluginGraph> getPluginGraph();
 
+  /** Get configuration */
+  Config getConfig() const;
+
   /** Authenticate plugin using token
    *
    * \param token secret token
