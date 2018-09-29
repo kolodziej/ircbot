@@ -141,9 +141,6 @@ class Core : public std::enable_shared_from_this<Core> {
   /** Reference to network::ContextProvider */
   network::ContextProvider& m_context_provider;
 
-  /** Reference to instance of io_service */
-  asio::io_service& m_io_service;
-
   /** TCP socket which is connected to IRC server */
   asio::ip::tcp::socket m_socket;
 

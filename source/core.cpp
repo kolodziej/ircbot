@@ -20,8 +20,7 @@ using network::ContextProvider;
 
 Core::Core(Config cfg)
     : m_context_provider{ContextProvider::getInstance()},
-      m_io_service{m_context_provider.getContext()},
-      m_socket{m_io_service},
+      m_socket{m_context_provider.getContext()},
       m_cfg{cfg},
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
@@ -30,7 +29,7 @@ Core::Core(Config cfg)
       m_start_time{std::chrono::steady_clock::now()} {}
 
 void Core::connect() {
-  asio::ip::tcp::resolver resolver{m_io_service};
+  asio::ip::tcp::resolver resolver{m_context_provider.getContext()};
   boost::system::error_code ec;
 
   std::string host = m_cfg["server"].as<std::string>();
@@ -284,7 +283,9 @@ bool Core::authenticatePlugin(const std::string& token) {
   return false;
 }
 
-asio::io_service& Core::getIoService() { return m_io_service; }
+asio::io_service& Core::getIoService() {
+  return m_context_provider.getContext();
+}
 
 std::chrono::steady_clock::duration Core::getUptime() const {
   return std::chrono::steady_clock::now() - m_start_time;
