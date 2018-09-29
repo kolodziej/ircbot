@@ -30,7 +30,7 @@ Core::Core(Config cfg)
       m_result{RunResult::OK},
       m_start_time{std::chrono::steady_clock::now()} {
   // create instance of PluginGraph
-  m_plugin_graph = std::make_unique<PluginGraph>(shared_from_this());
+  m_plugin_graph = std::make_shared<PluginGraph>(shared_from_this());
 }
 
 void Core::connect() {
@@ -273,6 +273,8 @@ void Core::signal(int signum) {
       break;
   }
 }
+
+std::shared_ptr<PluginGraph> Core::getPluginGraph() { return m_plugin_graph; }
 
 bool Core::authenticatePlugin(const std::string& token) {
   const std::string real_token = m_cfg["plugin_token"].as<std::string>();

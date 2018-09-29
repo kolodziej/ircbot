@@ -117,6 +117,9 @@ class Core : public std::enable_shared_from_this<Core> {
   /** Signal handler */
   void signal(int);
 
+  /** Get pointer to PluginGraph instance */
+  std::shared_ptr<PluginGraph> getPluginGraph();
+
   /** Authenticate plugin using token
    *
    * \param token secret token
@@ -152,7 +155,7 @@ class Core : public std::enable_shared_from_this<Core> {
   Config m_cfg;
 
   /** instance of PluginGraph for this Core */
-  std::unique_ptr<PluginGraph> m_plugin_graph;
+  std::shared_ptr<PluginGraph> m_plugin_graph;
 
   /** instance of AdminPort for this Core */
   std::unique_ptr<AdminPort> m_admin_port;
