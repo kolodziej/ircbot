@@ -18,7 +18,6 @@
 #include "ircbot/irc_parser.hpp"
 #include "ircbot/logger.hpp"
 #include "ircbot/network/context_provider.hpp"
-#include "ircbot/plugin_config.hpp"
 
 namespace asio = boost::asio;
 
@@ -27,6 +26,7 @@ namespace ircbot {
 class Plugin;
 class SoPlugin;
 class TcpPluginServer;
+class PluginGraph;
 
 /** \class Core
  *
@@ -150,6 +150,9 @@ class Core : public std::enable_shared_from_this<Core> {
   std::array<char, 4096> m_buffer;
 
   Config m_cfg;
+
+  /** instance of PluginGraph for this Core */
+  std::unique_ptr<PluginGraph> m_plugin_graph;
 
   /** instance of AdminPort for this Client */
   std::unique_ptr<AdminPort> m_admin_port;

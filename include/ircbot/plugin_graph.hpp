@@ -18,7 +18,7 @@ namespace ircbot {
 class PluginGraph : private std::enable_shared_from_this<PluginGraph>,
                     public OutputPlugin {
  public:
-  PluginGraph(std::shared_ptr<Core> core, Config config);
+  PluginGraph(std::shared_ptr<Core> core);
 
   /** Returns pointer to Core that own this PluginGraph */
   std::shared_ptr<Core> core();

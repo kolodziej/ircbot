@@ -11,6 +11,7 @@
 
 #include "ircbot/helpers.hpp"
 #include "ircbot/plugin.hpp"
+#include "ircbot/plugin_graph.hpp"
 #include "ircbot/so_plugin.hpp"
 #include "ircbot/tcp_plugin_server.hpp"
 
@@ -22,11 +23,15 @@ Core::Core(Config cfg)
     : m_context_provider{ContextProvider::getInstance()},
       m_socket{m_context_provider.getContext()},
       m_cfg{cfg},
+      m_plugin_graph{nullptr},
       m_admin_port{nullptr},
       m_tcp_plugin_server{nullptr},
       m_running{false},
       m_result{RunResult::OK},
-      m_start_time{std::chrono::steady_clock::now()} {}
+      m_start_time{std::chrono::steady_clock::now()} {
+  // create instance of PluginGraph
+  m_plugin_graph = std::make_unique<PluginGraph>(shared_from_this());
+}
 
 void Core::connect() {
   asio::ip::tcp::resolver resolver{m_context_provider.getContext()};

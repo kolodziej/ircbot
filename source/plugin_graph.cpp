@@ -7,8 +7,7 @@
 
 namespace ircbot {
 
-PluginGraph::PluginGraph(std::shared_ptr<Core> core, Config config)
-    : m_core{core} {}
+PluginGraph::PluginGraph(std::shared_ptr<Core> core) : m_core{core} {}
 
 std::shared_ptr<Core> PluginGraph::core() { return m_core; }
 

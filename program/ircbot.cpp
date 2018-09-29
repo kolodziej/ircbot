@@ -13,6 +13,7 @@
 #include "ircbot/logger.hpp"
 #include "ircbot/network/context_provider.hpp"
 #include "ircbot/plugin.hpp"
+#include "ircbot/plugin_graph.hpp"
 #include "ircbot/tcp_plugin_server.hpp"
 #include "ircbot/version.hpp"
 
