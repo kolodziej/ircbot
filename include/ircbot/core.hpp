@@ -32,7 +32,7 @@ class PluginGraph;
  *
  * \brief Maintains a connection to server and manages plugins.
  *
- * Client is a representation of connection to IRC server. It routes received
+ * Core is a representation of connection to IRC server. It routes received
  * messages to plugins which are managed also by this class and takes outgoing
  * messages from plugins and delivers them back to server.
  */
@@ -133,7 +133,7 @@ class Core : public std::enable_shared_from_this<Core> {
    *
    * Returns duration from creation of this object's creation
    *
-   * \return duration from Client creation
+   * \return duration from Core creation
    */
   std::chrono::steady_clock::duration getUptime() const;
 
@@ -154,10 +154,10 @@ class Core : public std::enable_shared_from_this<Core> {
   /** instance of PluginGraph for this Core */
   std::unique_ptr<PluginGraph> m_plugin_graph;
 
-  /** instance of AdminPort for this Client */
+  /** instance of AdminPort for this Core */
   std::unique_ptr<AdminPort> m_admin_port;
 
-  /** instance of TcpPluginServer for this Client */
+  /** instance of TcpPluginServer for this Core */
   std::unique_ptr<TcpPluginServer> m_tcp_plugin_server;
 
   /** Indicates if instance is running */
