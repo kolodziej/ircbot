@@ -13,12 +13,13 @@ PluginGraph::PluginGraph(std::shared_ptr<Core> core) : m_core{core} {}
 std::shared_ptr<Core> PluginGraph::core() { return m_core; }
 
 void PluginGraph::loadPlugins(Config config) {
-  using PluginPair = std::pair<Config, std::shared_ptr<OutputPlugin>>;
+  using PluginPair = std::pair<Config, std::shared_ptr<DependencyContainer>>;
   std::stack<PluginPair> trees;
 
   LOG(INFO, "Adding plugins configuration");
-  trees.push(std::make_pair(Config(config),
-                            std::shared_ptr<OutputPlugin>(shared_from_this())));
+  trees.push(
+      std::make_pair(Config(config),
+                     std::shared_ptr<DependencyContainer>(shared_from_this())));
 
   while (not trees.empty()) {
     auto tree = trees.top();
@@ -40,14 +41,14 @@ void PluginGraph::loadPlugins(Config config) {
         addPlugin(id, plugin_ptr);
 
         // add plugin as an output for current parrent
-        parent->addOutputPlugin(plugin_ptr);
+        parent->addDependentPlugin(plugin_ptr);
 
         // add dependencies
         if (plugin.second["dependencies"]) {
           LOG(INFO, "Adding dependencies of plugin: ", id);
           PluginPair p =
               std::make_pair(Config(plugin.second["dependencies"]),
-                             std::shared_ptr<OutputPlugin>(plugin_ptr));
+                             std::shared_ptr<DependencyContainer>(plugin_ptr));
           trees.push(p);
         }
       }

@@ -1,4 +1,4 @@
-#include "ircbot/output_plugin.hpp"
+#include "ircbot/dependency_container.hpp"
 
 #include "ircbot/plugin.hpp"
 
@@ -6,11 +6,12 @@
 
 namespace ircbot {
 
-void OutputPlugin::addOutputPlugin(std::shared_ptr<Plugin> plugin) {
+void DependencyContainer::addDependentPlugin(std::shared_ptr<Plugin> plugin) {
   m_inputs.push_back(plugin);
 }
 
-bool OutputPlugin::removeOutputPlugin(std::shared_ptr<Plugin> plugin) {
+bool DependencyContainer::removeDependentPlugin(
+    std::shared_ptr<Plugin> plugin) {
   auto it = std::find(m_inputs.begin(), m_inputs.end(), plugin);
   if (it != m_inputs.end()) {
     m_inputs.erase(it);
@@ -20,7 +21,7 @@ bool OutputPlugin::removeOutputPlugin(std::shared_ptr<Plugin> plugin) {
   return false;
 }
 
-void OutputPlugin::outputMessage(const IRCMessage& message) {
+void DependencyContainer::outputMessage(const IRCMessage& message) {
   for (auto& plugin : m_inputs) {
     if (not plugin->preFilter(message)) {
       DEBUG("Plugin ", plugin->getName(), " pre-filtering not passed",

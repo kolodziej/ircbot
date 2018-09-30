@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "ircbot/core.hpp"
-#include "ircbot/output_plugin.hpp"
+#include "ircbot/dependency_container.hpp"
 
 namespace ircbot {
 
@@ -16,7 +16,7 @@ namespace ircbot {
  */
 
 class PluginGraph : public std::enable_shared_from_this<PluginGraph>,
-                    public OutputPlugin {
+                    public DependencyContainer {
  public:
   PluginGraph(std::shared_ptr<Core> core);
 

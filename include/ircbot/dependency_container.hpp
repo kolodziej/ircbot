@@ -1,5 +1,5 @@
-#ifndef _IRCBOT_OUTPUT_PLUGIN_HPP
-#define _IRCBOT_OUTPUT_PLUGIN_HPP
+#ifndef _IRCBOT_DEPENDENCY_CONTAINER_HPP
+#define _IRCBOT_DEPENDENCY_CONTAINER_HPP
 
 #include <memory>
 #include <vector>
@@ -9,7 +9,7 @@
 
 namespace ircbot {
 
-/* \class OutputPlugin
+/* \class DependencyContainer
  *
  * \brief Base class for all everything that can act as an input for other
  * plugins
@@ -20,26 +20,26 @@ namespace ircbot {
 
 class Plugin;
 
-class OutputPlugin {
+class DependencyContainer {
  public:
-  OutputPlugin() = default;
-  OutputPlugin(const OutputPlugin&) = default;
-  OutputPlugin(OutputPlugin&&) = default;
-  OutputPlugin& operator=(const OutputPlugin&) = default;
-  OutputPlugin& operator=(OutputPlugin&&) = default;
+  DependencyContainer() = default;
+  DependencyContainer(const DependencyContainer&) = default;
+  DependencyContainer(DependencyContainer&&) = default;
+  DependencyContainer& operator=(const DependencyContainer&) = default;
+  DependencyContainer& operator=(DependencyContainer&&) = default;
 
   /** Add plugin - register plugin to which this should output
    *
    * \param plugin shared pointer to plugin that should be added
    */
-  void addOutputPlugin(std::shared_ptr<Plugin> plugin);
+  void addDependentPlugin(std::shared_ptr<Plugin> plugin);
 
   /** Remove plugin
    *
    * \param plugin shared pointer to plugin that should be removed
    * \return returns false if plugin didn't exist in OutputPlugin
    */
-  bool removeOutputPlugin(std::shared_ptr<Plugin> plugin);
+  bool removeDependentPlugin(std::shared_ptr<Plugin> plugin);
 
   /** Output message to all inputs
    *
