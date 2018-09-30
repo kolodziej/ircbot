@@ -5,7 +5,7 @@
 
 using namespace ircbot;
 
-Uptime::Uptime(PluginConfig config) : SoPlugin{config} {}
+Uptime::Uptime(std::shared_ptr<Core> core) : SoPlugin{core} {}
 
 std::string Uptime::getName() const { return "HelloWorld"; }
 

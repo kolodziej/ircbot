@@ -4,7 +4,7 @@
 
 using namespace ircbot;
 
-Ping::Ping(PluginConfig config) : SoPlugin{config} {}
+Ping::Ping(std::shared_ptr<Core> core) : SoPlugin{core} {}
 
 std::string Ping::getName() const { return "Ping"; }
 

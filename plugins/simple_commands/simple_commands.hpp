@@ -5,7 +5,7 @@
 
 class SimpleCommands : public ircbot::SoPlugin {
  public:
-  SimpleCommands(ircbot::PluginConfig config) : ircbot::SoPlugin{config} {
+  SimpleCommands(std::shared_ptr<ircbot::Core> core) : ircbot::SoPlugin{core} {
     installCommandParser(std::make_shared<ircbot::CommandParser>(
         ircbot::ParserConfig{'!', true}));
     addFunction("help", [this](const ircbot::CommandParser::Command& cmd) {

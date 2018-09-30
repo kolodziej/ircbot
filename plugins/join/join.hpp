@@ -8,7 +8,7 @@
 
 class Join : public ircbot::SoPlugin {
  public:
-  Join(ircbot::PluginConfig config);
+  Join(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
   void onInit() override;

@@ -5,12 +5,12 @@
 
 using namespace ircbot;
 
-Join::Join(PluginConfig config) : SoPlugin{config} {}
+Join::Join(std::shared_ptr<Core> core) : SoPlugin{core} {}
 
 std::string Join::getName() const { return "Join"; }
 
 void Join::onInit() {
-  for (auto p : getConfig()["config"]["channels"]) {
+  for (auto p : getConfig()["channels"]) {
     auto channel = p.as<std::string>();
     if (not m_channels.count(channel)) {
       LOG(INFO, "Trying to join ", channel);

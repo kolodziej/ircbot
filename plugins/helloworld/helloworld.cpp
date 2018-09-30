@@ -4,7 +4,7 @@
 
 using namespace ircbot;
 
-HelloWorld::HelloWorld(PluginConfig config) : SoPlugin{config} {}
+HelloWorld::HelloWorld(std::shared_ptr<Core> core) : SoPlugin{core} {}
 
 std::string HelloWorld::getName() const { return "HelloWorld"; }
 
@@ -17,8 +17,7 @@ void HelloWorld::onMessage(IRCMessage cmd) {
 
   IRCMessage response{
       "PRIVMSG",
-      {cmd.nick,
-       getConfig()["config"]["message"].as<std::string>("HelloWorld plugin")}};
+      {cmd.nick, getConfig()["message"].as<std::string>("HelloWorld plugin")}};
 
   send(response);
 }

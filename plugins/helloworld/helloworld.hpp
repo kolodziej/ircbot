@@ -8,7 +8,7 @@
 
 class HelloWorld : public ircbot::SoPlugin {
  public:
-  HelloWorld(ircbot::PluginConfig config);
+  HelloWorld(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
   void onMessage(ircbot::IRCMessage cmd) override;

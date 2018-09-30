@@ -5,7 +5,7 @@
 
 class Ping : public ircbot::SoPlugin {
  public:
-  Ping(ircbot::PluginConfig config);
+  Ping(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
   void onMessage(ircbot::IRCMessage cmd) override;

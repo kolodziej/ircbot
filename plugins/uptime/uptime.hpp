@@ -8,7 +8,7 @@
 
 class Uptime : public ircbot::SoPlugin {
  public:
-  Uptime(ircbot::PluginConfig config);
+  Uptime(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
   void onMessage(ircbot::IRCMessage cmd) override;
