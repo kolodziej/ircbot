@@ -61,6 +61,12 @@ class Core : public std::enable_shared_from_this<Core> {
   /** Initializes all plugins from configuration */
   void initializePlugins();
 
+  /** Start all plugins */
+  void startPlugins();
+
+  /** Stop all plugins */
+  void stopPlugins();
+
   /** Deinitializes all plugins */
   void deinitializePlugins();
 

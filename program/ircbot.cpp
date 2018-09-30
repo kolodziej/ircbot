@@ -153,6 +153,9 @@ int main(int argc, char** argv) {
     } while (result != Core::RunResult::OK);
 
     ctx.stop();
+  } catch (YAML::Exception& exc) {
+    std::cerr << "Configuration error: " << exc.what() << '\n';
+    return 2;
   } catch (std::runtime_error& exc) {
     std::cerr << "Runtime error: " << exc.what() << '\n';
     return 2;

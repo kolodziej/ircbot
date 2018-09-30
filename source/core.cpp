@@ -76,9 +76,26 @@ void Core::connect() {
 
 void Core::initializePlugins() {
   // create instance of PluginGraph
-  m_plugin_graph = std::make_shared<PluginGraph>(shared_from_this());
+  if (m_cfg["plugins"]) {
+    LOG(INFO, "Initializing PluginGraph");
+    m_plugin_graph = std::make_shared<PluginGraph>(shared_from_this());
+    LOG(INFO, "Initializing plugins");
+    m_plugin_graph->loadPlugins(m_cfg["plugins"]);
+  } else {
+    LOG(INFO, "Configuration does not contain any plugins configuration!");
+  }
+}
 
-  // @TODO: initializePlugins
+void Core::startPlugins() {
+  if (m_plugin_graph) {
+    m_plugin_graph->startPlugins();
+  }
+}
+
+void Core::stopPlugins() {
+  if (m_plugin_graph) {
+    m_plugin_graph->stopPlugins();
+  }
 }
 
 void Core::deinitializePlugins() {
@@ -231,7 +248,7 @@ void Core::run() {
   initializePlugins();
 
   // start plugins
-  // startPlugins();
+  startPlugins();
 
   startTcpPluginServer();
   startAdminPort();

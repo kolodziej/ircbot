@@ -12,26 +12,32 @@ PluginGraph::PluginGraph(std::shared_ptr<Core> core) : m_core{core} {}
 
 std::shared_ptr<Core> PluginGraph::core() { return m_core; }
 
-void PluginGraph::loadPluginsFromConfig() {
-  Config cfg{core()->getConfig()};
-
-  auto plugins_tree = cfg["plugins"];
-
+void PluginGraph::loadPlugins(Config config) {
   std::stack<Config> trees;
-  trees.push(plugins_tree);
+
+  LOG(INFO, "Adding plugins configuration");
+  trees.push(config);
 
   while (not trees.empty()) {
     auto tree = trees.top();
     trees.pop();
 
-    // for (auto plugin : tree) {
-    // add dependencies to trees
-    // load this plugin
-    // }
+    for (auto plugin : tree) {
+      const std::string id = plugin.first.as<std::string>();
+      LOG(INFO, "Adding plugin: ", id);
+
+      if (plugin.second["dependencies"]) {
+        LOG(INFO, "Adding dependencies of plugin: ", id);
+        trees.push(plugin.second["dependencies"]);
+      }
+
+      loadPlugin(id, plugin.second);
+    }
   }
 }
 
-std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id) {
+std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id,
+                                                Config config) {
   std::string type{}, path{};
   std::tie(type, path) = splitId(id);
 
@@ -52,6 +58,9 @@ std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id) {
 
   if (plugin != nullptr) {
     addPlugin(id, plugin);
+
+    // Setting configuration
+    plugin->setConfig(config);
   } else {
     LOG(ERROR, "Could not load plugin: ", id);
   }
@@ -62,6 +71,22 @@ std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id) {
 void PluginGraph::addPlugin(const std::string& id,
                             std::shared_ptr<Plugin> plugin) {
   m_plugins.emplace(id, plugin);
+}
+
+void PluginGraph::removePlugin(const std::string& id) {}
+
+void PluginGraph::startPlugins() {
+  for (auto plugin : m_plugins) {
+    LOG(INFO, "Starting plugin: ", plugin.first);
+    plugin.second->spawn();
+  }
+}
+
+void PluginGraph::stopPlugins() {
+  for (auto plugin : m_plugins) {
+    LOG(INFO, "Stopping plugin: ", plugin.first);
+    plugin.second->stop();
+  }
 }
 
 std::pair<std::string, std::string> PluginGraph::splitId(

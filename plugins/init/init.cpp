@@ -10,13 +10,13 @@ Init::Init(std::shared_ptr<Core> core)
 std::string Init::getName() const { return "Init"; }
 
 void Init::onInit() {
-  for (auto nick : getConfig()["config"]["alternative_nicks"]) {
+  for (auto nick : getConfig()["alternative_nicks"]) {
     m_alt_nicks.push_back(nick.as<std::string>());
   }
 
-  sendNickMsg(getConfig()["config"]["nick"].as<std::string>());
-  sendUserMsg(getConfig()["config"]["user"].as<std::string>(),
-              getConfig()["config"]["real_name"].as<std::string>());
+  sendNickMsg(getConfig()["nick"].as<std::string>());
+  sendUserMsg(getConfig()["user"].as<std::string>(),
+              getConfig()["real_name"].as<std::string>());
 }
 
 void Init::onMessage(IRCMessage cmd) {

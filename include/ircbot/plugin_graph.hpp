@@ -26,8 +26,10 @@ class PluginGraph : public std::enable_shared_from_this<PluginGraph>,
   /** Load plugins from configuration file
    *
    * Fetches configuration from client and loads all plugins.
+   *
+   * \param config plugins configuration
    */
-  void loadPluginsFromConfig();
+  void loadPlugins(Config config);
 
   /** Loads plugin from file and adds it to PluginGraph
    *
@@ -35,10 +37,11 @@ class PluginGraph : public std::enable_shared_from_this<PluginGraph>,
    *
    * \param id unique id in format: type://resource; eg. py://hello.py,
    * tcp://reported_name, so://clipboard/clipboard.so
+   * \param config plugin configuration
    *
    * \return shared pointer to loaded plugin
    */
-  std::shared_ptr<Plugin> loadPlugin(const std::string& id);
+  std::shared_ptr<Plugin> loadPlugin(const std::string& id, Config config);
 
   /** Adds plugin to Graph
    *
@@ -57,6 +60,12 @@ class PluginGraph : public std::enable_shared_from_this<PluginGraph>,
    * This function removes plugin from graph.
    */
   void removePlugin(const std::string& id);
+
+  /** Start all plugins */
+  void startPlugins();
+
+  /** Stop all plugins */
+  void stopPlugins();
 
  private:
   /** pointer to Core */

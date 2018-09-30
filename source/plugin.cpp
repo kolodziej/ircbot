@@ -36,8 +36,10 @@ void Plugin::run() {
   using namespace std::literals::chrono_literals;
   m_running = true;
 
+  LOG(INFO, "Running onInit event in: ", getName());
   onInit();
 
+  LOG(INFO, "Starting plugins loop in:", getName());
   while (isRunning()) {
     std::unique_lock<std::mutex> lock{m_incoming_mtx};
     if (m_incoming_cv.wait_for(lock, 500ms,
@@ -107,6 +109,14 @@ void Plugin::spawn() {
   auto plugin_call = [this] {
     try {
       run();
+    } catch (YAML::RepresentationException& exc) {
+      LOG(ERROR, "Plugin ", getName(),
+          " caused a configuration representation problem: ", exc.what(),
+          " in: position: ", exc.mark.pos, ", line: ", exc.mark.line,
+          ", column: ", exc.mark.column);
+    } catch (YAML::Exception& exc) {
+      LOG(ERROR, "Plugin ", getName(),
+          " has configuration problem: ", exc.what());
     } catch (std::exception& exc) {
       LOG(ERROR, "Plugin ", getName(), " caused an exception: ", exc.what());
     }
