@@ -260,7 +260,7 @@ void Core::stop() {
   stopAsyncReceive();
   disconnect();
 
-  // stopPlugins();
+  stopPlugins();
 
   LOG(INFO, "Stopping tcp plugin server (if exists)...");
   stopTcpPluginServer();
