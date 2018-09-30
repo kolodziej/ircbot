@@ -180,7 +180,7 @@ void Core::startTcpPluginServer() {
   }
 
   m_tcp_plugin_server =
-      std::make_unique<TcpPluginServer>(shared_from_this(), host, port);
+      std::make_unique<TcpPluginServer>(m_plugin_graph, host, port);
   m_tcp_plugin_server->acceptConnections();
 }
 

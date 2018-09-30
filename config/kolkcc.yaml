@@ -3,6 +3,8 @@ port: 6667
 plugin_token: __secret__
 admin_port:
   path: "/tmp/ircbot.sock"
+tcp_plugin_server:
+  port: 5544
 log:
 - level: INFO
   file: "-stdout"

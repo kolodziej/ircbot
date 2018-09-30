@@ -14,7 +14,7 @@ set(HEADERS
 
 pybind11_add_module(pyircbot ${SOURCES})
 target_link_libraries(pyircbot PRIVATE
-  ircbot
+  ircbot yaml-cpp
   ${Boost_LIBRARIES}
   ${Protobuf_LIBRARIES}
   ${CMAKE_THREAD_LIBS_INIT}

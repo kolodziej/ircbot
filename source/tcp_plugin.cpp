@@ -2,13 +2,16 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include "ircbot/plugin_graph.hpp"
+
 #include "control.pb.h"
 #include "message.pb.h"
 
 namespace ircbot {
 
-TcpPlugin::TcpPlugin(std::shared_ptr<Core> core, asio::ip::tcp::socket&& socket)
-    : Plugin{core},
+TcpPlugin::TcpPlugin(std::shared_ptr<PluginGraph> plugin_graph,
+                     asio::ip::tcp::socket&& socket)
+    : Plugin{plugin_graph->core()},
       m_socket{std::move(socket)},
       m_init_timer{m_socket.get_io_service()},
       m_name{TcpPlugin::defaultName(m_socket)} {

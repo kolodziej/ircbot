@@ -20,13 +20,13 @@ class TcpPluginServer {
  public:
   /** Default constructor
    *
-   * \param client shared pointer to client which owns plugins registered by
-   * this server
-   * \param host hostname/ip addr on which server should listen for connections
-   * \pararm port tcp port on which server should listen
+   * \param plugin_graph shared pointer to PluginGraph which owns plugins
+   * registered by this server \param host hostname/ip addr on which server
+   * should listen for connections \pararm port tcp port on which server should
+   * listen
    */
-  TcpPluginServer(std::shared_ptr<Core> client, const std::string& host,
-                  uint16_t port);
+  TcpPluginServer(std::shared_ptr<PluginGraph> plugin_graph,
+                  const std::string& host, uint16_t port);
 
   /** start accepting connections from plugins */
   void acceptConnections();
@@ -36,7 +36,7 @@ class TcpPluginServer {
 
  private:
   /** pointer to client which owns plugins registered by this server */
-  std::shared_ptr<Core> m_core;
+  std::shared_ptr<PluginGraph> m_plugin_graph;
 
   /** endpoint on which server is listening for plugins connections */
   asio::ip::tcp::endpoint m_endpoint;

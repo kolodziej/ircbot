@@ -17,11 +17,12 @@ class TcpPlugin : public Plugin {
  public:
   /** Default constructor
    *
-   * \param config plugin configuration
+   * \param plugin_graph shared pointer to PluginGraph owning this plugin
    * \param socket rvalue reference to asio tcp socket on which communication
    * with plugin will be performed
    */
-  TcpPlugin(std::shared_ptr<Core> core, asio::ip::tcp::socket&& socket);
+  TcpPlugin(std::shared_ptr<PluginGraph> plugin_graph,
+            asio::ip::tcp::socket&& socket);
 
   std::string getName() const;
 
