@@ -28,10 +28,7 @@ Core::Core(Config cfg)
       m_tcp_plugin_server{nullptr},
       m_running{false},
       m_result{RunResult::OK},
-      m_start_time{std::chrono::steady_clock::now()} {
-  // create instance of PluginGraph
-  m_plugin_graph = std::make_shared<PluginGraph>(shared_from_this());
-}
+      m_start_time{std::chrono::steady_clock::now()} {}
 
 void Core::connect() {
   asio::ip::tcp::resolver resolver{m_context_provider.getContext()};
@@ -78,6 +75,9 @@ void Core::connect() {
 }
 
 void Core::initializePlugins() {
+  // create instance of PluginGraph
+  m_plugin_graph = std::make_shared<PluginGraph>(shared_from_this());
+
   // @TODO: initializePlugins
 }
 
