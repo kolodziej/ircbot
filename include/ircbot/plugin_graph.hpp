@@ -15,7 +15,7 @@ namespace ircbot {
  * Container for all plugins in ircbot.
  */
 
-class PluginGraph : private std::enable_shared_from_this<PluginGraph>,
+class PluginGraph : public std::enable_shared_from_this<PluginGraph>,
                     public OutputPlugin {
  public:
   PluginGraph(std::shared_ptr<Core> core);
