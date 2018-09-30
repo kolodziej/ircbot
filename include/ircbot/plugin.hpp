@@ -14,6 +14,7 @@
 #include "ircbot/core.hpp"
 #include "ircbot/irc_message.hpp"
 #include "ircbot/logger.hpp"
+#include "ircbot/output_plugin.hpp"
 #include "ircbot/plugin_config.hpp"
 
 namespace ircbot {
@@ -26,7 +27,7 @@ namespace ircbot {
  * and responding to incoming messages. It also supports CommandParser.
  */
 
-class Plugin {
+class Plugin : public OutputPlugin {
   /** Type of function that is called when command from user comes */
   using CmdFunction = std::function<void(const CommandParser::Command&)>;
 

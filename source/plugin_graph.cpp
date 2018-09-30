@@ -13,31 +13,49 @@ PluginGraph::PluginGraph(std::shared_ptr<Core> core) : m_core{core} {}
 std::shared_ptr<Core> PluginGraph::core() { return m_core; }
 
 void PluginGraph::loadPlugins(Config config) {
-  std::stack<Config> trees;
+  using PluginPair = std::pair<Config, std::shared_ptr<OutputPlugin>>;
+  std::stack<PluginPair> trees;
 
   LOG(INFO, "Adding plugins configuration");
-  trees.push(config);
+  trees.push(std::make_pair(Config(config),
+                            std::shared_ptr<OutputPlugin>(shared_from_this())));
 
   while (not trees.empty()) {
     auto tree = trees.top();
+    auto& config = tree.first;
+    auto& parent = tree.second;
+
     trees.pop();
 
-    for (auto plugin : tree) {
+    for (auto plugin : config) {
       const std::string id = plugin.first.as<std::string>();
       LOG(INFO, "Adding plugin: ", id);
 
-      if (plugin.second["dependencies"]) {
-        LOG(INFO, "Adding dependencies of plugin: ", id);
-        trees.push(plugin.second["dependencies"]);
-      }
+      auto plugin_ptr = loadPlugin(id);
+      if (plugin_ptr != nullptr) {
+        // set configuration
+        plugin_ptr->setConfig(plugin.second);
 
-      loadPlugin(id, plugin.second);
+        // add plugin to map
+        addPlugin(id, plugin_ptr);
+
+        // add plugin as an output for current parrent
+        parent->addOutputPlugin(plugin_ptr);
+
+        // add dependencies
+        if (plugin.second["dependencies"]) {
+          LOG(INFO, "Adding dependencies of plugin: ", id);
+          PluginPair p =
+              std::make_pair(Config(plugin.second["dependencies"]),
+                             std::shared_ptr<OutputPlugin>(plugin_ptr));
+          trees.push(p);
+        }
+      }
     }
   }
 }
 
-std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id,
-                                                Config config) {
+std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id) {
   std::string type{}, path{};
   std::tie(type, path) = splitId(id);
 
@@ -56,12 +74,7 @@ std::shared_ptr<Plugin> PluginGraph::loadPlugin(const std::string& id,
     LOG(ERROR, "Unsupported plugin type: ", type);
   }
 
-  if (plugin != nullptr) {
-    addPlugin(id, plugin);
-
-    // Setting configuration
-    plugin->setConfig(config);
-  } else {
+  if (plugin == nullptr) {
     LOG(ERROR, "Could not load plugin: ", id);
   }
 

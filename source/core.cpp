@@ -120,19 +120,9 @@ void Core::startAsyncReceive() {
     LOG(INFO, "Parsed commands: ", m_parser.messagesCount());
     while (m_parser.messagesCount() > 0) {
       auto msg = m_parser.getMessage();
-      LOG(INFO, "Passing message to plugins: ", msg.toString());
-      for (auto& plugin : m_plugins) {
-        if (not plugin->preFilter(msg)) {
-          DEBUG("Plugin ", plugin->getName(), " pre-filtering not passed",
-                " for message: ", msg.toString(true));
-          continue;
-        }
-
-        if (plugin->filter(msg)) {
-          DEBUG("Plugin ", plugin->getName(),
-                " filtering passed for message: ", msg.toString(true));
-          plugin->receive(msg);
-        }
+      if (m_plugin_graph) {
+        LOG(INFO, "Passing message to PluginGraph: ", msg.toString());
+        m_plugin_graph->outputMessage(msg);
       }
     }
 

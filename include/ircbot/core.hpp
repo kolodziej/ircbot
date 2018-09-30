@@ -181,18 +181,6 @@ class Core : public std::enable_shared_from_this<Core> {
   /** promise that will be set when client will be stopped */
   std::promise<RunResult> m_stop_promise;
 
-  /** Vector of unique pointers to plugins */
-  PluginVector m_plugins;
-
-  /** Map of plugin ids to pointers to dynamically loaded libraries containing
-   * these plugins. Lets us to safely close (dlclose) them when plugins are
-   * reloaded or removed
-   */
-  std::map<std::string, void*> m_dl_plugins;
-
-  /** Mutex protecting vector of plugins */
-  std::mutex m_plugins_mtx;
-
   /** Time when bot has been started */
   std::chrono::steady_clock::time_point m_start_time;
 };

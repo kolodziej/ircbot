@@ -41,7 +41,7 @@ class PluginGraph : public std::enable_shared_from_this<PluginGraph>,
    *
    * \return shared pointer to loaded plugin
    */
-  std::shared_ptr<Plugin> loadPlugin(const std::string& id, Config config);
+  std::shared_ptr<Plugin> loadPlugin(const std::string& id);
 
   /** Adds plugin to Graph
    *

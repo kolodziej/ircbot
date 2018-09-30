@@ -16,20 +16,8 @@ plugins:
     real_name: IRCBot
     invisible: false
     wallops: false
-  xx://./plugins/ping/ping.so:
-    path: "./plugins/ping/ping.so"
-  uptime:
-    path: "./plugins/uptime/uptime.so"
-  join:
-    path: "./plugins/join/join.so"
-    config:
-      channels:
-      - "#IRCBot"
-  clipboard:
-    path: "./plugins/clipboard/clipboard.so"
-    config:
-      size: 5
-      message_size: 20
-  simple:
-    path: "./plugins/simple_commands/simple_commands.so"
-    config: {}
+  so://./plugins/ping/ping.so: {}
+  so://./plugins/uptime/uptime.so: {}
+  so://./plugins/join/join.so:
+    channels:
+    - "#IRCBot"

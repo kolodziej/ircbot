@@ -4,7 +4,8 @@
 #include <memory>
 #include <vector>
 
-#include "ircbot/plugin.hpp"
+#include "ircbot/irc_message.hpp"
+#include "ircbot/logger.hpp"
 
 namespace ircbot {
 
@@ -16,6 +17,8 @@ namespace ircbot {
  * Plugins that should receive output from something that inherits this class
  * should register in it.
  */
+
+class Plugin;
 
 class OutputPlugin {
  public:
@@ -29,16 +32,15 @@ class OutputPlugin {
    *
    * \param plugin shared pointer to plugin that should be added
    */
-  void addPlugin(std::shared_ptr<Plugin> plugin);
+  void addOutputPlugin(std::shared_ptr<Plugin> plugin);
 
   /** Remove plugin
    *
    * \param plugin shared pointer to plugin that should be removed
    * \return returns false if plugin didn't exist in OutputPlugin
    */
-  bool removePlugin(std::shared_ptr<Plugin> plugin);
+  bool removeOutputPlugin(std::shared_ptr<Plugin> plugin);
 
- protected:
   /** Output message to all inputs
    *
    * \param message message that should be sent to all inputs
