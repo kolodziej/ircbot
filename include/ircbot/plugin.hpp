@@ -158,9 +158,6 @@ class Plugin {
    */
   void send(const IRCMessage& msg);
 
-  /** Get configuration as boost::property_tree::ptree */
-  pt::ptree& cfg();
-
   /** Add function that can be called using commands passed by user via irc
    * message
    *

@@ -1,0 +1,37 @@
+server: kolk.cc
+port: 6667
+plugin_token: __secret__
+admin_port:
+  path: "/tmp/ircbot.sock"
+log:
+- level: INFO
+  file: "-stdout"
+plugins:
+  init:
+    path: "./plugins/init/init.so"
+    config:
+      nick: LoIRCBot
+      user: LoIRCBot
+      alternative_nicks:
+      - IRCBot_1
+      - IRCBot_2
+      real_name: IRCBot
+      invisible: false
+      wallops: false
+  ping:
+    path: "./plugins/ping/ping.so"
+  uptime:
+    path: "./plugins/uptime/uptime.so"
+  join:
+    path: "./plugins/join/join.so"
+    config:
+      channels:
+      - "#IRCBot"
+  clipboard:
+    path: "./plugins/clipboard/clipboard.so"
+    config:
+      size: 5
+      message_size: 20
+  simple:
+    path: "./plugins/simple_commands/simple_commands.so"
+    config: {}

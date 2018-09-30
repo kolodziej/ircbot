@@ -90,8 +90,6 @@ IRCMessage Plugin::getCommand() {
 
 void Plugin::send(const IRCMessage& cmd) { m_client->send(cmd); }
 
-pt::ptree& Plugin::cfg() { return m_cfg.tree(); }
-
 bool Plugin::filter(const IRCMessage& /*cmd*/) { return true; }
 
 bool Plugin::preFilter(const IRCMessage& cmd) {

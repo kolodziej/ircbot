@@ -7,7 +7,7 @@ foreach(PROGRAM ${PROGRAMS})
     set_target_properties(program-${PROGRAM}
       PROPERTIES OUTPUT_NAME ${PROGRAM})
     target_link_libraries(program-${PROGRAM}
-        ircbot dl
+        ircbot dl yaml-cpp
         ${Boost_LIBRARIES}
         ${Protobuf_LIBRARIES}
         ${CMAKE_THREAD_LIBS_INIT}
