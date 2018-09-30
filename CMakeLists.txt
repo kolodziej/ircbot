@@ -24,6 +24,7 @@ include_directories("${CMAKE_SOURCE_DIR}/pybind11/include")
 set(YAML_CPP_BUILD_TESTS OFF CACHE BOOL "disable yaml-cpp tests" FORCE)
 set(YAML_CPP_BUILD_TOOLS OFF CACHE BOOL "disable yaml-cpp tools" FORCE)
 set(YAML_CPP_BUILD_CONTRIB OFF CACHE BOOL "disable yaml-cpp contrib" FORCE)
+set(BUILD_SHARED_LIBS ON CACHE BOOL "enable building shared libraries" FORCE)
 add_subdirectory(yaml-cpp)
 include_directories("${CMAKE_SOURCE_DIR}/yaml-cpp/include")
 
