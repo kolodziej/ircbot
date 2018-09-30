@@ -15,7 +15,7 @@ std::shared_ptr<Core> PluginGraph::core() { return m_core; }
 void PluginGraph::loadPluginsFromConfig() {
   Config cfg{core()->getConfig()};
 
-  auto plugins_tree = cfg.tree().get_child("plugins");
+  auto plugins_tree = cfg["plugins"];
 
   std::stack<Config> trees;
   trees.push(plugins_tree);
