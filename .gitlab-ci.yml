@@ -23,7 +23,7 @@ ubuntu-x86-image:
     - docker push docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
 
 build:
-  image: docker.kolk.cc/ircbot-debian:$IMAGE_ID
+  image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Build
   tags:
     - docker
