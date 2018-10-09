@@ -82,8 +82,6 @@ test:
 deb:ubuntu:
   image: docker.kolk.cc/ircbot-ubuntu:$IMAGE_ID
   stage: Package
-  only:
-    - tags
   tags:
     - docker
     - ircbot
