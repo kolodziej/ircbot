@@ -1,7 +1,9 @@
 #include "join.hpp"
 
+#include <chrono>
 #include <stdexcept>
 #include <string>
+#include <thread>
 
 using namespace ircbot;
 
@@ -9,25 +11,16 @@ Join::Join(std::shared_ptr<Core> core) : SoPlugin{core} {}
 
 std::string Join::getName() const { return "Join"; }
 
-void Join::onInit() {
-  for (auto p : getConfig()["channels"]) {
-    auto channel = p.as<std::string>();
-    if (not m_channels.count(channel)) {
-      LOG(INFO, "Trying to join ", channel);
-      m_channels.insert(channel);
-
-      IRCMessage msg{"JOIN", {channel}};
-      send(msg);
-    }
-  }
-}
-
 void Join::onMessage(IRCMessage cmd) {
   int responseCode = std::stoi(cmd.command);
   switch (responseCode) {
     case 332:
       LOG(INFO, "Joined to channel: ", cmd.params[0],
           ". Topic: ", cmd.params[1]);
+      break;
+    case 376:
+      LOG(INFO, "Joining to channels!");
+      join();
       break;
     default:
       LOG(ERROR, "Error occurred during JOIN command to channel ",
@@ -37,7 +30,8 @@ void Join::onMessage(IRCMessage cmd) {
 }
 
 bool Join::filter(const IRCMessage& cmd) {
-  return (cmd.command == "461" or  // 461 == ERR_NEEDMOREPARAMS
+  return (cmd.command == "376" or  // 376 == RPL_ENDOFMOTD
+          cmd.command == "461" or  // 461 == ERR_NEEDMOREPARAMS
           cmd.command == "473" or  // 473 == ERR_INVITEONLYCHAN
           cmd.command == "474" or  // 474 == ERR_BANNEDFROMCHAN
           cmd.command == "475" or  // 475 == ERR_BADCHANNELKEY
@@ -49,3 +43,16 @@ bool Join::filter(const IRCMessage& cmd) {
 }
 
 void Join::onNewConfiguration() {}
+
+void Join::join() {
+  for (auto p : getConfig()["channels"]) {
+    auto channel = p.as<std::string>();
+    if (not m_channels.count(channel)) {
+      LOG(INFO, "Trying to join ", channel);
+      m_channels.insert(channel);
+
+      IRCMessage msg{"JOIN", {channel}};
+      send(msg);
+    }
+  }
+}

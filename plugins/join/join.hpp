@@ -11,13 +11,14 @@ class Join : public ircbot::SoPlugin {
   Join(std::shared_ptr<ircbot::Core> core);
 
   std::string getName() const override;
-  void onInit() override;
   void onMessage(ircbot::IRCMessage cmd) override;
   bool filter(const ircbot::IRCMessage& cmd) override;
   void onNewConfiguration() override;
 
  private:
   std::unordered_set<std::string> m_channels;
+
+  void join();
 };
 
 IRCBOT_PLUGIN(Join)
