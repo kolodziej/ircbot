@@ -33,6 +33,9 @@ struct IRCMessage {
   IRCMessage(const std::string& command,
              std::initializer_list<std::string> params);
 
+  /** message id */
+  uint64_t message_id;
+
   /** servername part of message */
   std::string servername;
 

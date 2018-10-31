@@ -149,6 +149,14 @@ class Core : public std::enable_shared_from_this<Core> {
    */
   std::chrono::steady_clock::duration getUptime() const;
 
+  /** Get next message Id
+   *
+   * Increment m_last_message_id and return new value
+   *
+   * \return next message id
+   */
+  uint64_t nextMessageId();
+
  private:
   /** Reference to network::ContextProvider */
   network::ContextProvider& m_context_provider;
@@ -183,6 +191,9 @@ class Core : public std::enable_shared_from_this<Core> {
 
   /** Time when bot has been started */
   std::chrono::steady_clock::time_point m_start_time;
+
+  /** Last Message ID */
+  uint64_t m_last_message_id;
 };
 
 }  // namespace ircbot

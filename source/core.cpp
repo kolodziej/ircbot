@@ -121,6 +121,11 @@ void Core::startAsyncReceive() {
     while (m_parser.messagesCount() > 0) {
       auto msg = m_parser.getMessage();
       if (m_plugin_graph) {
+        // assigning new message id
+        msg.message_id = nextMessageId();
+        DEBUG("Assigned id to message: ", msg.message_id);
+
+        // passing message to plugin's graph
         LOG(INFO, "Passing message to PluginGraph: ", msg.toString());
         m_plugin_graph->outputMessage(msg);
       }
@@ -306,5 +311,7 @@ asio::io_service& Core::getIoService() {
 std::chrono::steady_clock::duration Core::getUptime() const {
   return std::chrono::steady_clock::now() - m_start_time;
 }
+
+uint64_t Core::nextMessageId() { return ++m_last_message_id; }
 
 }  // namespace ircbot
